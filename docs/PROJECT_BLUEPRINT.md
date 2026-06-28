@@ -310,6 +310,118 @@ The system must provide:
 - Draft, published, archived, and scheduled content states.
 - Media library with file validation and alt text.
 
+## CMS-Driven Frontend Architecture
+
+The public website frontend must be CMS-driven and backend-controlled as much as possible. Next.js should provide the rendering system, routing structure, reusable UI components, layouts, accessibility behavior, responsive design, animations, and data-fetching layer. Laravel and Filament must control editable institutional content through secure staff/admin workflows and expose that content through clean public API endpoints.
+
+### Backend-Controlled Public Content
+
+The following public website content must be managed from Laravel/Filament and delivered through the API:
+
+- Logo, favicon, website title, institute identity text, and brand assets.
+- SEO title, meta description, canonical URL, Open Graph image, social share text, robots behavior, and structured metadata.
+- Header menu, footer menu, important links, footer text, contact details, social media links, and quick links.
+- Hero title, hero subtitle, hero image, hero video, CTA button text, CTA button links, and homepage banners.
+- Homepage section visibility, section order, section labels, section headings, and section content sources.
+- Notices, popup notices, admission circulars, downloads, policies, forms, and important announcements.
+- News, events, gallery images, gallery albums, videos, faculty profiles, department information, course information, scholarship information, and admission information.
+- Contact page content, map/embed settings if approved, office hours, email addresses, phone numbers, and address records.
+
+Hard-coded frontend public content is allowed only for structural UI labels that are not intended to be edited by staff, such as generic accessibility labels, fallback button labels, loading messages, and form control labels. Any content that staff may reasonably need to update must be backend-controlled.
+
+### What Remains in Frontend Code
+
+The frontend should contain:
+
+- Route structure and page shells.
+- Reusable components for layout, sections, cards, menus, banners, lists, galleries, and detail pages.
+- TypeScript types for public API contracts.
+- API client functions and response normalization.
+- Loading, empty, error, and fallback states.
+- Accessibility behavior, responsive layout, and animation behavior.
+- Static structural copy only where the text is part of the UI mechanics rather than institutional content.
+
+The frontend must not contain authoritative public website data such as institute contact details, menu items, notices, department copy, admission circular text, SEO content, or media URLs.
+
+### Frontend Content Fetching
+
+The Next.js frontend must fetch public website data from Laravel API endpoints. Public content should be grouped into practical API resources such as site settings, menus, homepage layout, notices, news, events, departments, courses, faculty profiles, galleries, downloads, admission content, scholarship content, contact details, and page SEO.
+
+The frontend should prefer server-side data fetching for public pages so pages remain fast, SEO-friendly, and crawlable. Client-side fetching should be reserved for interactive widgets, non-critical enhancements, or content that does not need to be indexed.
+
+### Caching and Revalidation
+
+Public content should use a layered caching strategy:
+
+- Laravel should cache expensive public CMS queries where safe.
+- Next.js should use static generation, ISR, or route-level revalidation for public pages where appropriate.
+- Frequently changing content such as urgent notices and popup notices should have shorter cache lifetimes.
+- Stable content such as department pages, faculty profiles, downloads, and general pages can use longer cache lifetimes with manual or webhook-triggered revalidation.
+- Admin publishing actions should be designed to trigger cache invalidation or revalidation in a future deployment phase.
+- API responses should include update timestamps or version markers where useful for cache decisions.
+
+If content freshness is critical, the page or section should be configured with a lower revalidation interval instead of bypassing caching for the entire public website.
+
+### Images, Videos, and Files
+
+Laravel must manage public CMS media metadata and file validation. Filament should allow authorized staff to upload and manage public images, videos, downloadable files, alt text, captions, publish status, and ordering.
+
+Rules:
+
+- Public media may be served from public storage only after validation.
+- Sensitive files must remain private and must not be exposed through public CMS endpoints.
+- Media records should include alt text, caption, file type, dimensions where practical, file size, URL, and status.
+- Homepage hero media, banners, gallery images, news images, event images, department images, faculty photos, admission circulars, and downloads must come from backend-managed media records.
+- The frontend should render media responsively and should not hard-code media URLs except for emergency fallback assets approved by the architect.
+
+### SEO Metadata Control
+
+SEO metadata must be controlled from the backend for public pages. Filament should allow authorized staff to manage SEO title, meta description, slug, canonical URL, Open Graph image, Open Graph title/description, robots directives, and structured data fields where appropriate.
+
+The frontend should use Next.js metadata features to render backend-provided metadata. If backend metadata is missing, the frontend may use safe fallback metadata from backend-provided global site settings. Hard-coded SEO defaults should be minimal and generic.
+
+### Homepage Section Control
+
+The homepage must support backend-controlled sections. Authorized staff should be able to enable, disable, reorder, and configure homepage sections from Filament.
+
+Examples of configurable homepage sections:
+
+- Hero
+- Banner/slider
+- Notices
+- Admission call-to-action
+- Departments
+- Courses/programs
+- News
+- Events
+- Gallery
+- Faculty highlights
+- Scholarship information
+- Downloads
+- Contact block
+- Important links
+
+Each section should have a stable frontend component type, while its content, visibility, order, title, CTA, media, and item limits are controlled by the backend. The frontend should ignore unknown inactive section types safely and render known active sections in the backend-provided order.
+
+### Menus and Footer Links
+
+Header menu, footer menu, important links, social links, and footer text must be CMS-controlled. Filament should allow staff to manage labels, URLs, link targets, ordering, parent/child menu structure, visibility, and publish status.
+
+The frontend should render menus from API data and should support nested menu structures where approved by the design. Hard-coded navigation should be limited to structural routes needed for application behavior and must not replace CMS-managed public menus.
+
+### Fallback Content and API Failure
+
+The frontend must handle API failures gracefully:
+
+- Show a polished error or maintenance state for critical page-level failures.
+- Render cached or previously generated content when available.
+- Use safe generic fallback metadata if backend SEO metadata cannot be loaded.
+- Avoid displaying stale urgent notices if their expiry date has passed.
+- Avoid hard-coding full institutional content as a fallback.
+- Log or report public content fetch failures through the approved monitoring strategy when implemented.
+
+Fallback content should preserve usability without becoming a second hidden source of editable website content.
+
 ## 13. Database Entity List
 
 Core entities:
@@ -720,4 +832,3 @@ Mitigation: Set upload limits, retention policies, image optimization, and stora
 - Keep frontend components reusable and accessible.
 - Keep deployment processes documented and repeatable.
 - Keep future expansion possible without destabilizing the core platform.
-

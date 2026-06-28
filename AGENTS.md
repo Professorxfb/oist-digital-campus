@@ -25,6 +25,7 @@ This file is the permanent instruction rulebook for all future Codex work in thi
 - Prefer clean architecture over quick shortcuts.
 - Keep backend business rules in the backend.
 - Keep frontend code focused on presentation, user interaction, routing, data fetching, and client-side state needed for the UI.
+- Keep the public website CMS-driven and backend-controlled for all editable institutional content.
 - Keep public pages fast, crawlable, and SEO-friendly.
 - Keep portal workflows simple, reliable, and mobile-first.
 - Keep staff/admin features practical and easy to operate through Filament.
@@ -45,6 +46,12 @@ This file is the permanent instruction rulebook for all future Codex work in thi
 - Do not commit secrets, credentials, API keys, `.env` files, database dumps, or private certificates.
 - Do not expose sensitive backend data to the frontend.
 - Do not mix frontend UI concerns with backend business rules.
+- Do not hard-code public website content unless it is structural UI only.
+- All editable public website content must come from the backend API.
+- Logo, favicon, SEO metadata, titles, text, images, videos, menus, footer content, notices, news, events, courses, departments, faculty profiles, gallery content, downloads, admission content, scholarship content, contact data, social links, popup notices, and homepage section configuration must be CMS-controlled.
+- Frontend public website components must be reusable, data-driven, and able to render backend-provided content safely.
+- Backend must expose clean public API endpoints for CMS-managed public website content.
+- The Filament admin panel must allow authorized staff to update CMS content without developer help.
 
 ## 5. Folder Ownership Rules
 
@@ -62,6 +69,9 @@ This file is the permanent instruction rulebook for all future Codex work in thi
 - Use server components by default where possible.
 - Use client components only for interactivity, browser APIs, local UI state, animations, and form interactions that require client behavior.
 - Keep API access behind a clear frontend API client layer.
+- Fetch editable public website content from Laravel public CMS APIs.
+- Do not hard-code institutional content in frontend pages or components.
+- Treat frontend public website components as data-driven renderers for backend-managed content.
 - Do not duplicate backend validation or business rules as authoritative logic in the frontend.
 - Handle loading, empty, success, and error states for every data-driven UI.
 - Keep public website pages SEO-friendly and portal pages protected from indexing.
@@ -72,6 +82,10 @@ This file is the permanent instruction rulebook for all future Codex work in thi
 ## 7. Backend Coding Standards
 
 - Use Laravel 12 conventions.
+- Own all CMS-managed public website content, including site settings, menus, SEO metadata, pages, homepage sections, notices, news, events, departments, courses, faculty profiles, media, downloads, contact details, and social links.
+- Expose clean, versioned public API endpoints for CMS content consumed by the Next.js frontend.
+- Keep public CMS APIs read-only for unauthenticated visitors.
+- Ensure staff can manage editable website content through Filament without developer help.
 - Keep business logic out of controllers when it grows beyond simple request orchestration.
 - Use Form Requests or equivalent validation boundaries for API/admin inputs.
 - Use policies and permissions for protected actions.
@@ -85,6 +99,9 @@ This file is the permanent instruction rulebook for all future Codex work in thi
 ## 8. Laravel/Filament Standards
 
 - Filament is the staff/admin CMS and operations interface.
+- Filament must provide authorized management screens for editable public website content.
+- Filament must support managing logo, favicon, website title, SEO defaults, menus, footer links, homepage sections, notices, news, events, galleries, courses, departments, faculty profiles, scholarship content, admission circulars, contact details, social links, popup notices, and downloads.
+- Filament CMS resources must support publish status, ordering, scheduling, and visibility controls where relevant.
 - Filament resources must enforce authorization through policies, permissions, or resource-level checks.
 - Filament forms must validate inputs clearly.
 - Filament tables must support practical search, filters, sorting, and pagination for operational datasets.
@@ -98,7 +115,11 @@ This file is the permanent instruction rulebook for all future Codex work in thi
 - Use Next.js 15 features intentionally and conservatively.
 - Use server rendering or static generation for public website pages where appropriate.
 - Use dynamic rendering only when required by personalization, authentication, or frequently changing private data.
-- Use metadata APIs for titles, descriptions, canonical URLs, Open Graph, and robots behavior.
+- Use metadata APIs to render backend-provided titles, descriptions, canonical URLs, Open Graph data, favicon data, and robots behavior.
+- Fetch public website settings, menus, page content, homepage sections, SEO metadata, notices, news, events, departments, courses, faculty profiles, gallery media, downloads, contact data, and footer content from backend APIs.
+- Hard-coded frontend public content is allowed only for structural UI text that is not intended to be edited by staff.
+- Homepage sections must render from backend-provided visibility, order, configuration, and content data.
+- Header and footer navigation must render from CMS-managed menu data.
 - Use route groups to separate public website, admission UI, student portal, and teacher portal when implementation begins.
 - Keep portal routes authenticated.
 - Ensure admin/staff content management remains in backend Filament, not in the frontend.
@@ -238,6 +259,7 @@ Rules:
 ## 20. SEO Rules
 
 - Public pages must support unique titles, descriptions, canonical URLs, Open Graph metadata, and structured data where appropriate.
+- Public page SEO metadata must come from backend CMS data, with frontend fallbacks limited to safe generic defaults.
 - Generate sitemap and robots rules for public content.
 - Prevent portal, admin, authenticated, and private pages from being indexed.
 - Use clean human-readable URLs.
@@ -261,6 +283,8 @@ Rules:
 
 - Optimize public website pages for fast first load.
 - Use caching for public content where safe.
+- Use Next.js revalidation or static regeneration for CMS-driven public content where appropriate.
+- Use short cache lifetimes for urgent notices and popup notices, and longer cache lifetimes for stable CMS pages when safe.
 - Use pagination for large lists.
 - Avoid over-fetching portal data.
 - Avoid unnecessary client-side JavaScript on public pages.
@@ -305,6 +329,7 @@ Rules:
 ## 26. Documentation Expectations
 
 - Keep `docs/PROJECT_BLUEPRINT.md` aligned with major architectural decisions.
+- Keep `docs/CMS_DRIVEN_FRONTEND.md` aligned with CMS-driven frontend decisions.
 - Document API contracts as they are introduced.
 - Document deployment steps for Vercel, cPanel, and MySQL.
 - Document environment variables without exposing secret values.
@@ -323,8 +348,9 @@ Rules:
 - Do not bypass authentication or authorization checks.
 - Do not hard-code secrets, tokens, passwords, or production URLs.
 - Do not use frontend code as the authority for business rules.
+- Do not use frontend code as the source of truth for editable public website content.
+- Do not hard-code logo, favicon, website title, SEO metadata, hero content, banners, CTA content, notices, news, events, gallery media, course data, department data, faculty profiles, scholarship information, admission circulars, contact details, social links, footer text, important links, downloads, homepage section visibility/order, popup notices, header menu, or footer menu.
 - Do not store private uploaded files in public web paths.
 - Do not return stack traces or internal errors in production responses.
 - Do not make destructive database or filesystem changes without explicit instruction and review.
 - Do not introduce a new major framework, package, service, or architectural pattern without architect approval.
-
