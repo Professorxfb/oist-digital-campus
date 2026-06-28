@@ -139,3 +139,64 @@ Backend:
 
 Enable the PHP CLI `zip` and `fileinfo` extensions in `D:\Software\php-8.5.7-nts-Win32-vs17-x64\php.ini`, then perform the backend environment setup step: create a local `.env`, generate the Laravel application key, and configure the intended MySQL connection without running project-specific migrations until the database design is approved.
 
+## Scaffold Verification After CMS-Driven Architecture Update
+
+Date: 2026-06-28
+
+### Scope
+
+Verified the existing clean frontend and backend starter applications after the CMS-driven frontend architecture rules were added.
+
+No project generator was re-run because `frontend` and `backend` already contained clean starter applications. Re-running `create-next-app` or `composer create-project` would risk overwriting the existing scaffold.
+
+No website pages, custom homepage design, institute content, authentication, admin panel, database models, database tables, Filament setup, Spatie Permission setup, or business features were implemented.
+
+### Commands Used
+
+- `Get-Content AGENTS.md`
+- `Get-Content docs\PROJECT_BLUEPRINT.md`
+- `Get-Content docs\CMS_DRIVEN_FRONTEND.md`
+- `Get-ChildItem -Force frontend`
+- `Get-ChildItem -Force frontend\src`
+- `Get-ChildItem -Force backend`
+- `Get-Content docs\SETUP_LOG.md`
+- `npm pkg get dependencies.next devDependencies.typescript devDependencies.tailwindcss devDependencies.eslint scripts`
+- `npm run lint`
+- `php -d extension=zip -d extension=fileinfo C:\ProgramData\ComposerSetup\bin\composer.phar show laravel/framework --no-interaction`
+- `php -d extension=zip -d extension=fileinfo artisan --version`
+
+### What Was Verified
+
+Frontend:
+
+- `frontend` contains a clean Next.js starter application.
+- Next.js version: 15.5.19.
+- TypeScript is present.
+- Tailwind CSS is present.
+- App Router is present under `src`.
+- ESLint is configured.
+- `npm run lint` completed successfully.
+- No OIST-specific public website content was added.
+- No custom homepage design was added.
+
+Backend:
+
+- `backend` contains a clean Laravel starter application.
+- Laravel Framework version: 12.62.0.
+- Composer dependencies are installed.
+- Filament is not installed.
+- Spatie Laravel Permission is not installed.
+- No custom business features were added.
+- No `.env` file exists.
+- No `database/database.sqlite` file exists.
+- No database migrations were run during this verification.
+
+### Errors and Warnings
+
+- No new command errors occurred during this verification pass.
+- The PHP CLI still requires runtime loading of `zip` and `fileinfo` for Composer/Laravel verification commands unless those extensions are enabled in `php.ini`.
+- Existing frontend dependency audit warning from the original scaffold remains noted: npm previously reported 2 moderate severity vulnerabilities in the generated dependency tree.
+
+### Next Recommended Setup Step
+
+Enable the PHP CLI `zip` and `fileinfo` extensions in `D:\Software\php-8.5.7-nts-Win32-vs17-x64\php.ini`. After that, create the backend local `.env`, generate the Laravel application key, and configure the MySQL connection. Do not run project-specific migrations until the database design is approved.
