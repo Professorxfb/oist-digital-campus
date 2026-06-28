@@ -523,3 +523,188 @@ The local test database was created with:
 - To access `/admin`, first run `php artisan db:seed --class=RolePermissionSeeder`, then run `php artisan oist:create-super-admin` and enter approved real admin credentials.
 - The local MySQL test database `oist_digital_campus_testing` must exist for `php artisan test`.
 - Do not commit `.env` or real credentials.
+
+## Backend CMS Foundation Setup
+
+Date: 2026-06-28
+
+### Scope
+
+Created the first backend-controlled CMS foundation for the public website.
+
+No frontend files were modified.
+
+No public website pages were created.
+
+No student, teacher, admission, result, attendance, fee, or academic business modules were created.
+
+No demo content or public institute content was hard-coded.
+
+### Commands Used
+
+Documentation and inspection:
+
+- `Get-Content AGENTS.md`
+- `Get-Content docs\PROJECT_BLUEPRINT.md`
+- `Get-Content docs\CMS_DRIVEN_FRONTEND.md`
+- `Get-Content backend\routes\api.php`
+- `Get-Content backend\app\Models\User.php`
+- `Get-Content backend\database\seeders\RolePermissionSeeder.php`
+- `git status --short`
+
+Generation:
+
+- `php artisan make:model SiteSetting -m`
+- `php artisan make:model HomepageSection -m`
+- `php artisan make:model Menu -m`
+- `php artisan make:model MenuItem -m`
+- `php artisan make:filament-resource SiteSetting --simple --panel=admin --no-interaction`
+- `php artisan make:filament-resource HomepageSection --simple --panel=admin --no-interaction`
+- `php artisan make:filament-resource Menu --simple --panel=admin --no-interaction`
+- `php artisan make:filament-resource MenuItem --simple --panel=admin --no-interaction`
+
+Verification:
+
+- `php artisan migrate`
+- `php artisan migrate:status`
+- `php artisan route:list --path=api/v1`
+- `php artisan test`
+
+Troubleshooting:
+
+- `php artisan tinker --execute="dump(Schema::hasTable('menu_items')); dump(Schema::hasTable('menus')); dump(Schema::hasTable('site_settings'));"` 
+- `php artisan tinker --execute="Schema::dropIfExists('menu_items');"`
+- `Move-Item -LiteralPath backend\database\migrations\2026_06_28_173441_create_menus_table.php -Destination backend\database\migrations\2026_06_28_173440_create_menus_table.php`
+- `Move-Item -LiteralPath backend\database\migrations\2026_06_28_173441_create_menu_items_table.php -Destination backend\database\migrations\2026_06_28_173442_create_menu_items_table.php`
+
+### Files Created
+
+- `backend/app/Models/SiteSetting.php`
+- `backend/app/Models/HomepageSection.php`
+- `backend/app/Models/Menu.php`
+- `backend/app/Models/MenuItem.php`
+- `backend/app/Policies/SiteSettingPolicy.php`
+- `backend/app/Policies/HomepageSectionPolicy.php`
+- `backend/app/Policies/MenuPolicy.php`
+- `backend/app/Policies/MenuItemPolicy.php`
+- `backend/app/Http/Controllers/Api/V1/PublicCmsController.php`
+- `backend/app/Filament/Resources/SiteSettings/SiteSettingResource.php`
+- `backend/app/Filament/Resources/SiteSettings/Pages/ManageSiteSettings.php`
+- `backend/app/Filament/Resources/HomepageSections/HomepageSectionResource.php`
+- `backend/app/Filament/Resources/HomepageSections/Pages/ManageHomepageSections.php`
+- `backend/app/Filament/Resources/Menus/MenuResource.php`
+- `backend/app/Filament/Resources/Menus/Pages/ManageMenus.php`
+- `backend/app/Filament/Resources/MenuItems/MenuItemResource.php`
+- `backend/app/Filament/Resources/MenuItems/Pages/ManageMenuItems.php`
+- `backend/database/migrations/2026_06_28_173440_create_menus_table.php`
+- `backend/database/migrations/2026_06_28_173441_create_homepage_sections_table.php`
+- `backend/database/migrations/2026_06_28_173441_create_site_settings_table.php`
+- `backend/database/migrations/2026_06_28_173442_create_menu_items_table.php`
+- `backend/tests/Feature/PublicCmsApiTest.php`
+- `backend/tests/Feature/CmsPolicyTest.php`
+
+### Files Updated
+
+- `backend/routes/api.php`
+- `docs/SETUP_LOG.md`
+
+### Models Created
+
+- `SiteSetting`
+  - Stores backend-controlled public site identity, SEO, brand assets, contact details, social links, footer text, admission CTA state, and popup notice fields.
+  - Uses nullable/empty defaults for editable public content.
+
+- `HomepageSection`
+  - Stores CMS-controlled homepage sections with key, text, media paths, button fields, sort order, enabled state, and JSON metadata.
+  - Provides an `enabled` query scope for public API filtering.
+
+- `Menu`
+  - Stores CMS menus for `header`, `footer`, and `quick_links`.
+  - Provides active menu relationships for public API rendering.
+
+- `MenuItem`
+  - Stores menu items with optional parent-child hierarchy, URL, target, sort order, and active state.
+
+### Filament Resources Created
+
+- `SiteSettingResource`
+  - Restricted by policy to `super_admin` and `admin`.
+  - Create action is hidden after the first settings record exists.
+  - Delete actions are not exposed.
+  - Provides logo, dark logo, and favicon upload fields on the public disk.
+
+- `HomepageSectionResource`
+  - Restricted by policy to `super_admin`, `admin`, and `cms_editor`.
+  - Supports enabled/disabled state, sort order, image upload, video upload, and metadata.
+
+- `MenuResource`
+  - Restricted by policy to `super_admin`, `admin`, and `cms_editor`.
+  - Supports menu locations: `header`, `footer`, and `quick_links`.
+
+- `MenuItemResource`
+  - Restricted by policy to `super_admin`, `admin`, and `cms_editor`.
+  - Supports menu item ordering and optional parent-child hierarchy.
+
+### Public API Endpoints Created
+
+- `GET /api/v1/site-settings`
+- `GET /api/v1/homepage-sections`
+- `GET /api/v1/menus/{location}`
+
+All endpoints:
+
+- Are public read-only endpoints.
+- Do not require authentication.
+- Return the project JSON envelope: `success`, `message`, `data`, and `meta`.
+- Expose only public-safe CMS fields.
+- Include `Cache-Control` directives with `public`, `max-age=60`, and `stale-while-revalidate=300`.
+
+### Access Rules
+
+- Site settings management: `super_admin`, `admin`.
+- Homepage section management: `super_admin`, `admin`, `cms_editor`.
+- Menu management: `super_admin`, `admin`, `cms_editor`.
+- Menu item management: `super_admin`, `admin`, `cms_editor`.
+- Public API access: unauthenticated read-only.
+
+### Migration Status
+
+The CMS migrations ran successfully after correcting migration order:
+
+- `2026_06_28_173440_create_menus_table`
+- `2026_06_28_173441_create_homepage_sections_table`
+- `2026_06_28_173441_create_site_settings_table`
+- `2026_06_28_173442_create_menu_items_table`
+
+### Errors and Warnings
+
+- The first `php artisan migrate` attempt failed because `menu_items` was generated with the same timestamp as `menus` and sorted before it.
+- MySQL left a partial `menu_items` table after the failed foreign-key attempt.
+- The partial table was removed with `Schema::dropIfExists('menu_items')`.
+- Migration filenames were renamed so `menus` runs before `menu_items` in future environments.
+- No demo CMS records were created.
+- Uploaded media fields use the `public` filesystem disk; run `php artisan storage:link` in environments where the public storage symlink has not been created.
+
+### Tests Added
+
+- `PublicCmsApiTest`
+  - Confirms site settings API returns a public-safe structure.
+  - Confirms homepage sections API returns enabled sections ordered by `sort_order`.
+  - Confirms menus API returns active menu items and active children.
+  - Confirms unknown menu locations return a consistent error response.
+
+- `CmsPolicyTest`
+  - Confirms non-admin users cannot manage site settings.
+  - Confirms `super_admin` and `admin` can manage site settings.
+  - Confirms `cms_editor` can manage homepage sections and menus but not site settings.
+  - Confirms non-CMS roles cannot manage homepage sections or menus.
+
+### Verification Results
+
+- `php artisan migrate` completed successfully.
+- `php artisan route:list --path=api/v1` showed 3 public CMS API routes.
+- `php artisan test` passed: 15 tests, 60 assertions.
+
+### Next Recommended Step
+
+Create the next CMS foundation layer for editable public content, such as notices, news, events, gallery items, downloads, departments, courses, faculty profiles, and admission circulars. Keep all public content CMS-controlled through Laravel API endpoints and Filament resources.
