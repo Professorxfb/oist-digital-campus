@@ -329,3 +329,197 @@ No student, teacher, admission, CMS, notice, news, event, course, department, fa
 Enable PHP CLI `intl` and `pdo_mysql` in `D:\Software\php-8.5.7-nts-Win32-vs17-x64\php.ini` so backend commands do not require runtime `-d` flags.
 
 After that, define the approved initial roles and permissions, then create the first real admin account through a controlled setup process. Because no demo user was created, `/admin` will require a user with either the `super_admin` or `admin` role before login can reach the panel dashboard.
+
+## Role, Permission, and First Super Admin Setup Foundation
+
+Date: 2026-06-28
+
+### Scope
+
+Created the controlled RBAC foundation and first super admin creation command.
+
+No frontend files were modified.
+
+No public website pages were created.
+
+No student, teacher, admission, CMS, notice, news, event, course, or department business modules were created.
+
+No demo users or default credentials were created.
+
+No public institute content was hard-coded.
+
+### Commands Used
+
+Inspection:
+
+- `Get-Content AGENTS.md`
+- `Get-Content docs\PROJECT_BLUEPRINT.md`
+- `Get-Content docs\CMS_DRIVEN_FRONTEND.md`
+- `Get-Content app\Models\User.php`
+- `Get-Content database\seeders\DatabaseSeeder.php`
+- `Get-Content app\Providers\Filament\AdminPanelProvider.php`
+- `Get-Content bootstrap\app.php`
+- `Get-Content config\permission.php`
+- `php artisan --version`
+- `php artisan route:list --path=admin`
+
+Verification:
+
+- `php artisan db:seed --class=RolePermissionSeeder`
+- `php artisan permission:cache-reset`
+- `php artisan list oist`
+- `php artisan oist:create-super-admin --help`
+- `php artisan oist:create-super-admin`
+- `php artisan test`
+
+Additional checks:
+
+- `php -d extension=php_pdo_sqlite.dll -d extension=php_sqlite3.dll vendor\bin\phpunit`
+- `php -r "... CREATE DATABASE IF NOT EXISTS oist_digital_campus_testing ..."`
+- `php -r "... count roles and permissions ..."`
+
+### Files Created
+
+- `backend/database/seeders/RolePermissionSeeder.php`
+- `backend/app/Console/Commands/CreateSuperAdmin.php`
+- `backend/tests/Feature/RolePermissionSeederTest.php`
+- `backend/tests/Feature/CreateSuperAdminCommandTest.php`
+- `backend/tests/Feature/FilamentPanelAccessTest.php`
+
+### Files Updated
+
+- `backend/bootstrap/app.php`
+- `backend/database/seeders/DatabaseSeeder.php`
+- `backend/phpunit.xml`
+- `docs/SETUP_LOG.md`
+
+### Roles Created
+
+The `RolePermissionSeeder` creates these roles idempotently:
+
+- `super_admin`
+- `admin`
+- `principal`
+- `admission_officer`
+- `academic_officer`
+- `accounts_officer`
+- `cms_editor`
+- `teacher`
+- `student`
+- `applicant`
+- `staff`
+
+### Permissions Created
+
+The `RolePermissionSeeder` creates these permissions idempotently:
+
+- `users.view`
+- `users.create`
+- `users.update`
+- `users.delete`
+- `roles.view`
+- `roles.manage`
+- `settings.view`
+- `settings.manage`
+- `reports.view`
+- `audit_logs.view`
+- `cms.view`
+- `cms.manage`
+- `admissions.view`
+- `admissions.manage`
+- `academics.view`
+- `academics.manage`
+- `accounts.view`
+- `accounts.manage`
+- `students.view`
+- `students.manage`
+- `teachers.view`
+- `teachers.manage`
+
+### Permission Assignment Summary
+
+- `super_admin`: all permissions.
+- `admin`: broad operational permissions except destructive user deletion, role management, and settings management.
+- `principal`: reporting, audit log viewing, and read access across major operational areas.
+- `admission_officer`: admission management, student viewing, and reports.
+- `academic_officer`: academic, student, and teacher management plus reports.
+- `accounts_officer`: accounts management, student viewing, and reports.
+- `cms_editor`: CMS view and manage permissions.
+- `teacher`: academic and student view permissions.
+- `student`: no admin permissions at this foundation stage.
+- `applicant`: no admin permissions at this foundation stage.
+- `staff`: reports view permission only at this foundation stage.
+
+### How To Run The Seeder
+
+Run:
+
+- `php artisan db:seed --class=RolePermissionSeeder`
+
+The seeder is safe to run multiple times. It uses Spatie's `findOrCreate` behavior, syncs role permissions, and clears the permission cache.
+
+### How To Create The First Super Admin
+
+Run:
+
+- `php artisan oist:create-super-admin`
+
+The command asks for:
+
+- Name
+- Email
+- Password, securely hidden from terminal output
+
+Rules enforced by the command:
+
+- Email must be valid.
+- Password must be at least 12 characters.
+- Password is never printed.
+- Existing users are not promoted unless the operator confirms.
+- The `super_admin` role must already exist. If it does not exist, run the role permission seeder first.
+- No default or demo user is created automatically.
+
+### Test Configuration
+
+`backend/phpunit.xml` now uses a dedicated MySQL test database:
+
+- `oist_digital_campus_testing`
+
+This avoids relying on SQLite for tests and keeps testing aligned with the project MySQL stack.
+
+The local test database was created with:
+
+- `CREATE DATABASE IF NOT EXISTS oist_digital_campus_testing CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`
+
+### Verification Results
+
+- `php artisan db:seed --class=RolePermissionSeeder` completed successfully.
+- `php artisan permission:cache-reset` completed successfully.
+- `php artisan list oist` shows `oist:create-super-admin`.
+- `php artisan oist:create-super-admin --help` displays the command help.
+- `php artisan oist:create-super-admin` was executed with an invalid email to verify validation without creating an unapproved user.
+- `php artisan test` passed: 7 tests, 23 assertions.
+- Local seeded database check returned: 11 roles and 22 permissions.
+
+### Tests Added
+
+- `RolePermissionSeederTest`
+  - Confirms the seeder can run repeatedly.
+  - Confirms expected role and permission counts.
+  - Confirms `super_admin` receives key permissions.
+
+- `CreateSuperAdminCommandTest`
+  - Confirms the command creates a super admin safely.
+  - Confirms existing users can be promoted only after confirmation.
+  - Confirms passwords are hashed.
+
+- `FilamentPanelAccessTest`
+  - Confirms `super_admin` can access Filament panel logic.
+  - Confirms a non-admin role cannot access Filament panel logic.
+
+### Warnings And Manual Steps
+
+- No real super admin account was created automatically.
+- To access `/admin`, first run `php artisan db:seed --class=RolePermissionSeeder`, then run `php artisan oist:create-super-admin` and enter approved real admin credentials.
+- The local MySQL test database `oist_digital_campus_testing` must exist for `php artisan test`.
+- Do not commit `.env` or real credentials.
