@@ -200,3 +200,132 @@ Backend:
 ### Next Recommended Setup Step
 
 Enable the PHP CLI `zip` and `fileinfo` extensions in `D:\Software\php-8.5.7-nts-Win32-vs17-x64\php.ini`. After that, create the backend local `.env`, generate the Laravel application key, and configure the MySQL connection. Do not run project-specific migrations until the database design is approved.
+
+## Backend Foundation Setup
+
+Date: 2026-06-28
+
+### Scope
+
+Prepared the Laravel backend foundation only.
+
+No student, teacher, admission, CMS, notice, news, event, course, public website, or frontend features were created.
+
+No demo users were created.
+
+No OIST public website content was hard-coded.
+
+### Commands Executed
+
+Documentation and inspection:
+
+- `Get-Content AGENTS.md`
+- `Get-Content docs\PROJECT_BLUEPRINT.md`
+- `Get-Content docs\CMS_DRIVEN_FRONTEND.md`
+- `Get-ChildItem -Recurse -Depth 2 app,bootstrap,config,routes,database`
+- `Get-Content composer.json`
+- `Get-Content bootstrap\app.php`
+- `Get-Content routes\web.php`
+- `Get-Content routes\console.php`
+- `php -m`
+- `php --ini`
+- `git status --short`
+
+Package installation:
+
+- `php -d extension=intl -d extension=pdo_mysql C:\ProgramData\ComposerSetup\bin\composer.phar require laravel/sanctum spatie/laravel-permission filament/filament:"^4.0" --with-all-dependencies --no-interaction`
+- `php -d extension=intl -d extension=pdo_mysql C:\ProgramData\ComposerSetup\bin\composer.phar install --no-interaction`
+- `$env:COMPOSER_PROCESS_TIMEOUT='1200'; php -d extension=intl -d extension=pdo_mysql C:\ProgramData\ComposerSetup\bin\composer.phar install --prefer-source --no-interaction`
+
+Package setup:
+
+- `php -d extension=intl -d extension=pdo_mysql artisan list filament`
+- `php -d extension=intl -d extension=pdo_mysql artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider" --no-interaction`
+- `php -d extension=intl -d extension=pdo_mysql artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider" --no-interaction`
+- `php -d extension=intl -d extension=pdo_mysql artisan filament:install --help`
+- `php -d extension=intl -d extension=pdo_mysql artisan filament:install --panels --no-interaction`
+
+Environment and database:
+
+- `php -d extension=intl -d extension=pdo_mysql artisan config:clear`
+- `php -d extension=pdo_mysql -r "... MySQL connection check ..."`
+- `php -d extension=pdo_mysql -r "... CREATE DATABASE IF NOT EXISTS oist_digital_campus ..."`
+- `php -d extension=intl -d extension=pdo_mysql artisan migrate`
+
+Verification:
+
+- `php -d extension=intl -d extension=pdo_mysql C:\ProgramData\ComposerSetup\bin\composer.phar show --direct --no-interaction`
+- `php -d extension=intl -d extension=pdo_mysql artisan migrate:status`
+- `php -d extension=intl -d extension=pdo_mysql artisan route:list --path=admin`
+- `php -d extension=intl -d extension=pdo_mysql artisan filament:about`
+- `php -d extension=intl -d extension=pdo_mysql artisan test`
+- `php -d extension=intl -d extension=pdo_mysql artisan permission:cache-reset`
+
+### Packages Installed
+
+- `laravel/sanctum` v4.3.2
+- `spatie/laravel-permission` v8.1.0
+- `filament/filament` v4.11.7
+
+Filament also installed its required supporting packages, including Livewire and Filament component packages.
+
+### Configuration Changes Made
+
+- Published Sanctum config to `backend/config/sanctum.php`.
+- Published Sanctum migration for `personal_access_tokens`.
+- Published Spatie Permission config to `backend/config/permission.php`.
+- Published Spatie Permission migration for roles and permissions.
+- Installed Filament panel foundation.
+- Created `backend/app/Providers/Filament/AdminPanelProvider.php`.
+- Registered `AdminPanelProvider` in `backend/bootstrap/providers.php`.
+- Created Filament admin routes at `/admin` and `/admin/login`.
+- Published Filament public assets under `backend/public/css`, `backend/public/js`, and `backend/public/fonts`.
+- Updated `backend/app/Models/User.php` to use Sanctum API tokens and Spatie roles.
+- Added Filament panel access control to `User::canAccessPanel()`.
+- Configured admin panel access to require either `super_admin` or `admin` role.
+- Added `backend/routes/api.php` as the future API route file without defining business endpoints.
+- Updated `backend/bootstrap/app.php` to load API routes and enable Sanctum stateful API middleware.
+- Updated `backend/.env.example` to use MySQL local development defaults.
+- Updated the ignored local `backend/.env` database settings to MySQL local development defaults. The `.env` file remains ignored and must not be committed.
+
+### Migration Status
+
+Local MySQL connection succeeded using the local defaults in `.env`.
+
+The local database `oist_digital_campus` was created if it did not already exist.
+
+The following migrations were run:
+
+- `0001_01_01_000000_create_users_table`
+- `0001_01_01_000001_create_cache_table`
+- `0001_01_01_000002_create_jobs_table`
+- `2026_06_28_164913_create_permission_tables`
+- `2026_06_28_164913_create_personal_access_tokens_table`
+
+No business tables were created.
+
+No student, teacher, admission, CMS, notice, news, event, course, department, faculty, or public content tables were created.
+
+### Verification Results
+
+- Filament admin route exists at `/admin`.
+- Filament login route exists at `/admin/login`.
+- Filament reports version v4.11.7.
+- All listed migrations show as `Ran`.
+- Default Laravel tests passed: 2 tests, 2 assertions.
+- Permission cache was reset successfully.
+
+### Errors and Warnings
+
+- Initial Composer package download hit repeated GitHub HTTP/2 504 errors for several dist archives.
+- Retrying Composer from the lock file also hit the same GitHub 504 errors.
+- The install completed successfully by using `--prefer-source` with a longer Composer process timeout.
+- One inline PHP/MySQL check failed because of PowerShell quoting. It did not modify files. A corrected command was run afterward and MySQL connection succeeded.
+- PHP CLI still does not load `intl` and `pdo_mysql` by default in the active `php.ini`, so backend commands were run with runtime `-d extension=intl -d extension=pdo_mysql` flags.
+- Filament installer warned that provider registration should be verified. It was verified: `AdminPanelProvider` is present in `bootstrap/providers.php`.
+
+### Next Recommended Step
+
+Enable PHP CLI `intl` and `pdo_mysql` in `D:\Software\php-8.5.7-nts-Win32-vs17-x64\php.ini` so backend commands do not require runtime `-d` flags.
+
+After that, define the approved initial roles and permissions, then create the first real admin account through a controlled setup process. Because no demo user was created, `/admin` will require a user with either the `super_admin` or `admin` role before login can reach the panel dashboard.
