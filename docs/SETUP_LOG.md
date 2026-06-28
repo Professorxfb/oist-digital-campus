@@ -708,3 +708,161 @@ The CMS migrations ran successfully after correcting migration order:
 ### Next Recommended Step
 
 Create the next CMS foundation layer for editable public content, such as notices, news, events, gallery items, downloads, departments, courses, faculty profiles, and admission circulars. Keep all public content CMS-controlled through Laravel API endpoints and Filament resources.
+
+## Frontend CMS API Integration Foundation
+
+Date: 2026-06-28
+
+### Scope
+
+Prepared the Next.js frontend foundation for fetching CMS-controlled public content from the Laravel API.
+
+No backend files were modified.
+
+No final public website design was created.
+
+No student portal, teacher portal, admission portal, admin features, fake institute content, or hard-coded public OIST content was added.
+
+### Commands Used
+
+Documentation and inspection:
+
+- `Get-Content AGENTS.md`
+- `Get-Content docs\PROJECT_BLUEPRINT.md`
+- `Get-Content docs\CMS_DRIVEN_FRONTEND.md`
+- `Get-Content frontend\src\app\page.tsx`
+- `Get-Content frontend\src\app\layout.tsx`
+- `Get-Content frontend\src\app\globals.css`
+- `Get-Content frontend\package.json`
+- `Get-Content frontend\tsconfig.json`
+- `git status --short`
+
+Verification:
+
+- `npm run lint`
+- `npm run build`
+- `npm run dev`
+
+### Files Created
+
+- `frontend/.env.example`
+- `frontend/src/types/cms.ts`
+- `frontend/src/lib/api-client.ts`
+- `frontend/src/services/cms.ts`
+
+### Files Updated
+
+- `frontend/.gitignore`
+- `frontend/src/app/page.tsx`
+- `frontend/src/app/layout.tsx`
+- `docs/SETUP_LOG.md`
+
+### Environment Variable Needed
+
+Create a local `frontend/.env.local` file for development and set:
+
+- `NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000/api/v1`
+
+Do not commit `.env.local` or real secrets.
+
+The committed `frontend/.env.example` documents the required public API base URL only.
+
+### API Client Created
+
+`frontend/src/lib/api-client.ts` now provides:
+
+- `cmsApiBaseUrl`
+- `fetchCmsApi<TData>()`
+- `resolveCmsAssetUrl()`
+
+The client:
+
+- Reads `NEXT_PUBLIC_API_BASE_URL`.
+- Defaults to `http://127.0.0.1:8000/api/v1` for local development.
+- Handles the Laravel JSON response envelope.
+- Returns typed fallback data when the API is unavailable or returns an unexpected response.
+- Logs CMS API fetch issues in non-production environments only.
+- Avoids exposing sensitive data or backend internals.
+
+### Types Created
+
+`frontend/src/types/cms.ts` defines:
+
+- `ApiResponse`
+- `ApiErrorResponse`
+- `ApiFetchResult`
+- `SiteSetting`
+- `HomepageSection`
+- `Menu`
+- `MenuItem`
+- `MenuLocation`
+
+### CMS Service Functions Created
+
+`frontend/src/services/cms.ts` provides:
+
+- `getSiteSettings()`
+- `getHomepageSections()`
+- `getMenuByLocation(location)`
+
+These functions use safe empty/null fallback data instead of fake institute content.
+
+### Frontend Preview Behavior
+
+The default home page now:
+
+- Fetches site settings from `GET /api/v1/site-settings`.
+- Fetches enabled homepage sections from `GET /api/v1/homepage-sections`.
+- Fetches the header menu from `GET /api/v1/menus/header`.
+- Renders a simple development preview only.
+- Shows the CMS-provided site title or institute name when available.
+- Shows generic fallback text only when CMS data is missing.
+- Renders homepage sections dynamically in API order.
+- Renders header menu items dynamically when returned by the backend.
+- Does not hard-code public institute content.
+- Does not create a final homepage design.
+
+The page uses Next.js `generateMetadata()` to read backend-provided metadata where available, with generic fallback metadata only when CMS metadata is absent.
+
+### How To Run Backend And Frontend Together
+
+Backend:
+
+- `cd backend`
+- `php artisan serve --host=127.0.0.1 --port=8000`
+
+Frontend:
+
+- `cd frontend`
+- Create `frontend/.env.local` with `NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000/api/v1`
+- `npm run dev`
+
+Then open the frontend URL shown by Next.js, usually:
+
+- `http://localhost:3000`
+
+### How To Verify API Integration
+
+1. Start the Laravel backend server.
+2. Confirm public CMS API endpoints respond:
+   - `http://127.0.0.1:8000/api/v1/site-settings`
+   - `http://127.0.0.1:8000/api/v1/homepage-sections`
+   - `http://127.0.0.1:8000/api/v1/menus/header`
+3. Start the Next.js frontend server.
+4. Open the frontend home page.
+5. Confirm the page renders CMS data if records exist.
+6. Stop the backend temporarily and confirm the frontend still renders safe fallback content without crashing.
+
+### Verification Results
+
+- `npm run lint` completed successfully with no warnings or errors.
+- `npm run build` completed successfully.
+- `npm run dev` started successfully at `http://localhost:3000`.
+- A request to `http://localhost:3000` returned HTTP 200.
+
+### Warnings And Manual Steps
+
+- `npm run dev` should be kept running while manually previewing the frontend.
+- If uploaded CMS media should be publicly visible, ensure the backend has run `php artisan storage:link`.
+- The current home page is an integration preview only and should be replaced by the approved public website design in a later milestone.
+- No CMS content records are created by this frontend step; staff-managed content must be entered through the backend Filament CMS when ready.
