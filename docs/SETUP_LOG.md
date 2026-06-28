@@ -866,3 +866,176 @@ Then open the frontend URL shown by Next.js, usually:
 - If uploaded CMS media should be publicly visible, ensure the backend has run `php artisan storage:link`.
 - The current home page is an integration preview only and should be replaced by the approved public website design in a later milestone.
 - No CMS content records are created by this frontend step; staff-managed content must be entered through the backend Filament CMS when ready.
+
+## Backend Public Content CMS Modules
+
+Date: 2026-06-29
+
+### Scope
+
+Created backend CMS-controlled public content modules for notices, news, events, gallery, downloads, departments, and faculty profiles.
+
+No frontend files were modified.
+
+No final public website pages were created.
+
+No student portal, teacher portal, admission portal, attendance, results, fee, or private academic workflow modules were created.
+
+No demo content or hard-coded public institute content was added.
+
+### Commands Used
+
+Documentation and inspection:
+
+- `Get-Content AGENTS.md`
+- `Get-Content docs\PROJECT_BLUEPRINT.md`
+- `Get-Content docs\CMS_DRIVEN_FRONTEND.md`
+- `Get-ChildItem backend\app\Filament\Resources -Recurse -Depth 3`
+- `Get-Content backend\app\Http\Controllers\Api\V1\PublicCmsController.php`
+- `Get-Content backend\routes\api.php`
+- `Get-Content backend\app\Models\HomepageSection.php`
+- `Get-Content backend\app\Policies\HomepageSectionPolicy.php`
+- `git status --short`
+
+Generation:
+
+- `php artisan make:model Notice -m`
+- `php artisan make:model NewsPost -m`
+- `php artisan make:model Event -m`
+- `php artisan make:model GalleryAlbum -m`
+- `php artisan make:model GalleryItem -m`
+- `php artisan make:model Download -m`
+- `php artisan make:model Department -m`
+- `php artisan make:model FacultyProfile -m`
+- `php artisan make:filament-resource Notice --simple --panel=admin --no-interaction`
+- `php artisan make:filament-resource NewsPost --simple --panel=admin --no-interaction`
+- `php artisan make:filament-resource Event --simple --panel=admin --no-interaction`
+- `php artisan make:filament-resource GalleryAlbum --simple --panel=admin --no-interaction`
+- `php artisan make:filament-resource GalleryItem --simple --panel=admin --no-interaction`
+- `php artisan make:filament-resource Download --simple --panel=admin --no-interaction`
+- `php artisan make:filament-resource Department --simple --panel=admin --no-interaction`
+- `php artisan make:filament-resource FacultyProfile --simple --panel=admin --no-interaction`
+
+Verification:
+
+- `php -l ...` for new models, policies, API controller, Filament resources, and tests
+- `php artisan migrate`
+- `php artisan route:list --path=api/v1`
+- `php artisan test`
+
+### Modules Created
+
+- Notices
+- News posts
+- Events
+- Gallery albums
+- Gallery items
+- Downloads
+- Departments
+- Faculty profiles
+
+### Models Created
+
+- `Notice`
+- `NewsPost`
+- `Event`
+- `GalleryAlbum`
+- `GalleryItem`
+- `Download`
+- `Department`
+- `FacultyProfile`
+
+### Relationships Added
+
+- `GalleryAlbum` has many `GalleryItem` records.
+- `GalleryItem` belongs to `GalleryAlbum`.
+- `Department` has many `FacultyProfile` records.
+- `FacultyProfile` belongs to `Department`.
+
+Published/public query scopes were added to public content models so API endpoints expose only public-safe records.
+
+### Migrations Created
+
+- `backend/database/migrations/2026_06_28_182327_create_notices_table.php`
+- `backend/database/migrations/2026_06_28_182327_create_news_posts_table.php`
+- `backend/database/migrations/2026_06_28_182327_create_events_table.php`
+- `backend/database/migrations/2026_06_28_182328_create_gallery_albums_table.php`
+- `backend/database/migrations/2026_06_28_182328_create_gallery_items_table.php`
+- `backend/database/migrations/2026_06_28_182329_create_downloads_table.php`
+- `backend/database/migrations/2026_06_28_182329_create_departments_table.php`
+- `backend/database/migrations/2026_06_28_182329_create_faculty_profiles_table.php`
+
+### Filament Resources Created
+
+- `NoticeResource`
+- `NewsPostResource`
+- `EventResource`
+- `GalleryAlbumResource`
+- `GalleryItemResource`
+- `DownloadResource`
+- `DepartmentResource`
+- `FacultyProfileResource`
+
+The resources include CMS-oriented fields for slugs, publish status, ordering, dates, SEO metadata, and validated public media/file uploads.
+
+### Access Rules
+
+- `super_admin` and `admin` can manage all new public CMS modules.
+- `cms_editor` can manage notices, news, events, gallery albums, gallery items, downloads, departments, and faculty profiles.
+- `academic_officer` can manage departments and faculty profiles only.
+- Other roles cannot manage these resources.
+
+### Public API Endpoints Added
+
+- `GET /api/v1/notices`
+- `GET /api/v1/notices/{slug}`
+- `GET /api/v1/news`
+- `GET /api/v1/news/{slug}`
+- `GET /api/v1/events`
+- `GET /api/v1/events/{slug}`
+- `GET /api/v1/gallery-albums`
+- `GET /api/v1/gallery-albums/{slug}`
+- `GET /api/v1/downloads`
+- `GET /api/v1/departments`
+- `GET /api/v1/departments/{slug}`
+- `GET /api/v1/faculty-profiles`
+
+All public list endpoints return the project JSON envelope and pagination metadata.
+
+Detail endpoints return `404` for missing or unpublished records.
+
+Gallery album detail responses include only published gallery items.
+
+Department detail responses include only published faculty profiles.
+
+### Tests Added
+
+- `PublicContentApiTest`
+  - Confirms list endpoints expose only published content.
+  - Confirms detail endpoints return content by slug.
+  - Confirms unpublished detail content is not exposed.
+  - Confirms gallery album details include only published items.
+  - Confirms department details include published faculty profiles.
+
+- `PublicContentPolicyTest`
+  - Confirms `super_admin`, `admin`, and `cms_editor` can manage public content modules.
+  - Confirms `academic_officer` can manage departments and faculty profiles only.
+  - Confirms unrelated roles cannot manage these public content modules.
+
+### Verification Results
+
+- `php artisan migrate` completed successfully.
+- `php artisan route:list --path=api/v1` showed 15 public CMS API routes.
+- `php artisan test` passed: 23 tests, 159 assertions.
+
+### Errors and Warnings
+
+- The first migration attempt failed because new Filament resources used `?string` for `$navigationGroup`.
+- Filament v4 requires `UnitEnum|string|null` for `$navigationGroup`.
+- The new resources were corrected to use `string|\UnitEnum|null`, then migrations completed successfully.
+- No demo CMS content was seeded.
+
+### Manual Steps
+
+- Run `php artisan storage:link` in environments where public CMS uploads need to be served from Laravel public storage.
+- Staff must create and publish real content through Filament before the frontend can render these modules.
