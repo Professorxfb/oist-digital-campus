@@ -2286,3 +2286,92 @@ No backend logic, fake public content, copied WordPress source, copied reference
 - Upload a real CMS-managed hero image/video for the `hero` Homepage Section.
 - Create real CMS-managed hero feature/info card records instead of relying on frontend placeholders.
 - Add the remaining homepage section records and public content modules in the CMS when those sections should appear.
+
+---
+
+Date: 2026-06-29
+
+## Hero Feature Cards CMS Foundation
+
+### Scope
+
+Added a dedicated backend-controlled CMS system for the three overlapping homepage hero feature cards. No fake public card content was added to the frontend.
+
+### Backend Changes
+
+- Added `HeroFeatureCard` model and migration.
+- Added a Filament resource named `Hero Feature Cards` under the `Public CMS` navigation group.
+- Added a policy so only `super_admin`, `admin`, and `cms_editor` roles can manage hero feature cards.
+- Limited creation to a maximum of three hero feature card records.
+- Added public read-only endpoint: `GET /api/v1/hero-feature-cards`.
+
+### Admin Fields
+
+- `title`
+- `description`
+- `icon_key`: `library`, `educator`, `achievement`, `default`
+- optional custom `image_path`
+- `style_variant`: `navy`, `yellow`
+- optional `button_text`
+- optional `button_url`
+- `sort_order`
+- `is_enabled`
+
+### API Response Behavior
+
+- Returns only enabled hero feature cards.
+- Sorts by `sort_order`, then `id`.
+- Limits the public response to three cards.
+- Exposes only public-safe card fields.
+- Uses the standard JSON response envelope.
+
+### Frontend Behavior
+
+- Added a typed `getHeroFeatureCards()` CMS service function.
+- Homepage now fetches hero feature cards from the dedicated API endpoint.
+- The overlapping hero card strip renders only when enabled CMS records exist.
+- Cards use CMS title, description, icon key, optional uploaded image/icon, style variant, optional button text, optional button URL, and sort order.
+- Cards stack cleanly on mobile and keep the Univet-inspired overlapping desktop layout.
+- If no hero feature card records exist, the card strip is hidden cleanly.
+
+### Manual CMS Setup Needed
+
+- In Filament, open `Public CMS > Hero Feature Cards`.
+- Create up to three real hero feature cards.
+- Recommended visual order is:
+  - Card 1: `style_variant` = `navy`, `sort_order` = `1`
+  - Card 2: `style_variant` = `yellow`, `sort_order` = `2`
+  - Card 3: `style_variant` = `navy`, `sort_order` = `3`
+- Use real institution-approved card titles and descriptions only.
+- Upload custom card icons/images only when approved assets are available.
+
+### Commands Run
+
+- `Get-Content docs\PROJECT_BLUEPRINT.md`
+- `Get-Content docs\CMS_DRIVEN_FRONTEND.md`
+- `Get-Content backend\routes\api.php`
+- `Get-Content backend\app\Http\Controllers\Api\V1\PublicCmsController.php`
+- `Get-Content backend\app\Filament\Resources\HomepageSections\HomepageSectionResource.php`
+- `Get-Content backend\app\Policies\HomepageSectionPolicy.php`
+- `Get-Content frontend\src\types\cms.ts`
+- `Get-Content frontend\src\services\cms.ts`
+- `Get-Content frontend\src\app\page.tsx`
+
+### Verification Commands
+
+- `php artisan migrate`
+- `php artisan test`
+- `php artisan route:list --path=api/v1`
+- `npm run lint`
+- `npm run build`
+- `npm run dev`
+
+### Verification Results
+
+- `php artisan migrate` completed successfully and created the `hero_feature_cards` table.
+- `php artisan test` completed successfully: 38 tests passed.
+- `php artisan route:list --path=api/v1` confirmed `GET /api/v1/hero-feature-cards`.
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully.
+- `npm run build` logged expected CMS fetch warnings because the Laravel API server was not running on `127.0.0.1:8000`; the frontend fallback behavior handled the unavailable API and the build still completed.
+- `npm run dev` started successfully on `http://localhost:3000` and was stopped after verification.

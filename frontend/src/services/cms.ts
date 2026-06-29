@@ -8,6 +8,7 @@ import type {
   FAQ,
   FacultyProfile,
   GalleryAlbum,
+  HeroFeatureCard,
   HomepageSection,
   InstitutionalPage,
   InstitutionalPageType,
@@ -57,6 +58,12 @@ export function getHomepageSections(): Promise<
   ApiFetchResult<HomepageSection[]>
 > {
   return fetchCmsApi<HomepageSection[]>("homepage-sections", []);
+}
+
+export function getHeroFeatureCards(): Promise<
+  ApiFetchResult<HeroFeatureCard[]>
+> {
+  return fetchCmsApi<HeroFeatureCard[]>("hero-feature-cards", []);
 }
 
 export function getMenuByLocation(

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\HomepageSection;
+use App\Models\HeroFeatureCard;
 use App\Models\Menu;
 use App\Models\MenuItem;
 use App\Models\SiteSetting;
@@ -73,6 +74,49 @@ class PublicCmsApiTest extends TestCase
             ->assertJsonPath('data.0.key', 'first-section')
             ->assertJsonPath('data.1.key', 'second-section')
             ->assertJsonMissing(['key' => 'disabled-section']);
+    }
+
+    public function test_hero_feature_cards_api_returns_enabled_cards_ordered_by_sort_order(): void
+    {
+        HeroFeatureCard::query()->create([
+            'title' => 'Disabled Card',
+            'description' => 'Hidden from public API.',
+            'icon_key' => 'library',
+            'style_variant' => 'navy',
+            'sort_order' => 1,
+            'is_enabled' => false,
+        ]);
+
+        HeroFeatureCard::query()->create([
+            'title' => 'Second Card',
+            'description' => 'Displayed second.',
+            'icon_key' => 'educator',
+            'style_variant' => 'yellow',
+            'sort_order' => 20,
+            'is_enabled' => true,
+        ]);
+
+        HeroFeatureCard::query()->create([
+            'title' => 'First Card',
+            'description' => 'Displayed first.',
+            'icon_key' => 'achievement',
+            'style_variant' => 'navy',
+            'sort_order' => 10,
+            'is_enabled' => true,
+        ]);
+
+        $response = $this->getJson('/api/v1/hero-feature-cards');
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.0.title', 'First Card')
+            ->assertJsonPath('data.0.icon_key', 'achievement')
+            ->assertJsonPath('data.1.title', 'Second Card')
+            ->assertJsonPath('data.1.style_variant', 'yellow')
+            ->assertJsonMissing(['title' => 'Disabled Card'])
+            ->assertJsonMissingPath('data.0.id')
+            ->assertJsonMissingPath('data.0.created_at');
     }
 
     public function test_menus_api_returns_active_menu_items(): void

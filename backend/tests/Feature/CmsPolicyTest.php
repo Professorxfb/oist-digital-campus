@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\HomepageSection;
+use App\Models\HeroFeatureCard;
 use App\Models\Facility;
 use App\Models\FAQ;
 use App\Models\InstitutionalPage;
@@ -61,6 +62,10 @@ class CmsPolicyTest extends TestCase
             'key' => 'editable-section',
         ]);
 
+        $card = HeroFeatureCard::query()->create([
+            'title' => 'Editable card',
+        ]);
+
         $menu = Menu::query()->create([
             'name' => 'Footer',
             'location' => 'footer',
@@ -73,6 +78,7 @@ class CmsPolicyTest extends TestCase
         ]);
 
         $this->assertTrue(Gate::forUser($user)->allows('update', $section));
+        $this->assertTrue(Gate::forUser($user)->allows('update', $card));
         $this->assertTrue(Gate::forUser($user)->allows('update', $menu));
         $this->assertTrue(Gate::forUser($user)->allows('update', $menuItem));
         $this->assertFalse(Gate::forUser($user)->allows('viewAny', SiteSetting::class));
@@ -89,6 +95,10 @@ class CmsPolicyTest extends TestCase
             'key' => 'locked-section',
         ]);
 
+        $card = HeroFeatureCard::query()->create([
+            'title' => 'Locked card',
+        ]);
+
         $menu = Menu::query()->create([
             'name' => 'Header',
             'location' => 'header',
@@ -101,8 +111,26 @@ class CmsPolicyTest extends TestCase
         ]);
 
         $this->assertFalse(Gate::forUser($user)->allows('update', $section));
+        $this->assertFalse(Gate::forUser($user)->allows('update', $card));
         $this->assertFalse(Gate::forUser($user)->allows('update', $menu));
         $this->assertFalse(Gate::forUser($user)->allows('update', $menuItem));
+    }
+
+    public function test_hero_feature_card_creation_is_limited_to_three_cards(): void
+    {
+        $this->seed(RolePermissionSeeder::class);
+
+        $user = User::factory()->create();
+        $user->assignRole('admin');
+
+        foreach (range(1, 3) as $index) {
+            HeroFeatureCard::query()->create([
+                'title' => "Card {$index}",
+                'sort_order' => $index,
+            ]);
+        }
+
+        $this->assertFalse(Gate::forUser($user)->allows('create', HeroFeatureCard::class));
     }
 
     public function test_institutional_cms_roles_can_manage_new_public_content_modules(): void

@@ -11,6 +11,7 @@ use App\Models\FAQ;
 use App\Models\FacultyProfile;
 use App\Models\GalleryAlbum;
 use App\Models\GalleryItem;
+use App\Models\HeroFeatureCard;
 use App\Models\HomepageSection;
 use App\Models\InstitutionalPage;
 use App\Models\LeadershipProfile;
@@ -80,6 +81,27 @@ class PublicCmsController extends Controller
             ]);
 
         return $this->publicResponse($sections, 'Homepage sections retrieved.');
+    }
+
+    public function heroFeatureCards(): JsonResponse
+    {
+        $cards = HeroFeatureCard::query()
+            ->enabled()
+            ->ordered()
+            ->limit(3)
+            ->get()
+            ->map(fn (HeroFeatureCard $card): array => [
+                'title' => $card->title,
+                'description' => $card->description,
+                'icon_key' => $card->icon_key,
+                'image_path' => $card->image_path,
+                'style_variant' => $card->style_variant,
+                'button_text' => $card->button_text,
+                'button_url' => $card->button_url,
+                'sort_order' => $card->sort_order,
+            ]);
+
+        return $this->publicResponse($cards, 'Hero feature cards retrieved.');
     }
 
     public function menu(string $location): JsonResponse

@@ -75,6 +75,25 @@ export interface HomepageSection {
   metadata: Record<string, unknown>;
 }
 
+export type HeroFeatureCardIconKey =
+  | "library"
+  | "educator"
+  | "achievement"
+  | "default";
+
+export type HeroFeatureCardStyleVariant = "navy" | "yellow" | string;
+
+export interface HeroFeatureCard {
+  title: string;
+  description?: string | null;
+  icon_key: HeroFeatureCardIconKey | string;
+  image_path?: string | null;
+  style_variant: HeroFeatureCardStyleVariant;
+  button_text?: string | null;
+  button_url?: string | null;
+  sort_order: number;
+}
+
 export type MenuLocation = "header" | "footer" | "quick_links";
 
 export interface MenuItem {
