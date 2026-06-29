@@ -2144,3 +2144,65 @@ No backend code, authentication features, portal implementations, copied WordPre
 
 - The Laravel backend was not running during build and dev verification, so CMS fetch warnings appeared for `127.0.0.1:8000`. The frontend still compiled, generated routes, and served the homepage safely.
 - To visually match the approved reference closely in production, staff must upload real CMS hero media and create real CMS hero feature/info card records.
+
+---
+
+Date: 2026-06-29
+
+## Frontend Univet-Style Layout Stability Fix
+
+### Scope
+
+Fixed the public homepage/header/hero/feature-card layout so the current Univet Blue Two inspired frontend is stable on desktop, laptop, and mobile widths while preserving CMS/API-driven content rules.
+
+No backend code, portal authentication, fake public content, copied WordPress source, copied assets, or hard-coded OIST public content were added.
+
+### Fixes Made
+
+- Tightened the desktop floating header to an 88% centered dark navy bar with reference-style height, rounded corners, icon-only search, menu icon, and desktop-only yellow Apply Now CTA.
+- Removed the Apply Now CTA from mobile/tablet header rendering; Apply Now remains available inside the offcanvas drawer when CMS admission CTA data exists.
+- Kept Student Portal and Faculty Portal out of the main desktop header and available only through the drawer/footer placeholder links.
+- Reduced mobile header dimensions so logo, site title, search icon, and menu icon fit within the viewport without horizontal overflow.
+- Reworked hero sizing from an over-tall fixed desktop layout to controlled responsive minimum heights with natural content growth.
+- Added a stricter responsive hero title clamp so long CMS-provided titles do not clip on mobile or desktop.
+- Preserved CMS hero media behavior: image/video from the `hero` homepage section renders as the background with a dark navy overlay; a navy gradient fallback appears only when CMS media is missing.
+- Adjusted hero feature cards so desktop cards overlap the hero bottom while mobile cards stack below the hero without negative overlap or clipped text.
+- Fixed the dark navy offcanvas drawer to use full-height internal scrolling, a visible close button, and a mobile-safe width that avoids horizontal overflow.
+- Added `overflow-x-hidden` at the public page/root layout level as an additional safety guard.
+
+### CMS Fields Used
+
+- Site settings: `logo_path`, `site_title`, `institute_name`, `site_tagline`, `footer_text`, `primary_phone`, `secondary_phone`, `email`, `address`, `admission_cta_text`, `admission_cta_url`, `is_admission_open`.
+- Header menu: CMS-managed `header` menu tree with optional child items for dropdowns.
+- Hero section: CMS `HomepageSection` key `hero`, using `title`, `subtitle`, `content`, `image_path`, `video_path`, `button_text`, and `button_url`.
+- Hero feature cards: CMS `HomepageSection` records with feature/stat/info-style keys, using `image_path`, `title`, `subtitle`, `content`, `button_text`, `button_url`, and `sort_order`.
+
+### Commands Run
+
+- `Get-Content AGENTS.md`
+- `Get-Content docs\PROJECT_BLUEPRINT.md`
+- `Get-Content docs\CMS_DRIVEN_FRONTEND.md`
+- `Get-Content C:\Users\22103\.codex\attachments\93f8b208-44cb-4c33-a6cb-1ea4d3c0bafd\pasted-text.txt`
+- `Get-Content frontend\src\components\public-site\SiteHeader.tsx`
+- `Get-Content frontend\src\components\public-site\ResponsiveMenu.tsx`
+- `Get-Content frontend\src\components\public-site\CMSHero.tsx`
+- `Get-Content frontend\src\app\page.tsx`
+- `Get-Content frontend\src\app\layout.tsx`
+- `npm run lint`
+- `npm run build`
+- `npm run dev`
+
+### Verification Results
+
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully.
+- `npm run dev` started successfully on `http://localhost:3001` because `http://localhost:3000` was already occupied by process `17376`.
+- Browser responsive audit against `http://localhost:3001` confirmed no horizontal overflow at 390px, 430px, 1366px, or 1920px widths.
+- Browser responsive audit confirmed the mobile header does not show the Apply Now CTA.
+- Browser responsive audit confirmed the drawer close button remains visible and the drawer content scrolls internally at 390px width.
+
+### Manual CMS Setup Needed
+
+- Upload a real CMS-managed hero image or video in the `hero` homepage section to match the reference image-banner look closely.
+- Create and enable up to three CMS homepage feature/info card records with real icon/image, title, and description content for the reference-style overlapping card row.
+- Keep homepage section titles, text, media, CTA labels, CTA URLs, visibility, and sort order managed from the backend CMS.

@@ -18,7 +18,7 @@ export function CMSHero({
   const ctaLabel = heroSection.button_text ?? (heroSection.button_url ? "Read More" : null);
 
   return (
-    <section className="relative min-h-[760px] overflow-hidden bg-[#06142d] text-white lg:min-h-[940px]">
+    <section className="relative min-h-[620px] overflow-hidden bg-[#06142d] text-white sm:min-h-[680px] lg:min-h-[740px] xl:min-h-[760px]">
       <div
         className="absolute inset-0 bg-[linear-gradient(120deg,rgba(2,6,23,0.98),rgba(8,47,73,0.84)_48%,rgba(30,64,175,0.62))]"
         aria-hidden="true"
@@ -50,14 +50,14 @@ export function CMSHero({
           aria-hidden="true"
         />
       ) : null}
-      <Container className="relative flex min-h-[760px] items-center pb-44 pt-40 sm:pt-48 lg:min-h-[940px] lg:pb-72 lg:pt-56">
-        <div className="max-w-4xl">
+      <Container className="relative flex min-h-[620px] items-center pb-24 pt-32 sm:min-h-[680px] sm:pb-32 sm:pt-40 lg:min-h-[740px] lg:pb-40 lg:pt-44 xl:min-h-[760px]">
+        <div className="max-w-[760px]">
           {heroSection.subtitle ? (
             <p className="text-xs font-black uppercase tracking-[0.2em] text-yellow-300 sm:text-sm">
               {heroSection.subtitle}
             </p>
           ) : null}
-          <h1 className="mt-8 max-w-4xl font-serif text-[clamp(4rem,8vw,7.8rem)] font-semibold leading-[0.98] text-white">
+          <h1 className="mt-6 max-w-[760px] break-words font-serif text-[clamp(2.625rem,11vw,3rem)] font-semibold leading-[1.02] text-white sm:mt-8 sm:text-[clamp(3.75rem,7vw,4.25rem)] sm:leading-[0.98] lg:text-[clamp(4.75rem,4.6vw,5.25rem)]">
             {heroSection.title}
           </h1>
           {description ? (
@@ -66,7 +66,7 @@ export function CMSHero({
             </p>
           ) : null}
           {ctaLabel && heroSection.button_url ? (
-            <div className="mt-10">
+            <div className="mt-8 sm:mt-10">
               <CTAButton href={heroSection.button_url} className="min-h-14 px-8 py-3">
                 {ctaLabel}
               </CTAButton>

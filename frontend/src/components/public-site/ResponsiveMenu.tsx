@@ -62,7 +62,7 @@ export function ResponsiveMenu({
   return (
     <>
       <button
-        className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition hover:border-yellow-300 hover:bg-yellow-300 hover:text-slate-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300"
+        className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition hover:border-yellow-300 hover:bg-yellow-300 hover:text-slate-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300 sm:h-12 sm:w-12"
         type="button"
         aria-label={`Open ${label.toLowerCase()}`}
         aria-expanded={isOpen}
@@ -72,15 +72,16 @@ export function ResponsiveMenu({
       </button>
 
       {isOpen ? (
-        <div className="fixed inset-0 z-[80]" role="dialog" aria-modal="true" aria-label={label}>
+        <div className="fixed inset-0 z-[80] overflow-hidden" role="dialog" aria-modal="true" aria-label={label}>
           <button
             className="absolute inset-0 h-full w-full cursor-default bg-slate-950/60 backdrop-blur-sm"
             type="button"
             aria-label={`Close ${label.toLowerCase()}`}
             onClick={() => setIsOpen(false)}
           />
-          <aside className="absolute right-0 top-0 flex h-full w-[min(28rem,100vw)] flex-col overflow-y-auto bg-[#061f3f] p-6 text-white shadow-2xl sm:p-8">
-            <div className="flex items-start justify-between gap-4">
+          <aside className="absolute right-0 top-0 flex h-dvh max-h-dvh w-[calc(100vw-1rem)] max-w-[28rem] flex-col overflow-hidden bg-[#061f3f] text-white shadow-2xl sm:w-[min(28rem,100vw)]">
+            <div className="shrink-0 bg-[#061f3f] px-5 pb-4 pt-5 sm:px-8 sm:pt-8">
+              <div className="flex items-start justify-between gap-4">
               <Link className="flex min-w-0 items-center gap-3" href="/" onClick={() => setIsOpen(false)}>
                 {logoUrl ? (
                   <span
@@ -109,9 +110,12 @@ export function ResponsiveMenu({
                 <CloseIcon />
               </button>
             </div>
+            </div>
+
+            <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-6 sm:px-8 sm:pb-8">
 
             {description ? (
-              <p className="mt-6 text-sm leading-7 text-blue-100">{description}</p>
+              <p className="text-sm leading-7 text-blue-100">{description}</p>
             ) : null}
 
             {items.length > 0 ? (
@@ -144,12 +148,13 @@ export function ResponsiveMenu({
             ) : null}
 
             {contactValues.length > 0 ? (
-              <div className="mt-auto space-y-3 border-t border-white/10 pt-6 text-sm leading-6 text-blue-100">
+              <div className="mt-8 space-y-3 border-t border-white/10 pt-6 text-sm leading-6 text-blue-100">
                 {contactValues.map((value) => (
                   <p key={value}>{value}</p>
                 ))}
               </div>
             ) : null}
+            </div>
           </aside>
         </div>
       ) : null}

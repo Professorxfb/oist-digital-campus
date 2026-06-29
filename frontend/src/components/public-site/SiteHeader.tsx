@@ -25,24 +25,24 @@ export function SiteHeader({
       : null;
 
   return (
-    <header className="absolute inset-x-0 top-0 z-50 pt-5 text-white sm:pt-7">
-      <div className="mx-auto max-w-[1620px] px-4 sm:px-6 lg:px-8">
-        <div className="flex min-h-[86px] items-center justify-between gap-4 rounded-[10px] bg-[#061f3f] px-4 py-4 shadow-2xl shadow-slate-950/30 sm:px-7">
+    <header className="absolute inset-x-0 top-0 z-50 pt-4 text-white sm:pt-8">
+      <div className="mx-auto w-[calc(100%-1rem)] max-w-[1620px] sm:w-[88%]">
+        <div className="flex h-[72px] items-center justify-between gap-2 rounded-[10px] bg-[#061f3f] px-3 shadow-2xl shadow-slate-950/30 sm:h-[86px] sm:gap-4 sm:px-5 lg:px-7">
           <Link className="flex min-w-0 shrink-0 items-center gap-3" href="/">
             {logoUrl ? (
               <span
-                className="h-14 w-14 shrink-0 rounded-xl border border-white/15 bg-white bg-contain bg-center bg-no-repeat shadow-sm"
+                className="h-12 w-12 shrink-0 rounded-xl border border-white/15 bg-white bg-contain bg-center bg-no-repeat shadow-sm sm:h-14 sm:w-14"
                 style={{ backgroundImage: `url(${logoUrl})` }}
                 aria-hidden="true"
               />
             ) : (
               <span
-                className="h-14 w-14 shrink-0 rounded-xl bg-[linear-gradient(135deg,#ffcc00,#1d4ed8_54%,#082f49)]"
+                className="h-12 w-12 shrink-0 rounded-xl bg-[linear-gradient(135deg,#ffcc00,#1d4ed8_54%,#082f49)] sm:h-14 sm:w-14"
                 aria-hidden="true"
               />
             )}
             <span className="min-w-0">
-              <span className="block truncate text-base font-black leading-tight tracking-tight text-white sm:text-xl">
+              <span className="block max-w-[11rem] truncate text-sm font-black leading-tight tracking-tight text-white sm:max-w-[16rem] sm:text-xl lg:max-w-[20rem]">
                 {title}
               </span>
               {settings.site_tagline ? (
@@ -61,9 +61,9 @@ export function SiteHeader({
             />
           </div>
 
-          <div className="flex shrink-0 items-center gap-2 sm:gap-4">
+          <div className="flex shrink-0 items-center gap-2 lg:gap-3">
             <a
-              className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition hover:border-yellow-300 hover:bg-yellow-300 hover:text-slate-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition hover:border-yellow-300 hover:bg-yellow-300 hover:text-slate-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300 sm:h-12 sm:w-12"
               href="/search"
               aria-label="Search public content"
             >
@@ -84,7 +84,7 @@ export function SiteHeader({
             {admissionAction ? (
               <CTAButton
                 href={admissionAction.href}
-                className="hidden min-h-12 px-7 py-3 text-sm xl:inline-flex"
+                className="!hidden min-h-12 shrink-0 px-7 py-3 text-sm xl:!inline-flex"
               >
                 {admissionAction.label}
               </CTAButton>

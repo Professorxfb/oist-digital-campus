@@ -322,7 +322,7 @@ export default async function Home() {
   const sectionBlocks = nullableSectionBlocks.filter(isSectionBlock).sort(sortSectionBlocks);
 
   return (
-    <div className="min-h-screen bg-[#f7f3ea] text-slate-950">
+    <div className="min-h-screen overflow-x-hidden bg-[#f7f3ea] text-slate-950">
       <SiteHeader settings={settings} menuItems={headerMenu.data.items} />
       <NoticeStrip notices={notices.data} label={noticeStripSection?.title} />
       <main>
@@ -410,8 +410,8 @@ function HeroFeatureCards({
   const visibleSections = sections.slice(0, 3);
 
   return (
-    <Container className="relative z-20 -mt-24 pb-8 lg:-mt-36">
-      <div className="mx-auto grid max-w-6xl gap-5 lg:grid-cols-3">
+    <Container className="relative z-20 pb-10 pt-6 sm:pt-8 lg:-mt-24 lg:pb-12 lg:pt-0 xl:-mt-28">
+      <div className="mx-auto grid max-w-6xl gap-4 sm:gap-5 lg:grid-cols-3">
         {visibleSections.map((section, index) => {
           const iconUrl = getCmsAssetUrl(section.image_path);
           const isAccent = index === 1;
@@ -419,21 +419,21 @@ function HeroFeatureCards({
           return (
           <article
             key={section.key}
-            className={`min-h-44 rounded-[10px] p-7 shadow-2xl shadow-slate-950/15 sm:p-8 ${
+            className={`rounded-[10px] p-6 shadow-2xl shadow-slate-950/15 sm:p-7 lg:min-h-44 lg:p-8 ${
               isAccent ? "bg-yellow-400 text-slate-950" : "bg-[#082f57] text-white"
             }`}
           >
-            <div className="flex gap-5">
+            <div className="flex gap-4 sm:gap-5">
               {iconUrl ? (
                 <span
-                  className={`h-16 w-16 shrink-0 rounded-2xl bg-contain bg-center bg-no-repeat ${
+                  className={`h-14 w-14 shrink-0 rounded-2xl bg-contain bg-center bg-no-repeat sm:h-16 sm:w-16 ${
                     isAccent ? "bg-slate-950/5" : "bg-white/10"
                   }`}
                   style={{ backgroundImage: `url(${iconUrl})` }}
                   aria-hidden="true"
                 />
               ) : null}
-              <div className="min-w-0">
+              <div className="min-w-0 break-words">
                 {section.subtitle ? (
                   <p
                     className={`text-xs font-black uppercase tracking-[0.18em] ${
