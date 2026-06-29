@@ -1540,3 +1540,146 @@ Verification:
 - Start the backend at `127.0.0.1:8000` to display live CMS records.
 - Ensure `frontend/.env.local` uses `NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000/api/v1` for local development.
 - Run `php artisan storage:link` in the backend if public CMS media and downloads should be accessible from storage URLs.
+
+---
+
+Date: 2026-06-29
+
+## Backend Institutional CMS Modules And Public Search Foundation
+
+### Scope
+
+Created backend-only CMS-controlled institutional content modules and public search foundation.
+
+No frontend files were modified.
+
+No student portal, teacher portal, admission portal, attendance, result, fee, or private business modules were created.
+
+No demo content, secrets, credentials, or environment files were added.
+
+### Modules Created
+
+- Institutional Pages for about, mission, vision, values, why choose us, campus life, facilities, accreditation, student support, and general institutional pages.
+- Scholarships.
+- Facilities.
+- FAQs.
+- Leadership Profiles.
+- Videos for public video showcase metadata, thumbnails, external URLs, and embed URLs.
+
+### Models And Migrations Created
+
+- `InstitutionalPage`
+- `Scholarship`
+- `Facility`
+- `FAQ`
+- `LeadershipProfile`
+- `Video`
+
+New migrations create:
+
+- `institutional_pages`
+- `scholarships`
+- `facilities`
+- `faqs`
+- `leadership_profiles`
+- `videos`
+
+Related news support was added with a nullable `department_id` foreign key on `news_posts`.
+
+### Filament Resources Created
+
+- Institutional Pages
+- Scholarships
+- Facilities
+- FAQs
+- Leadership Profiles
+- Videos
+
+Access rules:
+
+- `super_admin`, `admin`, and `cms_editor` can manage these institutional CMS modules.
+- `academic_officer` can manage institutional pages, scholarships, facilities, FAQs, and videos.
+- Leadership profile management is limited to `super_admin`, `admin`, and `cms_editor`.
+- Other roles are blocked through policy logic.
+
+### API Endpoints Added
+
+- `GET /api/v1/institutional-pages`
+- `GET /api/v1/institutional-pages/{slug}`
+- `GET /api/v1/scholarships`
+- `GET /api/v1/scholarships/{slug}`
+- `GET /api/v1/facilities`
+- `GET /api/v1/facilities/{slug}`
+- `GET /api/v1/faqs`
+- `GET /api/v1/leadership-profiles`
+- `GET /api/v1/leadership-profiles/{slug}`
+- `GET /api/v1/videos`
+- `GET /api/v1/videos/{slug}`
+- `GET /api/v1/search?q=keyword`
+
+All public APIs return only published/public-safe content and use the existing JSON response envelope.
+
+### Video CMS Support
+
+- Videos store metadata, type, category, tags, thumbnail path, external video URL, embed URL, publication date, event date, and SEO metadata.
+- Large video file storage is not required for the foundation; the preferred strategy is external video or embed URLs from approved platforms.
+- Thumbnail uploads are validated as public CMS media through Filament.
+
+### Public Search Foundation
+
+The public search endpoint searches only published/public-safe records across:
+
+- Notices
+- News Posts
+- Events
+- Departments
+- Faculty Profiles
+- Downloads
+- Gallery Albums
+- Institutional Pages
+- Scholarships
+- Facilities
+- FAQs
+- Leadership Profiles
+- Videos
+
+Search behavior:
+
+- Requires at least 2 characters.
+- Limits results per content type.
+- Returns safe result fields: `type`, `title`, `excerpt`, `url`, and date when available.
+- Does not search user, admin, private, student, applicant, financial, or portal data.
+- Does not expose unpublished records.
+
+### Commands Used
+
+Inspection:
+
+- `Get-Content AGENTS.md`
+- `Get-Content docs\PROJECT_BLUEPRINT.md`
+- `Get-Content docs\CMS_DRIVEN_FRONTEND.md`
+- `Get-Content backend\routes\api.php`
+- `Get-Content backend\app\Http\Controllers\Api\V1\PublicCmsController.php`
+- `Get-Content backend\app\Filament\Resources\NewsPosts\NewsPostResource.php`
+- `Get-Content backend\tests\Feature\PublicContentApiTest.php`
+- `Get-Content backend\tests\Feature\CmsPolicyTest.php`
+
+Verification:
+
+- `php artisan migrate`
+- `php artisan route:list --path=api/v1`
+- `php artisan test`
+
+### Verification Results
+
+- `php artisan migrate` completed successfully.
+- `php artisan route:list --path=api/v1` showed 27 public API routes, including the new institutional CMS endpoints and search endpoint.
+- `php artisan test` completed successfully.
+- Test result: 36 passed, 225 assertions.
+
+### Warnings And Manual Steps
+
+- No demo records were created, so public endpoints will return empty datasets until authorized staff publish CMS content in Filament.
+- Run `php artisan storage:link` if public CMS uploads should be served from Laravel public storage.
+- Keep video uploads external where practical; use CMS `video_url` or `embed_url` for YouTube, Facebook, Vimeo, or other approved platforms.
+- Frontend integration for these new institutional modules and search has not been implemented yet.

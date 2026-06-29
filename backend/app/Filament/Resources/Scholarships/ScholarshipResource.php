@@ -1,20 +1,17 @@
 <?php
 
-namespace App\Filament\Resources\NewsPosts;
+namespace App\Filament\Resources\Scholarships;
 
-use App\Filament\Resources\NewsPosts\Pages\ManageNewsPosts;
-use App\Models\Department;
-use App\Models\NewsPost;
+use App\Filament\Resources\Scholarships\Pages\ManageScholarships;
+use App\Models\Scholarship;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -27,21 +24,19 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
-class NewsPostResource extends Resource
+class ScholarshipResource extends Resource
 {
-    protected static ?string $model = NewsPost::class;
+    protected static ?string $model = Scholarship::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Public CMS';
 
-    protected static ?string $navigationLabel = 'News Posts';
-
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('News Post')
+                Section::make('Scholarship')
                     ->schema([
                         TextInput::make('title')->required()->maxLength(255),
                         TextInput::make('slug')
@@ -49,28 +44,24 @@ class NewsPostResource extends Resource
                             ->unique(ignoreRecord: true)
                             ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
                             ->maxLength(255),
-                        Textarea::make('excerpt')->rows(3)->columnSpanFull(),
-                        RichEditor::make('body')->columnSpanFull(),
+                        Textarea::make('summary')->rows(3)->columnSpanFull(),
+                        RichEditor::make('description')->columnSpanFull(),
+                        RichEditor::make('eligibility')->columnSpanFull(),
+                        RichEditor::make('benefits')->columnSpanFull(),
+                        RichEditor::make('application_process')->columnSpanFull(),
                     ])->columns(2),
-                Section::make('Details')
+                Section::make('Publication')
                     ->schema([
-                        FileUpload::make('featured_image_path')
-                            ->label('Featured image')
+                        DatePicker::make('deadline'),
+                        FileUpload::make('attachment_path')
+                            ->label('Attachment')
                             ->disk('public')
-                            ->directory('cms/news')
-                            ->image()
-                            ->maxSize(4096),
-                        TextInput::make('category')->maxLength(255),
-                        Select::make('department_id')
-                            ->label('Related department')
-                            ->options(fn (): array => Department::query()->orderBy('name')->pluck('name', 'id')->all())
-                            ->searchable()
-                            ->preload(),
-                        TagsInput::make('tags'),
-                        TextInput::make('author_name')->maxLength(255),
+                            ->directory('cms/scholarships')
+                            ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/webp'])
+                            ->maxSize(20480),
                         Toggle::make('is_featured')->inline(false),
                         Toggle::make('is_published')->inline(false),
-                        DateTimePicker::make('published_at'),
+                        TextInput::make('sort_order')->numeric()->minValue(0)->default(0)->required(),
                     ])->columns(2),
                 Section::make('SEO')
                     ->schema([
@@ -85,17 +76,16 @@ class NewsPostResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('title')->searchable()->sortable(),
-                TextColumn::make('category')->placeholder('Not set')->searchable(),
-                TextColumn::make('department.name')->label('Department')->placeholder('Not set')->searchable()->sortable(),
+                TextColumn::make('deadline')->date()->sortable(),
                 IconColumn::make('is_featured')->boolean()->sortable(),
                 IconColumn::make('is_published')->boolean()->sortable(),
-                TextColumn::make('published_at')->dateTime()->sortable(),
+                TextColumn::make('sort_order')->numeric()->sortable(),
             ])
             ->filters([
                 TernaryFilter::make('is_featured'),
                 TernaryFilter::make('is_published'),
             ])
-            ->defaultSort('published_at', 'desc')
+            ->defaultSort('sort_order')
             ->recordActions([
                 EditAction::make(),
                 DeleteAction::make(),
@@ -110,7 +100,7 @@ class NewsPostResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ManageNewsPosts::route('/'),
+            'index' => ManageScholarships::route('/'),
         ];
     }
 }

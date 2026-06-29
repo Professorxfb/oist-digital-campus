@@ -4,23 +4,45 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class NewsPost extends Model
+class Video extends Model
 {
+    public const VIDEO_TYPES = [
+        'youtube' => 'YouTube',
+        'facebook' => 'Facebook',
+        'vimeo' => 'Vimeo',
+        'uploaded' => 'Uploaded',
+        'external' => 'External',
+    ];
+
+    public const CATEGORIES = [
+        'lab_showcase' => 'Lab Showcase',
+        'campus_tour' => 'Campus Tour',
+        'event' => 'Event',
+        'seminar' => 'Seminar',
+        'workshop' => 'Workshop',
+        'student_project' => 'Student Project',
+        'admission_guide' => 'Admission Guide',
+        'promotional' => 'Promotional',
+        'general' => 'General',
+    ];
+
     protected $fillable = [
         'title',
         'slug',
         'excerpt',
-        'body',
-        'featured_image_path',
+        'description',
+        'video_type',
+        'video_url',
+        'embed_url',
+        'thumbnail_path',
         'category',
-        'department_id',
         'tags',
-        'author_name',
+        'event_date',
         'is_featured',
         'is_published',
         'published_at',
+        'sort_order',
         'meta_title',
         'meta_description',
     ];
@@ -29,15 +51,12 @@ class NewsPost extends Model
     {
         return [
             'tags' => 'array',
+            'event_date' => 'date',
             'is_featured' => 'boolean',
             'is_published' => 'boolean',
             'published_at' => 'datetime',
+            'sort_order' => 'integer',
         ];
-    }
-
-    public function department(): BelongsTo
-    {
-        return $this->belongsTo(Department::class);
     }
 
     public function scopePublished(Builder $query): Builder

@@ -3,10 +3,16 @@
 namespace Tests\Feature;
 
 use App\Models\HomepageSection;
+use App\Models\Facility;
+use App\Models\FAQ;
+use App\Models\InstitutionalPage;
+use App\Models\LeadershipProfile;
 use App\Models\Menu;
 use App\Models\MenuItem;
+use App\Models\Scholarship;
 use App\Models\SiteSetting;
 use App\Models\User;
+use App\Models\Video;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
@@ -97,5 +103,53 @@ class CmsPolicyTest extends TestCase
         $this->assertFalse(Gate::forUser($user)->allows('update', $section));
         $this->assertFalse(Gate::forUser($user)->allows('update', $menu));
         $this->assertFalse(Gate::forUser($user)->allows('update', $menuItem));
+    }
+
+    public function test_institutional_cms_roles_can_manage_new_public_content_modules(): void
+    {
+        $this->seed(RolePermissionSeeder::class);
+
+        $page = InstitutionalPage::query()->create(['title' => 'Page', 'slug' => 'page']);
+        $scholarship = Scholarship::query()->create(['title' => 'Scholarship', 'slug' => 'scholarship']);
+        $facility = Facility::query()->create(['title' => 'Facility', 'slug' => 'facility']);
+        $faq = FAQ::query()->create(['question' => 'Question', 'answer' => 'Answer']);
+        $video = Video::query()->create(['title' => 'Video', 'slug' => 'video']);
+
+        foreach (['super_admin', 'admin', 'cms_editor', 'academic_officer'] as $role) {
+            $user = User::factory()->create();
+            $user->assignRole($role);
+
+            $this->assertTrue(Gate::forUser($user)->allows('update', $page));
+            $this->assertTrue(Gate::forUser($user)->allows('update', $scholarship));
+            $this->assertTrue(Gate::forUser($user)->allows('update', $facility));
+            $this->assertTrue(Gate::forUser($user)->allows('update', $faq));
+            $this->assertTrue(Gate::forUser($user)->allows('update', $video));
+        }
+    }
+
+    public function test_leadership_profiles_are_limited_to_public_cms_roles(): void
+    {
+        $this->seed(RolePermissionSeeder::class);
+
+        $profile = LeadershipProfile::query()->create([
+            'name' => 'Leader',
+            'slug' => 'leader',
+        ]);
+
+        foreach (['super_admin', 'admin', 'cms_editor'] as $role) {
+            $user = User::factory()->create();
+            $user->assignRole($role);
+
+            $this->assertTrue(Gate::forUser($user)->allows('update', $profile));
+        }
+
+        $academicOfficer = User::factory()->create();
+        $academicOfficer->assignRole('academic_officer');
+
+        $teacher = User::factory()->create();
+        $teacher->assignRole('teacher');
+
+        $this->assertFalse(Gate::forUser($academicOfficer)->allows('update', $profile));
+        $this->assertFalse(Gate::forUser($teacher)->allows('update', $profile));
     }
 }

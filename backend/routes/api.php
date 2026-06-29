@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\PublicCmsController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function (): void {
+    Route::get('search', [PublicCmsController::class, 'search']);
     Route::get('site-settings', [PublicCmsController::class, 'siteSettings']);
     Route::get('homepage-sections', [PublicCmsController::class, 'homepageSections']);
     Route::get('menus/{location}', [PublicCmsController::class, 'menu']);
@@ -19,4 +20,15 @@ Route::prefix('v1')->group(function (): void {
     Route::get('departments', [PublicCmsController::class, 'departments']);
     Route::get('departments/{slug}', [PublicCmsController::class, 'department']);
     Route::get('faculty-profiles', [PublicCmsController::class, 'facultyProfiles']);
+    Route::get('institutional-pages', [PublicCmsController::class, 'institutionalPages']);
+    Route::get('institutional-pages/{slug}', [PublicCmsController::class, 'institutionalPage']);
+    Route::get('scholarships', [PublicCmsController::class, 'scholarships']);
+    Route::get('scholarships/{slug}', [PublicCmsController::class, 'scholarship']);
+    Route::get('facilities', [PublicCmsController::class, 'facilities']);
+    Route::get('facilities/{slug}', [PublicCmsController::class, 'facility']);
+    Route::get('faqs', [PublicCmsController::class, 'faqs']);
+    Route::get('leadership-profiles', [PublicCmsController::class, 'leadershipProfiles']);
+    Route::get('leadership-profiles/{slug}', [PublicCmsController::class, 'leadershipProfile']);
+    Route::get('videos', [PublicCmsController::class, 'videos']);
+    Route::get('videos/{slug}', [PublicCmsController::class, 'video']);
 });

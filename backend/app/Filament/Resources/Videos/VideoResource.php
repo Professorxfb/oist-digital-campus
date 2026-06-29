@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Filament\Resources\NewsPosts;
+namespace App\Filament\Resources\Videos;
 
-use App\Filament\Resources\NewsPosts\Pages\ManageNewsPosts;
-use App\Models\Department;
-use App\Models\NewsPost;
+use App\Filament\Resources\Videos\Pages\ManageVideos;
+use App\Models\Video;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
@@ -24,24 +24,23 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
-class NewsPostResource extends Resource
+class VideoResource extends Resource
 {
-    protected static ?string $model = NewsPost::class;
+    protected static ?string $model = Video::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Public CMS';
 
-    protected static ?string $navigationLabel = 'News Posts';
-
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('News Post')
+                Section::make('Video')
                     ->schema([
                         TextInput::make('title')->required()->maxLength(255),
                         TextInput::make('slug')
@@ -50,27 +49,34 @@ class NewsPostResource extends Resource
                             ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
                             ->maxLength(255),
                         Textarea::make('excerpt')->rows(3)->columnSpanFull(),
-                        RichEditor::make('body')->columnSpanFull(),
+                        RichEditor::make('description')->columnSpanFull(),
                     ])->columns(2),
-                Section::make('Details')
+                Section::make('Source')
                     ->schema([
-                        FileUpload::make('featured_image_path')
-                            ->label('Featured image')
+                        Select::make('video_type')
+                            ->options(Video::VIDEO_TYPES)
+                            ->required()
+                            ->default('external'),
+                        Select::make('category')
+                            ->options(Video::CATEGORIES)
+                            ->searchable(),
+                        TextInput::make('video_url')->url()->maxLength(2048),
+                        TextInput::make('embed_url')->url()->maxLength(2048),
+                        FileUpload::make('thumbnail_path')
+                            ->label('Thumbnail')
                             ->disk('public')
-                            ->directory('cms/news')
+                            ->directory('cms/videos/thumbnails')
                             ->image()
                             ->maxSize(4096),
-                        TextInput::make('category')->maxLength(255),
-                        Select::make('department_id')
-                            ->label('Related department')
-                            ->options(fn (): array => Department::query()->orderBy('name')->pluck('name', 'id')->all())
-                            ->searchable()
-                            ->preload(),
                         TagsInput::make('tags'),
-                        TextInput::make('author_name')->maxLength(255),
+                    ])->columns(2),
+                Section::make('Publication')
+                    ->schema([
+                        DatePicker::make('event_date'),
+                        DateTimePicker::make('published_at'),
                         Toggle::make('is_featured')->inline(false),
                         Toggle::make('is_published')->inline(false),
-                        DateTimePicker::make('published_at'),
+                        TextInput::make('sort_order')->numeric()->minValue(0)->default(0)->required(),
                     ])->columns(2),
                 Section::make('SEO')
                     ->schema([
@@ -85,17 +91,20 @@ class NewsPostResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('title')->searchable()->sortable(),
-                TextColumn::make('category')->placeholder('Not set')->searchable(),
-                TextColumn::make('department.name')->label('Department')->placeholder('Not set')->searchable()->sortable(),
+                TextColumn::make('video_type')->badge()->sortable(),
+                TextColumn::make('category')->badge()->placeholder('Not set')->searchable()->sortable(),
                 IconColumn::make('is_featured')->boolean()->sortable(),
                 IconColumn::make('is_published')->boolean()->sortable(),
                 TextColumn::make('published_at')->dateTime()->sortable(),
+                TextColumn::make('sort_order')->numeric()->sortable(),
             ])
             ->filters([
+                SelectFilter::make('video_type')->options(Video::VIDEO_TYPES),
+                SelectFilter::make('category')->options(Video::CATEGORIES),
                 TernaryFilter::make('is_featured'),
                 TernaryFilter::make('is_published'),
             ])
-            ->defaultSort('published_at', 'desc')
+            ->defaultSort('sort_order')
             ->recordActions([
                 EditAction::make(),
                 DeleteAction::make(),
@@ -110,7 +119,7 @@ class NewsPostResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ManageNewsPosts::route('/'),
+            'index' => ManageVideos::route('/'),
         ];
     }
 }

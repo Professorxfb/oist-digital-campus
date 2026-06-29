@@ -1,20 +1,17 @@
 <?php
 
-namespace App\Filament\Resources\NewsPosts;
+namespace App\Filament\Resources\InstitutionalPages;
 
-use App\Filament\Resources\NewsPosts\Pages\ManageNewsPosts;
-use App\Models\Department;
-use App\Models\NewsPost;
+use App\Filament\Resources\InstitutionalPages\Pages\ManageInstitutionalPages;
+use App\Models\InstitutionalPage;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -24,24 +21,25 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
-class NewsPostResource extends Resource
+class InstitutionalPageResource extends Resource
 {
-    protected static ?string $model = NewsPost::class;
+    protected static ?string $model = InstitutionalPage::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Public CMS';
 
-    protected static ?string $navigationLabel = 'News Posts';
+    protected static ?string $navigationLabel = 'Institutional Pages';
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('News Post')
+                Section::make('Page Content')
                     ->schema([
                         TextInput::make('title')->required()->maxLength(255),
                         TextInput::make('slug')
@@ -49,28 +47,23 @@ class NewsPostResource extends Resource
                             ->unique(ignoreRecord: true)
                             ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
                             ->maxLength(255),
+                        Select::make('page_type')
+                            ->options(InstitutionalPage::PAGE_TYPES)
+                            ->required()
+                            ->default('general'),
+                        TextInput::make('sort_order')->numeric()->minValue(0)->default(0)->required(),
                         Textarea::make('excerpt')->rows(3)->columnSpanFull(),
                         RichEditor::make('body')->columnSpanFull(),
                     ])->columns(2),
-                Section::make('Details')
+                Section::make('Media And Visibility')
                     ->schema([
                         FileUpload::make('featured_image_path')
                             ->label('Featured image')
                             ->disk('public')
-                            ->directory('cms/news')
+                            ->directory('cms/institutional-pages')
                             ->image()
                             ->maxSize(4096),
-                        TextInput::make('category')->maxLength(255),
-                        Select::make('department_id')
-                            ->label('Related department')
-                            ->options(fn (): array => Department::query()->orderBy('name')->pluck('name', 'id')->all())
-                            ->searchable()
-                            ->preload(),
-                        TagsInput::make('tags'),
-                        TextInput::make('author_name')->maxLength(255),
-                        Toggle::make('is_featured')->inline(false),
                         Toggle::make('is_published')->inline(false),
-                        DateTimePicker::make('published_at'),
                     ])->columns(2),
                 Section::make('SEO')
                     ->schema([
@@ -85,17 +78,16 @@ class NewsPostResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('title')->searchable()->sortable(),
-                TextColumn::make('category')->placeholder('Not set')->searchable(),
-                TextColumn::make('department.name')->label('Department')->placeholder('Not set')->searchable()->sortable(),
-                IconColumn::make('is_featured')->boolean()->sortable(),
+                TextColumn::make('page_type')->badge()->searchable()->sortable(),
                 IconColumn::make('is_published')->boolean()->sortable(),
-                TextColumn::make('published_at')->dateTime()->sortable(),
+                TextColumn::make('sort_order')->numeric()->sortable(),
+                TextColumn::make('updated_at')->dateTime()->sortable(),
             ])
             ->filters([
-                TernaryFilter::make('is_featured'),
+                SelectFilter::make('page_type')->options(InstitutionalPage::PAGE_TYPES),
                 TernaryFilter::make('is_published'),
             ])
-            ->defaultSort('published_at', 'desc')
+            ->defaultSort('sort_order')
             ->recordActions([
                 EditAction::make(),
                 DeleteAction::make(),
@@ -110,7 +102,7 @@ class NewsPostResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ManageNewsPosts::route('/'),
+            'index' => ManageInstitutionalPages::route('/'),
         ];
     }
 }
