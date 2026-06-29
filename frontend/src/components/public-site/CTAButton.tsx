@@ -13,21 +13,24 @@ export function CTAButton({
 }>) {
   const variantClassName = {
     primary:
-      "border-yellow-400 bg-yellow-400 text-slate-950 shadow-sm shadow-yellow-500/20 hover:border-yellow-300 hover:bg-yellow-300",
+      "border-yellow-400 bg-yellow-400 text-slate-950 shadow-sm shadow-yellow-500/20 hover:border-white hover:bg-white hover:text-[#061f3f] hover:shadow-xl hover:shadow-slate-950/10",
     secondary:
-      "border-white/20 bg-white text-slate-950 shadow-sm hover:border-yellow-300 hover:bg-yellow-50 hover:text-slate-950",
+      "border-white/20 bg-white text-slate-950 shadow-sm hover:border-yellow-300 hover:bg-yellow-50 hover:text-[#061f3f] hover:shadow-xl hover:shadow-slate-950/10",
     subtle:
-      "border-blue-100 bg-blue-50 text-blue-950 hover:border-blue-200 hover:bg-blue-100 hover:text-blue-950",
+      "border-blue-100 bg-blue-50 text-blue-950 hover:border-yellow-300 hover:bg-yellow-300 hover:text-[#061f3f] hover:shadow-xl hover:shadow-slate-950/10",
   }[variant];
 
   return (
     <a
-      className={`inline-flex min-h-11 items-center justify-center rounded-full border px-5 py-2.5 text-sm font-bold transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400 ${variantClassName} ${className}`}
+      className={`group/cta inline-flex min-h-11 items-center justify-center overflow-hidden rounded-full border px-5 py-2.5 text-sm font-bold transition-all duration-300 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400 ${variantClassName} ${className}`}
       href={href}
       target={target === "_blank" ? "_blank" : undefined}
       rel={target === "_blank" ? "noopener noreferrer" : undefined}
     >
-      {children}
+      <span>{children}</span>
+      <span className="ml-3 inline-flex h-5 w-5 items-center justify-center rounded-full bg-current/10 transition-transform duration-300 group-hover/cta:translate-x-1">
+        <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />
+      </span>
     </a>
   );
 }

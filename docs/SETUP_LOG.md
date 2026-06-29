@@ -2206,3 +2206,83 @@ No backend code, portal authentication, fake public content, copied WordPress so
 - Upload a real CMS-managed hero image or video in the `hero` homepage section to match the reference image-banner look closely.
 - Create and enable up to three CMS homepage feature/info card records with real icon/image, title, and description content for the reference-style overlapping card row.
 - Keep homepage section titles, text, media, CTA labels, CTA URLs, visibility, and sort order managed from the backend CMS.
+
+---
+
+Date: 2026-06-29
+
+## Frontend Public Homepage Polish And Inline Search Update
+
+### Scope
+
+Polished the CMS-driven Univet Blue Two inspired public homepage shell, header search behavior, CTA interactions, hero text sizing, feature cards, and offcanvas menu styling.
+
+No backend logic, fake public content, copied WordPress source, copied reference assets, copied images, or hard-coded OIST public content were added.
+
+### Updates Made
+
+- Changed the hero CTA fallback from an admission-style action to the safe structural label `View Our Programs`.
+- Hero CTA still prefers CMS `HomepageSection.button_text` and `button_url`; when the URL is missing, it falls back to `/departments`.
+- Reduced the hero eyebrow/subtitle visual weight with smaller uppercase yellow text, tighter letter spacing, and a max width around 650px.
+- Reduced hero body text weight and size for a cleaner reference-style hero composition.
+- Preserved full hero background support for CMS `image_path` and `video_path` with a dark navy overlay.
+- Kept the polished navy gradient fallback when CMS hero media is missing.
+- Added premium hover motion to shared CTA buttons, including header Apply Now, hero CTA, section CTA buttons, and other `CTAButton` usage.
+- Added hover lift and stronger soft shadow behavior to hero feature/info cards.
+- Kept hero feature cards CMS-driven and preserved the navy/yellow/navy card sequence.
+- Replaced direct header search navigation with an inline floating search box inspired by the reference.
+- Header search now opens a white search input overlay on desktop and mobile, autofocuses, closes with Escape/outside click, and submits to `/search?q=keyword`.
+- Preserved the existing `/search` page and route.
+- Polished the offcanvas drawer with a dark navy panel, yellow square close button, stacked divider menu links, collapsible parent menu items, internal scrolling, and portal/action links inside the drawer.
+
+### CMS Behavior Notes
+
+- Exact reference hero appearance requires an admin to upload a real hero image or video in the CMS `hero` Homepage Section.
+- Exact reference feature-card appearance requires up to three real CMS homepage feature/stat/info records with real icon/image, title, description, sort order, and optional CTA fields.
+- These homepage areas intentionally appear only when matching CMS/API data exists:
+  - About / Institution Intro
+  - Chairman Message
+  - Latest Notices
+  - Departments
+  - Campus Life
+  - Tuition Fee
+  - Scholarships
+  - Facilities
+  - Community Voices
+  - Professors
+  - Videos
+  - News & Events
+  - Gallery Strip
+- Empty sections remain hidden to avoid fake content and keep the page clean.
+
+### Commands Run
+
+- `Get-Content AGENTS.md`
+- `Get-Content docs\PROJECT_BLUEPRINT.md`
+- `Get-Content docs\CMS_DRIVEN_FRONTEND.md`
+- `Get-Content frontend\src\components\public-site\CTAButton.tsx`
+- `Get-Content frontend\src\components\public-site\SiteHeader.tsx`
+- `Get-Content frontend\src\components\public-site\ResponsiveMenu.tsx`
+- `Get-Content frontend\src\components\public-site\CMSHero.tsx`
+- `Get-Content frontend\src\app\page.tsx`
+- `npm run lint`
+- `npm run build`
+- `npm run dev`
+- `Invoke-WebRequest -UseBasicParsing http://localhost:3001/`
+
+### Verification Results
+
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully.
+- `npm run dev` started successfully on `http://localhost:3001` because `http://localhost:3000` was already occupied by process `4416`.
+- Local HTTP request to `http://localhost:3001/` returned HTTP 200.
+- Browser responsive audit confirmed no horizontal overflow at 390px, 430px, 1366px, or 1920px widths.
+- Browser responsive audit confirmed mobile/tablet header does not show the Apply Now CTA.
+- Browser interaction audit confirmed the header search opens inline, autofocuses the input, and submits to `/search?q=admission`.
+- Browser interaction audit confirmed the drawer close button remains visible, the drawer scrolls internally, and the drawer does not create horizontal overflow.
+
+### Manual CMS Setup Needed
+
+- Upload a real CMS-managed hero image/video for the `hero` Homepage Section.
+- Create real CMS-managed hero feature/info card records instead of relying on frontend placeholders.
+- Add the remaining homepage section records and public content modules in the CMS when those sections should appear.

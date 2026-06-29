@@ -419,7 +419,7 @@ function HeroFeatureCards({
           return (
           <article
             key={section.key}
-            className={`rounded-[10px] p-6 shadow-2xl shadow-slate-950/15 sm:p-7 lg:min-h-44 lg:p-8 ${
+            className={`rounded-[10px] p-6 shadow-2xl shadow-slate-950/15 transition duration-300 hover:-translate-y-2 hover:shadow-[0_24px_60px_rgba(2,6,23,0.24)] sm:p-7 lg:min-h-44 lg:p-8 ${
               isAccent ? "bg-yellow-400 text-slate-950" : "bg-[#082f57] text-white"
             }`}
           >
@@ -461,12 +461,13 @@ function HeroFeatureCards({
             </div>
             {section.button_text && section.button_url ? (
               <a
-                className={`mt-5 inline-flex text-sm font-black transition ${
+                className={`group mt-5 inline-flex items-center text-sm font-black transition duration-300 hover:-translate-y-0.5 ${
                   isAccent ? "text-slate-950 hover:text-blue-950" : "text-yellow-300 hover:text-white"
                 }`}
                 href={section.button_url}
               >
                 {section.button_text}
+                <span className="ml-2 h-1.5 w-1.5 rounded-full bg-current transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
               </a>
             ) : null}
           </article>

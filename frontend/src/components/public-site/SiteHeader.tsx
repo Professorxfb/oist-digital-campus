@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CTAButton } from "@/components/public-site/CTAButton";
+import { HeaderSearch } from "@/components/public-site/HeaderSearch";
 import { ResponsiveMenu } from "@/components/public-site/ResponsiveMenu";
 import { getCmsAssetUrl } from "@/lib/cms-display";
 import type { MenuItem, SiteSetting } from "@/types/cms";
@@ -62,13 +63,7 @@ export function SiteHeader({
           </div>
 
           <div className="flex shrink-0 items-center gap-2 lg:gap-3">
-            <a
-              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition hover:border-yellow-300 hover:bg-yellow-300 hover:text-slate-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300 sm:h-12 sm:w-12"
-              href="/search"
-              aria-label="Search public content"
-            >
-              <SearchIcon />
-            </a>
+            <HeaderSearch />
             <span className="hidden h-8 w-px bg-white/20 sm:block" aria-hidden="true" />
             <ResponsiveMenu
               items={visibleMenuItems}
@@ -93,24 +88,6 @@ export function SiteHeader({
         </div>
       </div>
     </header>
-  );
-}
-
-function SearchIcon() {
-  return (
-    <svg
-      className="h-4 w-4"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-      aria-hidden="true"
-    >
-      <circle cx="11" cy="11" r="7" />
-      <path d="m20 20-4-4" />
-    </svg>
   );
 }
 

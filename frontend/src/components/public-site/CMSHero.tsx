@@ -15,7 +15,8 @@ export function CMSHero({
   const description = getTextPreview(heroSection.content, 220);
   const imageUrl = getCmsAssetUrl(heroSection?.image_path);
   const videoUrl = getCmsAssetUrl(heroSection?.video_path);
-  const ctaLabel = heroSection.button_text ?? (heroSection.button_url ? "Read More" : null);
+  const ctaLabel = heroSection.button_text ?? "View Our Programs";
+  const ctaUrl = heroSection.button_url ?? "/departments";
 
   return (
     <section className="relative min-h-[620px] overflow-hidden bg-[#06142d] text-white sm:min-h-[680px] lg:min-h-[740px] xl:min-h-[760px]">
@@ -53,7 +54,7 @@ export function CMSHero({
       <Container className="relative flex min-h-[620px] items-center pb-24 pt-32 sm:min-h-[680px] sm:pb-32 sm:pt-40 lg:min-h-[740px] lg:pb-40 lg:pt-44 xl:min-h-[760px]">
         <div className="max-w-[760px]">
           {heroSection.subtitle ? (
-            <p className="text-xs font-black uppercase tracking-[0.2em] text-yellow-300 sm:text-sm">
+            <p className="max-w-[650px] text-[10px] font-black uppercase tracking-[0.16em] text-yellow-300 sm:text-xs lg:text-sm">
               {heroSection.subtitle}
             </p>
           ) : null}
@@ -61,13 +62,13 @@ export function CMSHero({
             {heroSection.title}
           </h1>
           {description ? (
-            <p className="mt-7 max-w-2xl text-base font-semibold leading-8 text-blue-50 sm:text-xl">
+            <p className="mt-6 max-w-2xl text-sm font-medium leading-7 text-blue-50 sm:text-base lg:text-lg">
               {description}
             </p>
           ) : null}
-          {ctaLabel && heroSection.button_url ? (
-            <div className="mt-8 sm:mt-10">
-              <CTAButton href={heroSection.button_url} className="min-h-14 px-8 py-3">
+          {ctaLabel ? (
+            <div className="mt-8 sm:mt-9">
+              <CTAButton href={ctaUrl} className="min-h-14 px-8 py-3">
                 {ctaLabel}
               </CTAButton>
             </div>
