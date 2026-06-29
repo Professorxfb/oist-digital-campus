@@ -6,6 +6,7 @@ import { CTAButton } from "@/components/public-site/CTAButton";
 import { DepartmentCard } from "@/components/public-site/DepartmentCard";
 import { EventCard } from "@/components/public-site/EventCard";
 import { NoticeStrip } from "@/components/public-site/NoticeStrip";
+import { ScrollReveal } from "@/components/public-site/ScrollReveal";
 import { SiteFooter } from "@/components/public-site/SiteFooter";
 import { SiteHeader } from "@/components/public-site/SiteHeader";
 import { resolveCmsAssetUrl } from "@/lib/api-client";
@@ -335,7 +336,7 @@ export default async function Home() {
         ) : null}
 
         {sectionBlocks.map((block) => (
-          <div key={block.section.key}>{block.node}</div>
+          <ScrollReveal key={block.section.key}>{block.node}</ScrollReveal>
         ))}
       </main>
       <SiteFooter
@@ -371,7 +372,7 @@ function PremiumSection({
   const description = getTextPreview(section.content, 260);
 
   return (
-    <section className={`py-16 sm:py-20 ${toneClassName}`}>
+    <section className={`py-20 sm:py-24 ${toneClassName}`}>
       <Container>
         <div className="mb-9 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-3xl">
@@ -380,7 +381,7 @@ function PremiumSection({
                 {section.subtitle}
               </p>
             ) : null}
-            <h2 className={`mt-3 text-3xl font-black tracking-tight sm:text-5xl ${titleClassName}`}>
+            <h2 className={`mt-3 font-serif text-3xl font-bold tracking-tight sm:text-5xl ${titleClassName}`}>
               {section.title}
             </h2>
             {description ? (
@@ -413,55 +414,62 @@ function HeroFeatureCards({
   const visibleCards = cards.slice(0, 3);
 
   return (
-    <Container className="relative z-20 pb-10 pt-6 sm:pt-8 lg:-mt-24 lg:pb-12 lg:pt-0 xl:-mt-28">
-      <div className="mx-auto grid max-w-6xl gap-4 sm:gap-5 lg:grid-cols-3">
+    <Container className="relative z-20 pb-12 pt-6 sm:pt-8 lg:-mt-[78px] lg:pb-16 lg:pt-0 xl:-mt-[86px]">
+      <div className="mx-auto grid max-w-[1280px] gap-4 sm:gap-5 lg:grid-cols-3" data-section="hero-feature-cards">
         {visibleCards.map((card, index) => {
           const iconUrl = getCmsAssetUrl(card.image_path);
           const isAccent = card.style_variant === "yellow";
 
           return (
-          <article
-            key={`${card.title}-${card.sort_order}-${index}`}
-            className={`rounded-[10px] p-6 shadow-2xl shadow-slate-950/15 transition duration-300 hover:-translate-y-2 hover:shadow-[0_24px_60px_rgba(2,6,23,0.24)] sm:p-7 lg:min-h-44 lg:p-8 ${
-              isAccent ? "bg-yellow-400 text-slate-950" : "bg-[#082f57] text-white"
-            }`}
-          >
-            <div className="flex gap-4 sm:gap-5">
-              <HeroFeatureIcon
-                iconKey={card.icon_key}
-                imageUrl={iconUrl}
-                isAccent={isAccent}
-              />
-              <div className="min-w-0 break-words">
-                {card.title ? (
-                  <h2 className="font-serif text-2xl font-bold leading-tight sm:text-3xl">
-                    {card.title}
-                  </h2>
-                ) : null}
-                {card.description ? (
-                  <p
-                    className={`mt-3 text-sm font-semibold leading-7 ${
-                      isAccent ? "text-slate-800" : "text-blue-50"
-                    }`}
-                  >
-                    {getTextPreview(card.description, 130)}
-                  </p>
-                ) : null}
-              </div>
-            </div>
-            {card.button_text && card.button_url ? (
-              <a
-                className={`group mt-5 inline-flex items-center text-sm font-black transition duration-300 hover:-translate-y-0.5 ${
-                  isAccent ? "text-slate-950 hover:text-blue-950" : "text-yellow-300 hover:text-white"
+            <ScrollReveal key={`${card.title}-${card.sort_order}-${index}`} delay={index * 110}>
+              <article
+                className={`group flex min-h-[150px] items-center rounded-[12px] p-7 shadow-[0_18px_42px_rgba(2,6,23,0.12)] transition duration-300 hover:-translate-y-2 hover:shadow-[0_26px_64px_rgba(2,6,23,0.22)] sm:p-8 lg:h-[158px] lg:p-8 xl:px-10 ${
+                  isAccent ? "bg-yellow-400 text-slate-950" : "bg-[#082f57] text-white"
                 }`}
-                href={card.button_url}
+                data-hero-feature-card
               >
-                {card.button_text}
-                <span className="ml-2 h-1.5 w-1.5 rounded-full bg-current transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
-              </a>
-            ) : null}
-          </article>
-        );
+                <div className="flex w-full items-center gap-6">
+                  <HeroFeatureIcon
+                    iconKey={card.icon_key}
+                    imageUrl={iconUrl}
+                    isAccent={isAccent}
+                  />
+                  <div className="min-w-0 flex-1 break-words">
+                    {card.title ? (
+                      <h2 className="font-serif text-[1.65rem] font-bold leading-tight sm:text-[1.85rem]">
+                        {card.title}
+                      </h2>
+                    ) : null}
+                    {card.description ? (
+                      <p
+                        className={`mt-3 text-[15px] font-semibold leading-7 ${
+                          isAccent ? "text-slate-800" : "text-blue-50"
+                        }`}
+                      >
+                        {getTextPreview(card.description, 120)}
+                      </p>
+                    ) : null}
+                    {card.button_text && card.button_url ? (
+                      <a
+                        className={`group/link mt-4 inline-flex items-center text-sm font-black transition duration-300 hover:-translate-y-0.5 ${
+                          isAccent
+                            ? "text-slate-950 hover:text-blue-950"
+                            : "text-yellow-300 hover:text-white"
+                        }`}
+                        href={card.button_url}
+                      >
+                        {card.button_text}
+                        <span
+                          className="ml-2 h-px w-4 bg-current transition-transform duration-300 group-hover/link:translate-x-1"
+                          aria-hidden="true"
+                        />
+                      </a>
+                    ) : null}
+                  </div>
+                </div>
+              </article>
+            </ScrollReveal>
+          );
         })}
       </div>
     </Container>
@@ -478,14 +486,11 @@ function HeroFeatureIcon({
   isAccent: boolean;
 }>) {
   const iconClassName = isAccent ? "text-[#082f57]" : "text-white";
-  const wrapperClassName = `flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl sm:h-16 sm:w-16 ${
-    isAccent ? "bg-slate-950/5" : "bg-white/10"
-  }`;
 
   if (imageUrl) {
     return (
       <span
-        className={`${wrapperClassName} bg-contain bg-center bg-no-repeat`}
+        className="h-16 w-16 shrink-0 bg-contain bg-center bg-no-repeat sm:h-[72px] sm:w-[72px]"
         style={{ backgroundImage: `url(${imageUrl})` }}
         aria-hidden="true"
       />
@@ -493,10 +498,10 @@ function HeroFeatureIcon({
   }
 
   return (
-    <span className={wrapperClassName} aria-hidden="true">
+    <span className="flex h-16 w-16 shrink-0 items-center justify-center sm:h-[72px] sm:w-[72px]" aria-hidden="true">
       <svg
-        className={`h-10 w-10 ${iconClassName}`}
-        viewBox="0 0 48 48"
+        className={`h-16 w-16 transition duration-300 group-hover:scale-105 sm:h-[72px] sm:w-[72px] ${iconClassName}`}
+        viewBox="0 0 72 72"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -511,34 +516,64 @@ function renderHeroFeatureIconPath(iconKey: string): React.ReactNode {
     case "library":
       return (
         <>
-          <path d="M8 15L24 7L40 15L24 23L8 15Z" stroke="currentColor" strokeWidth="2.8" strokeLinejoin="round" />
-          <path d="M14 20V30C14 33.5 18.5 36 24 36C29.5 36 34 33.5 34 30V20" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" />
-          <path d="M40 15V26" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" />
-          <path d="M36 30H44" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" />
+          <path
+            d="M10 23L36 10L62 23L36 36L10 23Z"
+            stroke="currentColor"
+            strokeWidth="3.2"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M20 31V45C20 51 27 55 36 55C45 55 52 51 52 45V31"
+            stroke="currentColor"
+            strokeWidth="3.2"
+            strokeLinecap="round"
+          />
+          <path d="M62 23V42" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
+          <path d="M56 48H68" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
         </>
       );
     case "educator":
       return (
         <>
-          <path d="M24 7L31 16H17L24 7Z" stroke="currentColor" strokeWidth="2.8" strokeLinejoin="round" />
-          <path d="M13 18H35V24H13V18Z" stroke="currentColor" strokeWidth="2.8" strokeLinejoin="round" />
-          <path d="M16 24V38M24 24V38M32 24V38" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" />
-          <path d="M10 39H38" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" />
+          <path
+            d="M36 9L47 24H25L36 9Z"
+            stroke="currentColor"
+            strokeWidth="3.2"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M18 27H54V36H18V27Z"
+            stroke="currentColor"
+            strokeWidth="3.2"
+            strokeLinejoin="round"
+          />
+          <path d="M23 36V58M36 36V58M49 36V58" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
+          <path d="M14 60H58" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
         </>
       );
     case "achievement":
       return (
         <>
-          <path d="M25 6L29.5 15.5L40 17L32.5 24.5L34.5 35L25 30L15.5 35L17.5 24.5L10 17L20.5 15.5L25 6Z" stroke="currentColor" strokeWidth="2.8" strokeLinejoin="round" />
-          <path d="M13 40H37" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" />
-          <path d="M18 34L15 40M32 34L35 40" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" />
+          <path
+            d="M36 8L43 24L60 26.5L48 39L51 56L36 48L21 56L24 39L12 26.5L29 24L36 8Z"
+            stroke="currentColor"
+            strokeWidth="3.2"
+            strokeLinejoin="round"
+          />
+          <path d="M17 63H55" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
+          <path d="M25 54L21 63M47 54L51 63" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
         </>
       );
     default:
       return (
         <>
-          <path d="M10 14H38V34H10V14Z" stroke="currentColor" strokeWidth="2.8" strokeLinejoin="round" />
-          <path d="M16 22H32M16 28H27" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" />
+          <path
+            d="M15 19H57V52H15V19Z"
+            stroke="currentColor"
+            strokeWidth="3.2"
+            strokeLinejoin="round"
+          />
+          <path d="M24 32H48M24 41H42" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
         </>
       );
   }
@@ -565,7 +600,7 @@ function AboutSection({
           <div className="relative min-h-[320px] overflow-hidden rounded-3xl bg-[#071733] shadow-2xl shadow-slate-950/10">
             {imageUrl ? (
               <div
-                className="absolute inset-0 bg-cover bg-center"
+                className="absolute inset-0 bg-cover bg-center transition duration-500 hover:scale-105"
                 style={{ backgroundImage: `url(${imageUrl})` }}
                 aria-hidden="true"
               />
@@ -583,7 +618,7 @@ function AboutSection({
                 {section.subtitle}
               </p>
             ) : null}
-            <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-5xl">
+            <h2 className="mt-3 font-serif text-3xl font-bold tracking-tight text-slate-950 sm:text-5xl">
               {section.title}
             </h2>
             {description ? (

@@ -76,7 +76,7 @@ export function ResponsiveMenu({
           <button
             className="absolute inset-0 h-full w-full cursor-default bg-slate-950/60 backdrop-blur-sm"
             type="button"
-            aria-label={`Close ${label.toLowerCase()}`}
+            aria-label={`Dismiss ${label.toLowerCase()} overlay`}
             onClick={() => setIsOpen(false)}
           />
           <aside className="absolute right-0 top-0 flex h-dvh max-h-dvh w-[calc(100vw-1rem)] max-w-[28rem] flex-col overflow-hidden bg-[#061f3f] text-white shadow-2xl sm:w-[min(28rem,100vw)]">

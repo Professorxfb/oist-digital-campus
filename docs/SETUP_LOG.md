@@ -2375,3 +2375,78 @@ Added a dedicated backend-controlled CMS system for the three overlapping homepa
 - `npm run build` completed successfully.
 - `npm run build` logged expected CMS fetch warnings because the Laravel API server was not running on `127.0.0.1:8000`; the frontend fallback behavior handled the unavailable API and the build still completed.
 - `npm run dev` started successfully on `http://localhost:3000` and was stopped after verification.
+
+---
+
+Date: 2026-06-30
+
+## Strict Univet-Inspired Frontend Reference Match Pass
+
+### Scope
+
+Polished the public homepage shell, header interactions, hero section, hero feature cards, button motion, and scroll reveal behavior while preserving the CMS-driven architecture. No backend application logic was changed and no fake public content was added.
+
+### CMS-Controlled Homepage Structure
+
+- `HomepageSection` controls section key/type, title, subtitle/eyebrow, content/body, image, video, button text, button URL, sort order, and enabled status for hero and homepage sections.
+- `HeroFeatureCard` controls the three overlapping hero cards through title, description, `icon_key`, optional image/icon upload, `style_variant`, optional button text, optional button URL, sort order, and enabled status.
+- Existing public CMS modules control about/institutional content, notices, news, events, departments, scholarships, facilities, gallery, videos, leadership/chairman content, faculty/professor profiles, menus, footer links, contact details, and social links.
+- Sections with no CMS data remain hidden or render only safe structural empty states where appropriate.
+
+### Frontend Visual Updates
+
+- Tuned the hero to use CMS image/video as the full background with a lighter left-to-right navy overlay so the right-side image remains clearer.
+- Preserved the CMS hero CTA behavior: `button_text` and `button_url` come from CMS; fallback is the safe UI label `View Our Programs` with `/departments`.
+- Added smooth first-load hero text animation for eyebrow, heading, body when present, and CTA.
+- Updated hero feature cards to match the reference more closely: three overlapping cards, short/wide desktop layout, card 1 navy, card 2 yellow, card 3 navy, horizontal icon/content alignment, premium line-style icons, hover lift, and shadow.
+- Added lightweight scroll reveal behavior for CMS-rendered homepage sections and hero feature cards with reduced-motion support.
+- Polished button hover behavior so yellow CTAs lift, transition to light background, and animate the arrow/dot affordance.
+- Improved section heading typography with premium serif headings and stronger section spacing.
+- Added structural data attributes for layout verification only; these do not contain public content.
+
+### Header, Search, and Offcanvas Updates
+
+- Desktop header remains a floating dark navy rounded bar with CMS logo/title/tagline, centered CMS menu, search icon, divider, hamburger icon, and yellow Apply Now CTA.
+- Student Portal and Faculty Portal remain out of the desktop header and stay available in the drawer/footer only.
+- Mobile header keeps logo, search icon, and hamburger icon only; Apply Now is hidden from the mobile header.
+- Offcanvas drawer uses a dark navy right-side panel, CMS logo/title, CMS menu links, portal links, Apply Now, contact details, internal scrolling, and a visible yellow close button.
+- Search icon opens the inline/floating search box first; submitting the box routes to `/search?q=keyword`.
+- Adjusted the drawer backdrop accessible label so the visible close button has a unique accessible name.
+
+### Manual CMS Setup Needed
+
+- Upload an approved real hero image or video to the `hero` Homepage Section for the closest reference-style result.
+- Set the hero Homepage Section `button_text` to the desired CMS-managed CTA label, for example `View Our Programs`, and set `button_url` to the desired route.
+- Create up to three real records in `Public CMS > Hero Feature Cards` with approved text, icons/images, style variants, sort order, and enabled status.
+- Create or enable CMS records for About / Institution Intro, Chairman Message, Latest Notices, Departments, Campus Life, Tuition Fee, Scholarships, Facilities, Community Voices, Professors, Videos, News & Events, and Gallery Strip before those sections can appear.
+- Community Voices still requires a dedicated testimonial/feedback CMS module before real feedback content can be managed separately.
+- Tuition Fee still requires a dedicated tuition/fee CMS module if the institution needs structured fee amounts; until then, the frontend must not invent fee values.
+
+### Commands Run
+
+- `Get-Content AGENTS.md`
+- `Get-Content docs\PROJECT_BLUEPRINT.md`
+- `Get-Content docs\CMS_DRIVEN_FRONTEND.md`
+- `Get-Content docs\SETUP_LOG.md`
+- `Get-Content frontend\src\services\cms.ts`
+- `Get-Content frontend\src\types\cms.ts`
+- `Get-Content frontend\src\app\page.tsx`
+- `Get-Content frontend\src\components\public-site\SiteHeader.tsx`
+- `Get-Content frontend\src\components\public-site\CMSHero.tsx`
+- `Get-Content frontend\src\components\public-site\ResponsiveMenu.tsx`
+- `Get-Content backend\routes\api.php`
+- `Get-Content backend\app\Http\Controllers\Api\V1\PublicCmsController.php`
+- `npm run lint`
+- `npm run build`
+- `npm run dev`
+
+### Verification Results
+
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully.
+- `npm run dev` started successfully on `http://localhost:3001` because `http://localhost:3000` was already occupied by another local process.
+- Browser checks on `http://localhost:3001/` confirmed no horizontal overflow at 390px, 430px, 768px, 1366px, or 1920px widths.
+- Browser checks confirmed desktop header shows Apply Now and does not show Student Portal or Faculty Portal as desktop header buttons.
+- Browser checks confirmed mobile header stays compact and the hero/card layout does not clip at 390px or 430px.
+- Browser checks confirmed the search icon opens a floating search input and submission routes to `/search?q=admission`.
+- Browser checks confirmed the offcanvas drawer opens from the right, shows portal links and Apply Now inside the drawer, keeps the close button visible, closes correctly, and does not create horizontal overflow.

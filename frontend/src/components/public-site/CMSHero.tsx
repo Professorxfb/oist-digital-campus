@@ -19,21 +19,20 @@ export function CMSHero({
   const ctaUrl = heroSection.button_url ?? "/departments";
 
   return (
-    <section className="relative min-h-[620px] overflow-hidden bg-[#06142d] text-white sm:min-h-[680px] lg:min-h-[740px] xl:min-h-[760px]">
-      <div
-        className="absolute inset-0 bg-[linear-gradient(120deg,rgba(2,6,23,0.98),rgba(8,47,73,0.84)_48%,rgba(30,64,175,0.62))]"
-        aria-hidden="true"
-      />
+    <section
+      className="relative min-h-[650px] overflow-hidden bg-[#06142d] text-white sm:min-h-[700px] lg:min-h-[770px] xl:min-h-[810px]"
+      data-section="homepage-hero"
+    >
       {imageUrl ? (
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-75"
+          className="absolute inset-0 bg-cover bg-[center_right] opacity-100"
           style={{ backgroundImage: `url(${imageUrl})` }}
           aria-hidden="true"
         />
       ) : null}
       {videoUrl ? (
         <video
-          className="absolute inset-0 h-full w-full object-cover opacity-70"
+          className="absolute inset-0 h-full w-full object-cover object-right opacity-100"
           src={videoUrl}
           autoPlay
           muted
@@ -42,32 +41,32 @@ export function CMSHero({
         />
       ) : null}
       <div
-        className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,30,57,0.96),rgba(3,30,57,0.78)_43%,rgba(3,30,57,0.38)_68%,rgba(3,30,57,0.5)),linear-gradient(180deg,rgba(2,6,23,0.2),rgba(2,6,23,0.22))]"
+        className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,22,50,0.97)_0%,rgba(3,22,50,0.9)_34%,rgba(3,22,50,0.52)_61%,rgba(3,22,50,0.18)_100%),linear-gradient(180deg,rgba(2,6,23,0.22),rgba(2,6,23,0.1))]"
         aria-hidden="true"
       />
       {!imageUrl && !videoUrl ? (
         <div
-          className="absolute inset-0 bg-[linear-gradient(135deg,rgba(30,64,175,0.28),transparent_45%),radial-gradient(circle_at_82%_28%,rgba(250,204,21,0.15),transparent_24%),radial-gradient(circle_at_75%_72%,rgba(14,165,233,0.16),transparent_26%)]"
+          className="absolute inset-0 bg-[linear-gradient(115deg,#031632,#062b55_48%,#0d3770),radial-gradient(circle_at_82%_28%,rgba(250,204,21,0.14),transparent_24%),radial-gradient(circle_at_75%_72%,rgba(14,165,233,0.14),transparent_26%)]"
           aria-hidden="true"
         />
       ) : null}
-      <Container className="relative flex min-h-[620px] items-center pb-24 pt-32 sm:min-h-[680px] sm:pb-32 sm:pt-40 lg:min-h-[740px] lg:pb-40 lg:pt-44 xl:min-h-[760px]">
-        <div className="max-w-[760px]">
+      <Container className="relative flex min-h-[650px] items-center pb-32 pt-32 sm:min-h-[700px] sm:pb-36 sm:pt-40 lg:min-h-[770px] lg:pb-44 lg:pt-44 xl:min-h-[810px]">
+        <div className="max-w-[780px]">
           {heroSection.subtitle ? (
-            <p className="max-w-[650px] text-[10px] font-black uppercase tracking-[0.16em] text-yellow-300 sm:text-xs lg:text-sm">
+            <p className="hero-animate-eyebrow max-w-[650px] text-[10px] font-black uppercase tracking-[0.16em] text-yellow-300 sm:text-xs lg:text-[13px]">
               {heroSection.subtitle}
             </p>
           ) : null}
-          <h1 className="mt-6 max-w-[760px] break-words font-serif text-[clamp(2.625rem,11vw,3rem)] font-semibold leading-[1.02] text-white sm:mt-8 sm:text-[clamp(3.75rem,7vw,4.25rem)] sm:leading-[0.98] lg:text-[clamp(4.75rem,4.6vw,5.25rem)]">
+          <h1 className="hero-animate-title mt-5 max-w-[780px] break-words font-serif text-[clamp(2.85rem,11vw,3.55rem)] font-semibold leading-[0.98] text-white sm:mt-7 sm:text-[clamp(4rem,7vw,5.15rem)] sm:leading-[0.96] lg:text-[clamp(5rem,4.8vw,5.85rem)]">
             {heroSection.title}
           </h1>
           {description ? (
-            <p className="mt-6 max-w-2xl text-sm font-medium leading-7 text-blue-50 sm:text-base lg:text-lg">
+            <p className="hero-animate-body mt-6 max-w-2xl text-sm font-medium leading-7 text-blue-50 sm:text-base lg:text-[18px]">
               {description}
             </p>
           ) : null}
           {ctaLabel ? (
-            <div className="mt-8 sm:mt-9">
+            <div className="hero-animate-cta mt-8 sm:mt-9">
               <CTAButton href={ctaUrl} className="min-h-14 px-8 py-3">
                 {ctaLabel}
               </CTAButton>
