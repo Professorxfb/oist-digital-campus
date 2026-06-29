@@ -54,6 +54,13 @@ export function SiteHeader({
           </Link>
           <div className="flex items-center gap-3">
             <ResponsiveMenu items={menuItems} label="Menu" action={admissionAction} />
+            <a
+              className="hidden min-h-10 items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 sm:inline-flex"
+              href="/search"
+              aria-label="Search public content"
+            >
+              Search
+            </a>
             {admissionAction ? (
               <CTAButton
                 href={admissionAction.href}
@@ -62,6 +69,13 @@ export function SiteHeader({
                 {admissionAction.label}
               </CTAButton>
             ) : null}
+            <a
+              className="inline-flex min-h-10 items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 sm:hidden"
+              href="/search"
+              aria-label="Search public content"
+            >
+              Search
+            </a>
           </div>
         </div>
       </Container>

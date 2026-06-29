@@ -112,6 +112,7 @@ export interface NewsPost {
   body?: string | null;
   featured_image_path?: string | null;
   category?: string | null;
+  department?: FacultyProfileDepartment | null;
   tags?: string[];
   author_name?: string | null;
   is_featured?: boolean;
@@ -190,4 +191,104 @@ export interface Department {
   meta_title?: string | null;
   meta_description?: string | null;
   faculty_profiles?: FacultyProfile[];
+}
+
+export type InstitutionalPageType =
+  | "about"
+  | "mission"
+  | "vision"
+  | "values"
+  | "why_choose_us"
+  | "campus_life"
+  | "facilities"
+  | "accreditation"
+  | "student_support"
+  | "general";
+
+export interface InstitutionalPage {
+  title: string;
+  slug: string;
+  page_type: InstitutionalPageType | string;
+  excerpt?: string | null;
+  body?: string | null;
+  featured_image_path?: string | null;
+  sort_order?: number;
+  meta_title?: string | null;
+  meta_description?: string | null;
+}
+
+export interface Scholarship {
+  title: string;
+  slug: string;
+  summary?: string | null;
+  description?: string | null;
+  eligibility?: string | null;
+  benefits?: string | null;
+  application_process?: string | null;
+  deadline?: string | null;
+  attachment_path?: string | null;
+  is_featured?: boolean;
+  sort_order?: number;
+  meta_title?: string | null;
+  meta_description?: string | null;
+}
+
+export interface Facility {
+  title: string;
+  slug: string;
+  summary?: string | null;
+  description?: string | null;
+  image_path?: string | null;
+  icon?: string | null;
+  sort_order?: number;
+  meta_title?: string | null;
+  meta_description?: string | null;
+}
+
+export interface FAQ {
+  question: string;
+  answer: string;
+  category?: string | null;
+  sort_order?: number;
+}
+
+export interface LeadershipProfile {
+  name: string;
+  slug: string;
+  designation?: string | null;
+  message?: string | null;
+  short_bio?: string | null;
+  photo_path?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  sort_order?: number;
+}
+
+export type VideoType = "youtube" | "facebook" | "vimeo" | "uploaded" | "external";
+
+export interface Video {
+  title: string;
+  slug: string;
+  excerpt?: string | null;
+  description?: string | null;
+  video_type?: VideoType | string;
+  video_url?: string | null;
+  embed_url?: string | null;
+  thumbnail_path?: string | null;
+  category?: string | null;
+  tags?: string[];
+  event_date?: string | null;
+  is_featured?: boolean;
+  published_at?: string | null;
+  sort_order?: number;
+  meta_title?: string | null;
+  meta_description?: string | null;
+}
+
+export interface SearchResult {
+  type: string;
+  title: string;
+  excerpt?: string | null;
+  url: string;
+  published_at?: string | null;
 }

@@ -17,21 +17,29 @@ import {
   getDepartments,
   getDownloads,
   getEvents,
+  getFacilities,
   getFacultyProfiles,
   getGalleryAlbums,
   getHomepageSections,
+  getLeadershipProfiles,
   getMenuByLocation,
   getNewsPosts,
   getNotices,
+  getScholarships,
   getSiteSettings,
+  getVideos,
 } from "@/services/cms";
 import type {
   Download,
+  Facility,
   GalleryAlbum,
   HomepageSection,
+  LeadershipProfile,
   NewsPost,
   Notice,
+  Scholarship,
   SiteSetting,
+  Video,
 } from "@/types/cms";
 
 export const revalidate = 60;
@@ -74,6 +82,10 @@ export default async function Home() {
     downloads,
     departments,
     facultyProfiles,
+    scholarships,
+    facilities,
+    leadershipProfiles,
+    videos,
   ] = await Promise.all([
     getSiteSettings(),
     getHomepageSections(),
@@ -87,6 +99,10 @@ export default async function Home() {
     getDownloads(),
     getDepartments(),
     getFacultyProfiles(),
+    getScholarships(),
+    getFacilities(),
+    getLeadershipProfiles(),
+    getVideos(),
   ]);
 
   const settings = siteSettings.data;
@@ -105,6 +121,10 @@ export default async function Home() {
     downloads,
     departments,
     facultyProfiles,
+    scholarships,
+    facilities,
+    leadershipProfiles,
+    videos,
   ].some((result) => result.error !== null);
 
   return (
@@ -193,6 +213,35 @@ export default async function Home() {
           )}
         </ShellSection>
 
+        {scholarships.data.length > 0 ? (
+          <ShellSection
+            title="Scholarships"
+            eyebrow="Support"
+            actionHref="/scholarships"
+          >
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {scholarships.data.slice(0, 3).map((scholarship) => (
+                <ScholarshipCard key={scholarship.slug} scholarship={scholarship} />
+              ))}
+            </div>
+          </ShellSection>
+        ) : null}
+
+        {facilities.data.length > 0 ? (
+          <ShellSection
+            title="Facilities"
+            eyebrow="Campus"
+            actionHref="/facilities"
+            tone="white"
+          >
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {facilities.data.slice(0, 3).map((facility) => (
+                <FacilityCard key={facility.slug} facility={facility} />
+              ))}
+            </div>
+          </ShellSection>
+        ) : null}
+
         <ShellSection title="Faculty Profiles" eyebrow="People" actionHref="/faculty">
           {facultyProfiles.data.length > 0 ? (
             <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
@@ -205,6 +254,21 @@ export default async function Home() {
           )}
         </ShellSection>
 
+        {leadershipProfiles.data.length > 0 ? (
+          <ShellSection
+            title="Leadership"
+            eyebrow="Profiles"
+            actionHref="/leadership"
+            tone="white"
+          >
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {leadershipProfiles.data.slice(0, 3).map((profile) => (
+                <LeadershipCard key={profile.slug} profile={profile} />
+              ))}
+            </div>
+          </ShellSection>
+        ) : null}
+
         <ShellSection title="Downloads" eyebrow="Resources" actionHref="/downloads" tone="white">
           {downloads.data.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -216,6 +280,16 @@ export default async function Home() {
             <EmptyState />
           )}
         </ShellSection>
+
+        {videos.data.length > 0 ? (
+          <ShellSection title="Videos" eyebrow="Media" actionHref="/videos">
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {videos.data.slice(0, 3).map((video) => (
+                <VideoCard key={video.slug} video={video} />
+              ))}
+            </div>
+          </ShellSection>
+        ) : null}
 
         <ShellSection title="Gallery Albums" eyebrow="Media" actionHref="/gallery">
           {galleryAlbums.data.length > 0 ? (
@@ -383,6 +457,68 @@ function GalleryCard({ album }: Readonly<{ album: GalleryAlbum }>) {
       imagePath={album.cover_image_path ?? null}
       href={`/gallery/${album.slug}`}
       meta={[itemCount]}
+    />
+  );
+}
+
+function ScholarshipCard({
+  scholarship,
+}: Readonly<{
+  scholarship: Scholarship;
+}>) {
+  return (
+    <ContentCard
+      title={scholarship.title}
+      description={scholarship.summary ?? getTextPreview(scholarship.description)}
+      href={`/scholarships/${scholarship.slug}`}
+      meta={[
+        scholarship.is_featured ? "Featured" : null,
+        scholarship.deadline ? formatDate(scholarship.deadline) : null,
+      ]}
+    />
+  );
+}
+
+function FacilityCard({ facility }: Readonly<{ facility: Facility }>) {
+  return (
+    <ContentCard
+      title={facility.title}
+      description={facility.summary}
+      imagePath={facility.image_path ?? null}
+      href={`/facilities/${facility.slug}`}
+      meta={[facility.icon]}
+    />
+  );
+}
+
+function LeadershipCard({
+  profile,
+}: Readonly<{
+  profile: LeadershipProfile;
+}>) {
+  return (
+    <ContentCard
+      title={profile.name}
+      description={profile.short_bio ?? profile.designation}
+      imagePath={profile.photo_path ?? null}
+      href={`/leadership/${profile.slug}`}
+      meta={[profile.designation]}
+    />
+  );
+}
+
+function VideoCard({ video }: Readonly<{ video: Video }>) {
+  return (
+    <ContentCard
+      title={video.title}
+      description={video.excerpt}
+      imagePath={video.thumbnail_path ?? null}
+      href={`/videos/${video.slug}`}
+      meta={[
+        video.is_featured ? "Featured" : null,
+        video.category,
+        formatDate(video.published_at ?? video.event_date),
+      ]}
     />
   );
 }

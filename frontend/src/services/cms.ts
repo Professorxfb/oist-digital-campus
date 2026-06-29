@@ -4,14 +4,22 @@ import type {
   Department,
   Download,
   Event,
+  Facility,
+  FAQ,
   FacultyProfile,
   GalleryAlbum,
   HomepageSection,
+  InstitutionalPage,
+  InstitutionalPageType,
+  LeadershipProfile,
   Menu,
   MenuLocation,
   NewsPost,
   Notice,
+  Scholarship,
+  SearchResult,
   SiteSetting,
+  Video,
 } from "@/types/cms";
 
 export const emptySiteSettings: SiteSetting = {
@@ -116,4 +124,98 @@ export function getDepartmentBySlug(
 
 export function getFacultyProfiles(): Promise<ApiFetchResult<FacultyProfile[]>> {
   return fetchCmsApi<FacultyProfile[]>("faculty-profiles", []);
+}
+
+export function getInstitutionalPages(): Promise<
+  ApiFetchResult<InstitutionalPage[]>
+> {
+  return fetchCmsApi<InstitutionalPage[]>("institutional-pages", []);
+}
+
+export function getInstitutionalPageBySlug(
+  slug: string,
+): Promise<ApiFetchResult<InstitutionalPage | null>> {
+  return fetchCmsApi<InstitutionalPage | null>(
+    `institutional-pages/${slug}`,
+    null,
+  );
+}
+
+export async function getInstitutionalPageByType(
+  type: InstitutionalPageType,
+): Promise<ApiFetchResult<InstitutionalPage | null>> {
+  const result = await getInstitutionalPages();
+
+  return {
+    ...result,
+    data: result.data.find((page) => page.page_type === type) ?? null,
+  };
+}
+
+export function getScholarships(): Promise<ApiFetchResult<Scholarship[]>> {
+  return fetchCmsApi<Scholarship[]>("scholarships", []);
+}
+
+export function getScholarshipBySlug(
+  slug: string,
+): Promise<ApiFetchResult<Scholarship | null>> {
+  return fetchCmsApi<Scholarship | null>(`scholarships/${slug}`, null);
+}
+
+export function getFacilities(): Promise<ApiFetchResult<Facility[]>> {
+  return fetchCmsApi<Facility[]>("facilities", []);
+}
+
+export function getFacilityBySlug(
+  slug: string,
+): Promise<ApiFetchResult<Facility | null>> {
+  return fetchCmsApi<Facility | null>(`facilities/${slug}`, null);
+}
+
+export function getFaqs(): Promise<ApiFetchResult<FAQ[]>> {
+  return fetchCmsApi<FAQ[]>("faqs", []);
+}
+
+export function getLeadershipProfiles(): Promise<
+  ApiFetchResult<LeadershipProfile[]>
+> {
+  return fetchCmsApi<LeadershipProfile[]>("leadership-profiles", []);
+}
+
+export function getLeadershipProfileBySlug(
+  slug: string,
+): Promise<ApiFetchResult<LeadershipProfile | null>> {
+  return fetchCmsApi<LeadershipProfile | null>(
+    `leadership-profiles/${slug}`,
+    null,
+  );
+}
+
+export function getVideos(): Promise<ApiFetchResult<Video[]>> {
+  return fetchCmsApi<Video[]>("videos", []);
+}
+
+export function getVideoBySlug(
+  slug: string,
+): Promise<ApiFetchResult<Video | null>> {
+  return fetchCmsApi<Video | null>(`videos/${slug}`, null);
+}
+
+export function searchPublicContent(
+  query: string,
+): Promise<ApiFetchResult<SearchResult[]>> {
+  const normalizedQuery = query.trim();
+
+  if (normalizedQuery.length < 2) {
+    return Promise.resolve({
+      data: [],
+      meta: {},
+      error: null,
+    });
+  }
+
+  return fetchCmsApi<SearchResult[]>(
+    `search?q=${encodeURIComponent(normalizedQuery)}`,
+    [],
+  );
 }
