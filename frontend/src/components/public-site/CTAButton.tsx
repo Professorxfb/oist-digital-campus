@@ -2,10 +2,12 @@ export function CTAButton({
   href,
   children,
   variant = "primary",
+  target,
 }: Readonly<{
   href: string;
   children: React.ReactNode;
   variant?: "primary" | "secondary" | "subtle";
+  target?: "_self" | "_blank";
 }>) {
   const variantClassName = {
     primary:
@@ -20,6 +22,8 @@ export function CTAButton({
     <a
       className={`inline-flex min-h-11 items-center justify-center rounded-md border px-5 py-2.5 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 ${variantClassName}`}
       href={href}
+      target={target === "_blank" ? "_blank" : undefined}
+      rel={target === "_blank" ? "noopener noreferrer" : undefined}
     >
       {children}
     </a>

@@ -8,7 +8,6 @@ export function FacultyCard({ profile }: Readonly<{ profile: FacultyProfile }>) 
       description={profile.short_bio}
       imagePath={profile.photo_path}
       meta={[profile.designation, profile.department?.name]}
-      href={`/faculty/${profile.slug}`}
     />
   );
 }

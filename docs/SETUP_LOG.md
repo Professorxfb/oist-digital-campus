@@ -742,6 +742,7 @@ Verification:
 - `npm run lint`
 - `npm run build`
 - `npm run dev`
+- `Invoke-WebRequest` checks for `/`, listing pages, `/contact`, and representative missing slug routes
 
 ### Files Created
 
@@ -1297,3 +1298,148 @@ Sections render backend-provided data when available. Empty states are generic a
 - Start the backend with `php artisan serve --host=127.0.0.1 --port=8000` to display live CMS data.
 - Ensure `frontend/.env.local` sets `NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000/api/v1` for local development.
 - Run `php artisan storage:link` in the backend if public CMS media or downloads should render from storage URLs.
+
+---
+
+Date: 2026-06-29
+
+## Frontend Public CMS Pages
+
+### Scope
+
+Created CMS-driven public website listing and detail pages using the existing frontend API client, CMS service functions, and public website design system.
+
+No backend application files were changed.
+
+No student portal, teacher portal, admission portal, login system, admin UI, or private workflow pages were created.
+
+No hard-coded institute public content was added. Editable content continues to come from the Laravel CMS API.
+
+### Pages Created
+
+Listing pages:
+
+- `/notices`
+- `/news`
+- `/events`
+- `/departments`
+- `/faculty`
+- `/downloads`
+- `/gallery`
+
+Detail pages:
+
+- `/notices/[slug]`
+- `/news/[slug]`
+- `/events/[slug]`
+- `/departments/[slug]`
+- `/gallery/[slug]`
+
+Contact page:
+
+- `/contact`
+
+### Components Reused
+
+- `SiteHeader`
+- `SiteFooter`
+- `Container`
+- `SectionHeader`
+- `ContentCard`
+- `DepartmentCard`
+- `FacultyCard`
+- `EventCard`
+- `EmptyState`
+- `CTAButton`
+
+### Components And Helpers Created
+
+- `CardGrid`
+- `DetailArticle`
+- `MissingContent`
+- `PageIntro`
+- `PublicSiteShell`
+- `cms-metadata` helper
+
+### API Functions Used
+
+- `getSiteSettings()`
+- `getMenuByLocation(location)`
+- `getNotices()`
+- `getNoticeBySlug(slug)`
+- `getNewsPosts()`
+- `getNewsPostBySlug(slug)`
+- `getEvents()`
+- `getEventBySlug(slug)`
+- `getGalleryAlbums()`
+- `getGalleryAlbumBySlug(slug)`
+- `getDownloads()`
+- `getDepartments()`
+- `getDepartmentBySlug(slug)`
+- `getFacultyProfiles()`
+
+### CMS Data Usage
+
+- Listing pages render only backend-returned published CMS records.
+- Detail pages fetch records by slug and show a clean missing-content state when unavailable.
+- The contact page renders phone, email, address, Google map URL, and social links from site settings.
+- Header and footer menus remain CMS-driven through the shared public shell.
+- SEO metadata uses page-level CMS metadata where available and safe generic/global fallbacks otherwise.
+
+### Commands Used
+
+Documentation and inspection:
+
+- `Get-Content AGENTS.md`
+- `Get-Content docs\PROJECT_BLUEPRINT.md`
+- `Get-Content docs\CMS_DRIVEN_FRONTEND.md`
+- `rg --files frontend\src`
+- `Get-Content frontend\src\types\cms.ts`
+- `Get-Content frontend\src\services\cms.ts`
+- `Get-Content frontend\src\lib\api-client.ts`
+- `Get-Content frontend\src\components\public-site\*.tsx`
+
+Implementation support:
+
+- `New-Item -ItemType Directory -Force ...`
+
+Verification:
+
+- `npm run lint`
+- `npm run build`
+- `npm run dev`
+
+### How To Verify
+
+1. Start the backend if CMS data should render:
+   - `cd backend`
+   - `php artisan serve --host=127.0.0.1 --port=8000`
+2. Start the frontend:
+   - `cd frontend`
+- `npm run dev`
+3. Open the listing pages:
+   - `http://localhost:3000/notices`
+   - `http://localhost:3000/news`
+   - `http://localhost:3000/events`
+   - `http://localhost:3000/departments`
+   - `http://localhost:3000/faculty`
+   - `http://localhost:3000/downloads`
+   - `http://localhost:3000/gallery`
+   - `http://localhost:3000/contact`
+4. Open CMS-provided detail links from listing pages when records exist.
+
+### Verification Results
+
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully.
+- `npm run dev` started successfully at `http://localhost:3000`.
+- HTTP checks returned 200 for `/`, `/notices`, `/news`, `/events`, `/departments`, `/faculty`, `/downloads`, `/gallery`, and `/contact`.
+- Representative unavailable slug routes rendered the clean missing-content state without crashing.
+- Static listing/contact pages and dynamic slug detail routes compiled successfully.
+
+### Warnings And Manual Steps
+
+- The Laravel backend was not reachable during build verification, so CMS API fetch failures were logged in the terminal. Pages still compiled and use safe fallback states.
+- Start the backend at `127.0.0.1:8000` to display live CMS records.
+- Faculty has a listing page only because the current documented backend API does not provide a faculty profile detail endpoint.
+- Run `php artisan storage:link` in the backend if public CMS media and downloads should be accessible from storage URLs.
