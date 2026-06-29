@@ -7,7 +7,7 @@ export function EventCard({ event }: Readonly<{ event: Event }>) {
     <ContentCard
       title={event.title}
       description={event.excerpt ?? event.location}
-      imagePath={event.featured_image_path}
+      imagePath={event.featured_image_path ?? null}
       meta={[
         event.is_featured ? "Featured" : null,
         formatDate(event.event_date),

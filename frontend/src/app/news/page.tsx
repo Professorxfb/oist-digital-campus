@@ -35,7 +35,7 @@ export default async function NewsPage() {
                 key={post.slug}
                 title={post.title}
                 description={post.excerpt ?? getTextPreview(post.body)}
-                imagePath={post.featured_image_path}
+                imagePath={post.featured_image_path ?? null}
                 meta={[
                   post.is_featured ? "Featured" : null,
                   post.category,

@@ -6,7 +6,7 @@ export function FacultyCard({ profile }: Readonly<{ profile: FacultyProfile }>) 
     <ContentCard
       title={profile.name}
       description={profile.short_bio}
-      imagePath={profile.photo_path}
+      imagePath={profile.photo_path ?? null}
       meta={[profile.designation, profile.department?.name]}
     />
   );

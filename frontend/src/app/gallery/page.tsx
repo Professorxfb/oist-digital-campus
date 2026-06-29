@@ -34,7 +34,7 @@ export default async function GalleryPage() {
                 key={album.slug}
                 title={album.title}
                 description={album.description}
-                imagePath={album.cover_image_path}
+                imagePath={album.cover_image_path ?? null}
                 href={`/gallery/${album.slug}`}
               />
             ))}

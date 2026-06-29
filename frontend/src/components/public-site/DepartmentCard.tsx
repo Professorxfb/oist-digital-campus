@@ -6,7 +6,7 @@ export function DepartmentCard({ department }: Readonly<{ department: Department
     <ContentCard
       title={department.name}
       description={department.short_description}
-      imagePath={department.featured_image_path}
+      imagePath={department.featured_image_path ?? null}
       meta={[department.icon]}
       href={`/departments/${department.slug}`}
     />

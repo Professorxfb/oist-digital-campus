@@ -37,7 +37,7 @@ export default async function DepartmentDetailPage({ params }: PageProps) {
             title={department.name}
             summary={department.short_description}
             body={department.description}
-            imagePath={department.featured_image_path}
+            imagePath={department.featured_image_path ?? null}
             meta={[department.icon]}
           />
           {department.faculty_profiles && department.faculty_profiles.length > 0 ? (

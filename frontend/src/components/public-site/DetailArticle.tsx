@@ -22,6 +22,7 @@ export function DetailArticle({
 }>) {
   const imageUrl = getCmsAssetUrl(imagePath);
   const visibleMeta = meta.filter(Boolean);
+  const shouldShowMedia = imagePath !== undefined;
 
   return (
     <article>
@@ -53,12 +54,16 @@ export function DetailArticle({
       </section>
 
       <Container className="py-10 sm:py-14">
-        {imageUrl ? (
-          <div
-            className="mb-8 aspect-[16/9] rounded-lg bg-slate-200 bg-cover bg-center"
-            style={{ backgroundImage: `url(${imageUrl})` }}
-            aria-hidden="true"
-          />
+        {shouldShowMedia ? (
+          imageUrl ? (
+            <div
+              className="mb-8 aspect-[16/9] rounded-lg bg-slate-200 bg-cover bg-center shadow-sm"
+              style={{ backgroundImage: `url(${imageUrl})` }}
+              aria-hidden="true"
+            />
+          ) : (
+            <div className="mb-8 aspect-[16/9] rounded-lg bg-[linear-gradient(135deg,#eff6ff,#ccfbf1_52%,#e2e8f0)] shadow-sm" aria-hidden="true" />
+          )
         ) : null}
         {body ? (
           <div className="max-w-3xl whitespace-pre-line text-base leading-8 text-slate-700">

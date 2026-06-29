@@ -32,7 +32,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
           title={post.title}
           summary={post.excerpt}
           body={post.body}
-          imagePath={post.featured_image_path}
+          imagePath={post.featured_image_path ?? null}
           meta={[
             post.is_featured ? "Featured" : null,
             post.category,

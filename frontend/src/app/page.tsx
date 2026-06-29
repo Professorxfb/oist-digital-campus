@@ -108,7 +108,7 @@ export default async function Home() {
   ].some((result) => result.error !== null);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-950">
+    <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc,#eef6ff_42%,#f8fafc)] text-slate-950">
       <SiteHeader settings={settings} menuItems={headerMenu.data.items} />
       <NoticeStrip notices={notices.data} />
       <main>
@@ -116,7 +116,7 @@ export default async function Home() {
 
         {hasCmsWarning ? (
           <Container className="pt-8">
-            <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+            <div className="rounded-lg border border-amber-200 bg-amber-50/90 p-4 text-sm font-medium text-amber-900 shadow-sm">
               Some public content is temporarily unavailable. Published content will appear when the CMS connection is ready.
             </div>
           </Container>
@@ -125,10 +125,10 @@ export default async function Home() {
         <AdmissionCTA settings={settings} />
 
         {nonHeroSections.length > 0 ? (
-          <section className="py-16">
+          <section className="py-14 sm:py-20">
             <SectionHeader
-              eyebrow="CMS Layout"
-              title="Featured Homepage Sections"
+              eyebrow="Homepage"
+              title="Featured Sections"
               description="Visible homepage sections are controlled by the CMS."
             />
             <Container>
@@ -145,7 +145,7 @@ export default async function Home() {
           </ShellSection>
         )}
 
-        <ShellSection title="Latest Notices" eyebrow="Updates">
+        <ShellSection title="Latest Notices" eyebrow="Updates" actionHref="/notices">
           {notices.data.length > 0 ? (
             <div className="grid gap-4 lg:grid-cols-3">
               {notices.data.slice(0, 3).map((notice) => (
@@ -157,7 +157,7 @@ export default async function Home() {
           )}
         </ShellSection>
 
-        <ShellSection title="News Preview" eyebrow="Stories">
+        <ShellSection title="News Preview" eyebrow="Stories" actionHref="/news" tone="white">
           {newsPosts.data.length > 0 ? (
             <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
               {newsPosts.data.slice(0, 3).map((post) => (
@@ -169,7 +169,7 @@ export default async function Home() {
           )}
         </ShellSection>
 
-        <ShellSection title="Events Preview" eyebrow="Calendar">
+        <ShellSection title="Events Preview" eyebrow="Calendar" actionHref="/events">
           {events.data.length > 0 ? (
             <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
               {events.data.slice(0, 3).map((event) => (
@@ -181,7 +181,7 @@ export default async function Home() {
           )}
         </ShellSection>
 
-        <ShellSection title="Departments" eyebrow="Academics">
+        <ShellSection title="Departments" eyebrow="Academics" actionHref="/departments" tone="white">
           {departments.data.length > 0 ? (
             <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
               {departments.data.slice(0, 6).map((department) => (
@@ -193,7 +193,7 @@ export default async function Home() {
           )}
         </ShellSection>
 
-        <ShellSection title="Faculty Profiles" eyebrow="People">
+        <ShellSection title="Faculty Profiles" eyebrow="People" actionHref="/faculty">
           {facultyProfiles.data.length > 0 ? (
             <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
               {facultyProfiles.data.slice(0, 4).map((profile) => (
@@ -205,7 +205,7 @@ export default async function Home() {
           )}
         </ShellSection>
 
-        <ShellSection title="Downloads" eyebrow="Resources">
+        <ShellSection title="Downloads" eyebrow="Resources" actionHref="/downloads" tone="white">
           {downloads.data.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {downloads.data.slice(0, 6).map((download) => (
@@ -217,7 +217,7 @@ export default async function Home() {
           )}
         </ShellSection>
 
-        <ShellSection title="Gallery Albums" eyebrow="Campus Media">
+        <ShellSection title="Gallery Albums" eyebrow="Media" actionHref="/gallery">
           {galleryAlbums.data.length > 0 ? (
             <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
               {galleryAlbums.data.slice(0, 3).map((album) => (
@@ -241,27 +241,52 @@ export default async function Home() {
 function ShellSection({
   title,
   eyebrow,
+  actionHref,
+  actionLabel = "View all",
+  tone = "soft",
   children,
 }: Readonly<{
   title: string;
   eyebrow?: string;
+  actionHref?: string;
+  actionLabel?: string;
+  tone?: "soft" | "white";
   children: React.ReactNode;
 }>) {
   return (
-    <section className="py-14 sm:py-16">
-      <SectionHeader title={title} eyebrow={eyebrow} />
+    <section className={`py-14 sm:py-16 ${tone === "white" ? "bg-white" : ""}`}>
+      <Container className="mb-8">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+          <div className="max-w-3xl">
+            {eyebrow ? (
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">
+                {eyebrow}
+              </p>
+            ) : null}
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
+              {title}
+            </h2>
+          </div>
+          {actionHref ? (
+            <CTAButton href={actionHref} variant="secondary" className="self-start sm:self-auto">
+              {actionLabel}
+            </CTAButton>
+          ) : null}
+        </div>
+      </Container>
       <Container>{children}</Container>
     </section>
   );
 }
 
 function AdmissionCTA({ settings }: Readonly<{ settings: SiteSetting }>) {
-  const hasAdmissionCta = settings.admission_cta_text && settings.admission_cta_url;
+  const hasAdmissionCta = Boolean(settings.admission_cta_text && settings.admission_cta_url);
+  const admissionCtaUrl = settings.admission_cta_url ?? "";
 
   return (
-    <section className="border-b border-slate-200 bg-white py-10">
+    <section className="border-y border-slate-200 bg-white py-10">
       <Container>
-        <div className="grid gap-6 rounded-lg border border-slate-200 bg-slate-50 p-6 shadow-sm md:grid-cols-[1fr_auto] md:items-center">
+        <div className="grid gap-6 overflow-hidden rounded-lg border border-blue-100 bg-[linear-gradient(135deg,#eff6ff,#f8fafc_48%,#ecfeff)] p-6 shadow-sm md:grid-cols-[1fr_auto] md:items-center">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-teal-700">
               Admission
@@ -278,7 +303,7 @@ function AdmissionCTA({ settings }: Readonly<{ settings: SiteSetting }>) {
             </p>
           </div>
           {hasAdmissionCta ? (
-            <CTAButton href={settings.admission_cta_url ?? "#"}>
+            <CTAButton href={admissionCtaUrl}>
               {settings.admission_cta_text}
             </CTAButton>
           ) : null}
@@ -295,6 +320,7 @@ function HomepageSectionCard({ section }: Readonly<{ section: HomepageSection }>
       description={section.subtitle ?? getTextPreview(section.content)}
       imagePath={section.image_path}
       href={section.button_url ?? undefined}
+      actionLabel={section.button_text ?? "View"}
       meta={[`Order ${section.sort_order}`]}
     />
   );
@@ -302,16 +328,21 @@ function HomepageSectionCard({ section }: Readonly<{ section: HomepageSection }>
 
 function NoticeCard({ notice }: Readonly<{ notice: Notice }>) {
   return (
-    <article className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-      <div className="flex flex-wrap gap-2 text-xs font-medium text-blue-700">
-        {notice.is_pinned ? <span className="rounded-full bg-blue-50 px-2.5 py-1">Pinned</span> : null}
-        {notice.category ? <span className="rounded-full bg-slate-100 px-2.5 py-1">{notice.category}</span> : null}
+    <article className="group rounded-lg border border-slate-200 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-lg">
+      <div className="flex flex-wrap gap-2 text-xs font-semibold text-blue-700">
+        {notice.is_pinned ? <span className="rounded-full bg-blue-50 px-2.5 py-1 ring-1 ring-blue-100">Pinned</span> : null}
+        {notice.category ? <span className="rounded-full bg-slate-100 px-2.5 py-1 ring-1 ring-slate-200">{notice.category}</span> : null}
       </div>
       <h3 className="mt-4 text-lg font-semibold tracking-tight text-slate-950">
-        <a href={`/notices/${notice.slug}`} className="hover:text-blue-800">
+        <a href={`/notices/${notice.slug}`} className="transition group-hover:text-blue-800">
           {notice.title}
         </a>
       </h3>
+      {notice.body ? (
+        <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">
+          {getTextPreview(notice.body, 120)}
+        </p>
+      ) : null}
       {notice.published_at ? (
         <p className="mt-3 text-sm text-slate-500">{formatDate(notice.published_at)}</p>
       ) : null}
@@ -324,7 +355,7 @@ function NewsCard({ post }: Readonly<{ post: NewsPost }>) {
     <ContentCard
       title={post.title}
       description={post.excerpt ?? post.category}
-      imagePath={post.featured_image_path}
+      imagePath={post.featured_image_path ?? null}
       href={`/news/${post.slug}`}
       meta={[post.is_featured ? "Featured" : null, post.category, formatDate(post.published_at)]}
     />
@@ -349,7 +380,7 @@ function GalleryCard({ album }: Readonly<{ album: GalleryAlbum }>) {
     <ContentCard
       title={album.title}
       description={album.description}
-      imagePath={album.cover_image_path}
+      imagePath={album.cover_image_path ?? null}
       href={`/gallery/${album.slug}`}
       meta={[itemCount]}
     />

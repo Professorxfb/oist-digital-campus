@@ -32,7 +32,7 @@ export default async function EventDetailPage({ params }: PageProps) {
           title={event.title}
           summary={event.excerpt}
           body={event.body}
-          imagePath={event.featured_image_path}
+          imagePath={event.featured_image_path ?? null}
           meta={[
             event.is_featured ? "Featured" : null,
             event.location,

@@ -1443,3 +1443,100 @@ Verification:
 - Start the backend at `127.0.0.1:8000` to display live CMS records.
 - Faculty has a listing page only because the current documented backend API does not provide a faculty profile detail endpoint.
 - Run `php artisan storage:link` in the backend if public CMS media and downloads should be accessible from storage URLs.
+
+---
+
+Date: 2026-06-29
+
+## Frontend Public Website Visual Polish
+
+### Scope
+
+Improved the visual presentation of the CMS-driven public website shell, homepage, header, footer, cards, empty states, and media fallbacks.
+
+No backend application files were changed.
+
+No student portal, teacher portal, admission portal, login system, admin UI, or private workflow pages were created.
+
+No hard-coded institute public content was added. Editable public content remains controlled by the backend CMS API.
+
+### Visual Improvements Made
+
+- Upgraded the sticky public header with stronger logo treatment, institute name/tagline display from CMS, CMS menu rendering, mobile menu styling, and admission CTA rendering only when CMS settings allow it.
+- Reworked the homepage hero into a premium split educational layout using the CMS `hero` homepage section.
+- Added support for CMS hero video, hero image, and a clean abstract visual fallback when no media is available.
+- Improved homepage section spacing, typography hierarchy, section actions, alternating white/soft bands, and card grids.
+- Improved latest notices as a clean notice-board style without requiring thumbnails.
+- Improved content cards with stronger hover states, badge styling, image support, and abstract media fallback for image-capable CMS content.
+- Improved footer layout with CMS logo, title, footer text, contact details, footer menu, quick links, and social links.
+- Improved global tap/focus polish and typography rendering.
+
+### Components Updated
+
+- `SiteHeader`
+- `ResponsiveMenu`
+- `CMSHero`
+- `ContentCard`
+- `NoticeStrip`
+- `SiteFooter`
+- `CTAButton`
+- `EmptyState`
+- `SectionHeader`
+- `DepartmentCard`
+- `FacultyCard`
+- `EventCard`
+- `DetailArticle`
+- `frontend/src/app/page.tsx`
+- `frontend/src/app/globals.css`
+
+### CMS Fields Used
+
+- Site settings: logo, dark logo, site title, institute name, tagline, footer text, phone, email, address, social links, admission status, admission CTA text, and admission CTA URL.
+- Menus: header, footer, and quick links.
+- Homepage sections: key, title, subtitle, content, image path, video path, button text, button URL, sort order.
+- Public CMS modules: notices, news, events, departments, faculty profiles, downloads, and gallery albums.
+
+### Image And Media Handling
+
+- Relative CMS image, video, and file paths continue to resolve through the backend base URL.
+- Hero video is rendered when `video_path` is provided.
+- Hero image is rendered when `image_path` is provided and no video is available.
+- Image-capable cards now show a clean abstract visual fallback when CMS media is missing.
+- Detail pages for news, events, and departments now show a clean abstract media fallback when media is missing.
+- Invalid image URLs do not crash the page; the browser simply fails the background asset while layout remains stable.
+
+### Commands Used
+
+Documentation and inspection:
+
+- `Get-Content AGENTS.md`
+- `Get-Content docs\PROJECT_BLUEPRINT.md`
+- `Get-Content docs\CMS_DRIVEN_FRONTEND.md`
+- `Get-Content frontend\src\app\page.tsx`
+- `Get-Content frontend\src\components\public-site\*.tsx`
+- `Get-Content frontend\src\app\globals.css`
+
+Verification:
+
+- `npm run lint`
+- `npm run build`
+- `npm run dev`
+- `Invoke-WebRequest` checks for `/`, `/notices`, `/news`, `/events`, `/departments`, `/faculty`, `/downloads`, `/gallery`, and `/contact`
+- In-app browser desktop check at `1280x800`
+- In-app browser mobile check at `390x844`
+
+### Verification Results
+
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully.
+- `npm run dev` started successfully at `http://localhost:3000`.
+- HTTP checks returned 200 for `/`, `/notices`, `/news`, `/events`, `/departments`, `/faculty`, `/downloads`, `/gallery`, and `/contact`.
+- Desktop browser check confirmed header, hero, footer, and no horizontal overflow.
+- Mobile browser check confirmed header, hero, footer, mobile menu control, and no horizontal overflow.
+
+### Warnings And Manual Steps
+
+- The Laravel backend was not reachable during verification, so CMS API fetch failures were logged in the terminal. The public UI still rendered safe fallback states.
+- Start the backend at `127.0.0.1:8000` to display live CMS records.
+- Ensure `frontend/.env.local` uses `NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000/api/v1` for local development.
+- Run `php artisan storage:link` in the backend if public CMS media and downloads should be accessible from storage URLs.
