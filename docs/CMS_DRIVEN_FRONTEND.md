@@ -8,6 +8,8 @@ The Next.js frontend must render public website content from Laravel API data. I
 
 Hard-coded public website content is allowed only when it is structural UI text that staff should not need to edit, such as generic loading labels, fallback labels, form control text, accessibility text, and layout mechanics.
 
+The approved public website design direction is a premium blue university/institution style inspired by `https://univet.rstheme.com/blue-two/`. This reference may be used only for broad visual inspiration. Do not copy WordPress source code, proprietary assets, exact HTML/CSS, copyrighted images, icons, text, branding, or implementation details from the reference.
+
 ## 2. CMS-Controlled Content List
 
 The following content must be managed through Laravel + Filament and exposed through public API endpoints:
@@ -99,6 +101,10 @@ Public endpoints must not expose unpublished, private, draft, expired, sensitive
 - Expired notices, unpublished content, and disabled sections must not render.
 - Public website data types must align with backend API contracts.
 - The frontend must not duplicate backend business rules for publication, scheduling, permissions, or content eligibility.
+- Production-style homepage UI should hide empty sections instead of rendering large empty boxes.
+- Header Search, Student Portal, and Faculty Portal links are structural navigation affordances. They may be hard-coded as route links, but they must not replace CMS-managed menus or editable content.
+- Search is a public page/link to `/search`, not a CMS content item requirement.
+- Student Portal and Faculty Portal links are visible placeholder links only until real authentication and portal features are built.
 
 ## 5. Backend Admin Management Rules
 
@@ -144,6 +150,9 @@ Planned section types:
 - Banner/slider
 - Popup notices
 - Notices
+- Notice strip
+- About/institution intro
+- Chairman or leadership message
 - Admission CTA
 - Departments
 - Courses/programs
@@ -152,6 +161,8 @@ Planned section types:
 - Events
 - Gallery
 - Scholarship information
+- Facilities
+- Video showcase
 - Downloads
 - Contact block
 - Important links
@@ -172,6 +183,20 @@ Each homepage section should support:
 
 The frontend should render known active sections in the order provided by the backend.
 
+CMS data source rules:
+
+- Hero content, CTA text, CTA URLs, hero image, and hero video must come from CMS homepage sections and site settings.
+- Notice strip and latest notices must come from published notice APIs.
+- About/institution intro must come from institutional page CMS content or homepage section CMS content.
+- Chairman message must come from published leadership profile or homepage section CMS content.
+- Departments/faculties must come from published department and faculty APIs.
+- Scholarships must come from published scholarship APIs.
+- Facilities must come from published facility APIs.
+- Videos must come from published video APIs and use public-safe embed/source URLs.
+- News and events must come from published news and event APIs.
+- Gallery must come from published gallery album APIs.
+- Footer content must come from CMS site settings, footer menu, quick links, contact details, and social links.
+
 ## 9. Header, Footer, and Menu Control Rules
 
 - Header menu must be CMS-controlled.
@@ -183,6 +208,32 @@ The frontend should render known active sections in the order provided by the ba
 - Menu items should support label, URL, target, parent item, sort order, visibility, and publish status.
 - The frontend should support nested menus only to the depth approved by the design.
 - Hard-coded navigation is allowed only for structural application behavior and must not replace public CMS menus.
+
+### Approved CMS Menu Structure
+
+The CMS-managed header menu should support this public structure:
+
+- About: About, Mission, Vision, Values, Why Choose Us, Leadership.
+- Academics: Departments, Facilities, Student Support, Accreditation.
+- Admission: Scholarships, FAQs, Downloads.
+- News & Events: Notices, News, Events.
+- Media: Gallery, Videos.
+- Contact.
+
+### Header Dropdown Behavior
+
+- Desktop header navigation should support dropdown menus for parent items with children.
+- Mobile navigation should expose the same CMS menu hierarchy in a touch-friendly layout.
+- Dropdowns must be keyboard accessible and have visible focus states.
+- Menu labels, URLs, targets, ordering, active status, and child structure must come from CMS menu data.
+- Unknown or inactive menu items should be ignored safely.
+- The header Search control should link to `/search`.
+- Student Portal and Faculty Portal controls may be visible as placeholder links only; they must not open protected portal functionality until real authentication exists.
+
+### Footer Link Behavior
+
+- Footer menu, quick links, contact details, social links, and footer text must come from CMS data.
+- Footer may include structural Student Portal and Faculty Portal placeholder links until real authentication and portal routing are implemented.
 
 ## 10. Fallback and Error Handling Rules
 
@@ -203,4 +254,3 @@ Rules:
 ## 11. Implementation Boundary
 
 This document is architectural guidance only. It does not create application code, database tables, API routes, models, Filament resources, frontend components, or packages by itself.
-

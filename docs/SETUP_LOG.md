@@ -1683,3 +1683,61 @@ Verification:
 - Run `php artisan storage:link` if public CMS uploads should be served from Laravel public storage.
 - Keep video uploads external where practical; use CMS `video_url` or `embed_url` for YouTube, Facebook, Vimeo, or other approved platforms.
 - Frontend integration for these new institutional modules and search has not been implemented yet.
+
+---
+
+Date: 2026-06-29
+
+## Documentation Update: Public Website Design Direction
+
+### Scope
+
+Updated documentation and permanent development instructions only.
+
+No frontend application code was implemented.
+
+No backend application code was modified.
+
+No portal/auth features, fake content, copied content, or hard-coded OIST public content were added.
+
+### Design Reference Recorded
+
+Approved visual inspiration:
+
+- `https://univet.rstheme.com/blue-two/`
+
+The reference is approved only for broad visual direction: premium university/institution style, white header, navy/blue hero, strong typography, modern cards, dropdown navigation, notice-focused homepage content, chairman message, video showcase, dark blue footer, and clean responsive behavior.
+
+Legal and quality boundary:
+
+- Do not copy WordPress source code.
+- Do not copy proprietary theme assets.
+- Do not copy exact HTML/CSS.
+- Do not copy copyrighted images, icons, text, branding, or implementation details.
+- Rebuild the design using project-owned Next.js components, Tailwind CSS, shadcn/ui where appropriate, and CMS API data.
+
+### Rules Added
+
+- Public website content remains CMS-driven and backend-controlled.
+- No fake institutional content should be added to make pages appear complete.
+- Header menu and footer menu remain CMS-managed.
+- Search is a structural public link/page at `/search`, not a CMS content item requirement.
+- Student Portal and Faculty Portal links are visible public placeholder links only until real authentication and portal features are built.
+- Empty homepage sections should be hidden in production-style UI.
+- Homepage design direction now includes premium hero, notice strip, about/institution intro, latest notices, chairman message, departments/faculties, scholarships, facilities, videos, news and events, gallery, and footer.
+
+### Files Updated
+
+- `AGENTS.md`
+- `docs/PROJECT_BLUEPRINT.md`
+- `docs/CMS_DRIVEN_FRONTEND.md`
+- `docs/SETUP_LOG.md`
+
+### Verification
+
+- No application commands were required because this was a documentation-only task.
+- `git status --short` was used to inspect the working tree.
+
+### Manual Next Step
+
+Commit these documentation updates, then implement the frontend redesign in a separate implementation task.

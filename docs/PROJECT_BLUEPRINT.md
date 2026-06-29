@@ -68,6 +68,69 @@ The system must provide:
 - Contact page
 - Search and archive pages
 
+#### Public Website Target Style
+
+The public website should follow a premium blue university/institution design direction inspired by `https://univet.rstheme.com/blue-two/`.
+
+The reference is approved for visual inspiration only. The project must not copy WordPress source code, proprietary assets, exact HTML/CSS, copyrighted images, icons, text, branding, or implementation details from the reference. The OIST frontend must be rebuilt with project-owned Next.js components, Tailwind CSS, shadcn/ui where appropriate, and CMS API data.
+
+Target visual qualities:
+
+- Premium university/institution feel.
+- White institutional header.
+- Navy/blue hero section.
+- Strong typography and clear hierarchy.
+- Modern card-based sections.
+- Dropdown navigation.
+- Notice section replacing a generic academics/programs-heavy homepage section.
+- Chairman or leadership message section.
+- Video showcase section.
+- Dark blue institutional footer.
+- Clean responsive layout for desktop, tablet, and mobile.
+
+### Homepage Section Direction
+
+The public homepage should be CMS-driven and composed from these planned sections:
+
+- Premium hero.
+- Notice strip.
+- About or institutional intro.
+- Latest notices.
+- Chairman message.
+- Departments/faculties.
+- Scholarships.
+- Facilities.
+- Videos.
+- News and events.
+- Gallery.
+- Footer.
+
+Empty homepage sections should be hidden in production-style UI unless the architect explicitly requests a development empty state.
+
+### Public Header Requirements
+
+The public header should include:
+
+- CMS-managed logo, title, and tagline.
+- CMS-managed dropdown menu.
+- Search link to `/search`.
+- Student Portal placeholder link until real authentication is built.
+- Faculty Portal placeholder link until real authentication is built.
+- Apply Now CTA using CMS-managed admission CTA settings.
+
+The header must not hard-code editable institutional content. Search, Student Portal, and Faculty Portal links are structural navigation affordances, not CMS content requirements.
+
+### Public Footer Requirements
+
+The public footer should include:
+
+- CMS-managed contact information.
+- CMS-managed footer menu.
+- CMS-managed quick links.
+- CMS-managed social links.
+- Portal links for Student Portal and Faculty Portal as structural placeholders until real authentication is implemented.
+- Dark blue institutional visual treatment.
+
 ### CMS Module
 
 - Pages
@@ -390,6 +453,8 @@ Examples of configurable homepage sections:
 - Banner/slider
 - Notices
 - Admission call-to-action
+- About/institution intro
+- Chairman or leadership message
 - Departments
 - Courses/programs
 - News
@@ -397,6 +462,8 @@ Examples of configurable homepage sections:
 - Gallery
 - Faculty highlights
 - Scholarship information
+- Facilities
+- Video showcase
 - Downloads
 - Contact block
 - Important links

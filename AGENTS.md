@@ -26,6 +26,8 @@ This file is the permanent instruction rulebook for all future Codex work in thi
 - Keep backend business rules in the backend.
 - Keep frontend code focused on presentation, user interaction, routing, data fetching, and client-side state needed for the UI.
 - Keep the public website CMS-driven and backend-controlled for all editable institutional content.
+- Build the public website toward a premium blue university/institution design direction inspired by `https://univet.rstheme.com/blue-two/`: white header, navy/blue hero, strong typography, modern cards, dropdown navigation, notice-focused homepage content, chairman/leadership message, video showcase, dark blue footer, and clean responsive layouts.
+- Use the approved design reference only as visual inspiration. Never copy WordPress source code, proprietary assets, exact HTML/CSS, copyrighted images, icons, text, branding, or layout internals from the reference.
 - Keep public pages fast, crawlable, and SEO-friendly.
 - Keep portal workflows simple, reliable, and mobile-first.
 - Keep staff/admin features practical and easy to operate through Filament.
@@ -49,9 +51,13 @@ This file is the permanent instruction rulebook for all future Codex work in thi
 - Do not hard-code public website content unless it is structural UI only.
 - All editable public website content must come from the backend API.
 - Logo, favicon, SEO metadata, titles, text, images, videos, menus, footer content, notices, news, events, courses, departments, faculty profiles, gallery content, downloads, admission content, scholarship content, contact data, social links, popup notices, and homepage section configuration must be CMS-controlled.
+- Do not add fake institutional content, placeholder claims, copied marketing text, copied statistics, or mock OIST copy to public pages.
+- Do not copy code, CSS, media, icons, text, branding, or proprietary assets from third-party templates or reference sites.
 - Frontend public website components must be reusable, data-driven, and able to render backend-provided content safely.
 - Backend must expose clean public API endpoints for CMS-managed public website content.
 - The Filament admin panel must allow authorized staff to update CMS content without developer help.
+- Public Search is a structural public page/link that points to `/search`; it is not a CMS content item requirement.
+- Student Portal and Faculty Portal links may appear publicly as structural placeholder links until real authentication and portal workflows are built. They must not imply working protected portal functionality before auth exists.
 
 ## 5. Folder Ownership Rules
 
@@ -72,6 +78,9 @@ This file is the permanent instruction rulebook for all future Codex work in thi
 - Fetch editable public website content from Laravel public CMS APIs.
 - Do not hard-code institutional content in frontend pages or components.
 - Treat frontend public website components as data-driven renderers for backend-managed content.
+- Follow the approved public website visual direction: premium university style, white institutional header, navy/blue hero, polished card sections, dropdown navigation, notice-first content, chairman/leadership message, video showcase, and dark blue footer.
+- Rebuild the design with project-owned Next.js components, Tailwind styles, and CMS API data. Do not copy WordPress theme implementation details or assets.
+- Header Search, Student Portal, and Faculty Portal links are structural navigation affordances. Header menus, footer menus, logos, titles, taglines, CTA text, notices, hero content, messages, media, and footer content must remain backend-controlled.
 - Do not duplicate backend validation or business rules as authoritative logic in the frontend.
 - Handle loading, empty, success, and error states for every data-driven UI.
 - Keep public website pages SEO-friendly and portal pages protected from indexing.
@@ -350,6 +359,8 @@ Rules:
 - Do not use frontend code as the authority for business rules.
 - Do not use frontend code as the source of truth for editable public website content.
 - Do not hard-code logo, favicon, website title, SEO metadata, hero content, banners, CTA content, notices, news, events, gallery media, course data, department data, faculty profiles, scholarship information, admission circulars, contact details, social links, footer text, important links, downloads, homepage section visibility/order, popup notices, header menu, or footer menu.
+- Do not add fake public website content to make pages look complete.
+- Do not copy WordPress source code, proprietary theme assets, copyrighted media, exact HTML/CSS, icons, text, or branding from the approved design reference or any third-party template.
 - Do not store private uploaded files in public web paths.
 - Do not return stack traces or internal errors in production responses.
 - Do not make destructive database or filesystem changes without explicit instruction and review.
