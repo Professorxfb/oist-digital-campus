@@ -414,7 +414,7 @@ function HeroFeatureCards({
   const visibleCards = cards.slice(0, 3);
 
   return (
-    <Container className="relative z-20 pb-12 pt-6 sm:pt-8 lg:-mt-[78px] lg:pb-16 lg:pt-0 xl:-mt-[86px]">
+    <Container className="relative z-20 pb-12 pt-6 sm:pt-8 lg:-mt-[78px] lg:max-w-[1344px] lg:pb-16 lg:pt-0 xl:-mt-[86px]">
       <div className="mx-auto grid max-w-[1280px] gap-4 sm:gap-5 lg:grid-cols-3" data-section="hero-feature-cards">
         {visibleCards.map((card, index) => {
           const iconUrl = getCmsAssetUrl(card.image_path);
@@ -423,12 +423,12 @@ function HeroFeatureCards({
           return (
             <ScrollReveal key={`${card.title}-${card.sort_order}-${index}`} delay={index * 110}>
               <article
-                className={`group flex min-h-[150px] items-center rounded-[12px] p-7 shadow-[0_18px_42px_rgba(2,6,23,0.12)] transition duration-300 hover:-translate-y-2 hover:shadow-[0_26px_64px_rgba(2,6,23,0.22)] sm:p-8 lg:h-[158px] lg:p-8 xl:px-10 ${
+                className={`group flex min-h-[150px] items-center rounded-[12px] p-6 text-left shadow-[0_18px_42px_rgba(2,6,23,0.12)] transition duration-300 hover:-translate-y-2 hover:shadow-[0_26px_64px_rgba(2,6,23,0.22)] sm:p-7 lg:h-[158px] lg:p-7 2xl:p-8 ${
                   isAccent ? "bg-yellow-400 text-slate-950" : "bg-[#082f57] text-white"
                 }`}
                 data-hero-feature-card
               >
-                <div className="flex w-full items-center gap-6">
+                <div className="flex w-full items-center gap-5 sm:gap-7 2xl:gap-8">
                   <HeroFeatureIcon
                     iconKey={card.icon_key}
                     imageUrl={iconUrl}
@@ -436,17 +436,17 @@ function HeroFeatureCards({
                   />
                   <div className="min-w-0 flex-1 break-words">
                     {card.title ? (
-                      <h2 className="font-serif text-[1.65rem] font-bold leading-tight sm:text-[1.85rem]">
+                      <h2 className="font-serif text-[clamp(1.45rem,5.8vw,1.62rem)] font-bold leading-[1.14] tracking-normal sm:text-[clamp(1.5rem,3.2vw,1.72rem)] lg:text-[clamp(1.48rem,1.9vw,1.68rem)]">
                         {card.title}
                       </h2>
                     ) : null}
                     {card.description ? (
                       <p
-                        className={`mt-3 text-[15px] font-semibold leading-7 ${
+                        className={`mt-2.5 text-[15px] font-medium leading-[1.55] sm:text-base lg:text-[15.5px] ${
                           isAccent ? "text-slate-800" : "text-blue-50"
                         }`}
                       >
-                        {getTextPreview(card.description, 120)}
+                        {getTextPreview(card.description, 112)}
                       </p>
                     ) : null}
                     {card.button_text && card.button_url ? (
@@ -490,7 +490,7 @@ function HeroFeatureIcon({
   if (imageUrl) {
     return (
       <span
-        className="h-16 w-16 shrink-0 bg-contain bg-center bg-no-repeat sm:h-[72px] sm:w-[72px]"
+        className="h-[58px] w-[58px] shrink-0 bg-contain bg-center bg-no-repeat sm:h-16 sm:w-16 lg:h-[62px] lg:w-[62px] 2xl:h-[66px] 2xl:w-[66px]"
         style={{ backgroundImage: `url(${imageUrl})` }}
         aria-hidden="true"
       />
@@ -498,9 +498,9 @@ function HeroFeatureIcon({
   }
 
   return (
-    <span className="flex h-16 w-16 shrink-0 items-center justify-center sm:h-[72px] sm:w-[72px]" aria-hidden="true">
+    <span className="flex h-[58px] w-[58px] shrink-0 items-center justify-center sm:h-16 sm:w-16 lg:h-[62px] lg:w-[62px] 2xl:h-[66px] 2xl:w-[66px]" aria-hidden="true">
       <svg
-        className={`h-16 w-16 transition duration-300 group-hover:scale-105 sm:h-[72px] sm:w-[72px] ${iconClassName}`}
+        className={`h-[58px] w-[58px] transition duration-300 group-hover:scale-105 sm:h-16 sm:w-16 lg:h-[62px] lg:w-[62px] 2xl:h-[66px] 2xl:w-[66px] ${iconClassName}`}
         viewBox="0 0 72 72"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

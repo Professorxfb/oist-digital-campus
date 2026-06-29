@@ -2450,3 +2450,39 @@ Polished the public homepage shell, header interactions, hero section, hero feat
 - Browser checks confirmed mobile header stays compact and the hero/card layout does not clip at 390px or 430px.
 - Browser checks confirmed the search icon opens a floating search input and submission routes to `/search?q=admission`.
 - Browser checks confirmed the offcanvas drawer opens from the right, shows portal links and Apply Now inside the drawer, keeps the close button visible, closes correctly, and does not create horizontal overflow.
+
+---
+
+Date: 2026-06-30
+
+## Hero Feature Card Layout Polish
+
+### Scope
+
+Fixed only the frontend layout and typography for CMS-driven hero feature cards. Backend models, API routes, Filament resources, and CMS content were not changed.
+
+### Changes Made
+
+- Kept hero feature cards CMS-driven through `GET /api/v1/hero-feature-cards`.
+- Widened the desktop card row so three cards remain in one row at 1366px with more text breathing room.
+- Preserved the horizontal desktop layout: icon on the left, title and description on the right, vertically centered.
+- Tuned card padding to keep the desktop card height around 158px.
+- Tuned icon size to stay in the premium 58px-70px range without a bulky background.
+- Reduced long-title pressure so titles like `Focus on Achievement` render cleanly in one or two lines instead of awkward stacking.
+- Improved title and description typography with tighter title line-height and more readable description line-height.
+- Preserved mobile/tablet stacking behavior with no horizontal overflow.
+
+### Verification Commands
+
+- `npm run lint`
+- `npm run build`
+- `npm run dev`
+
+### Verification Results
+
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully.
+- `npm run dev` started successfully on `http://localhost:3000`.
+- Browser measurement with CMS data confirmed three enabled hero feature cards render in one row at 1366px.
+- Browser measurement confirmed the third card title and description fit inside the desktop card without clipping.
+- Browser measurement confirmed no horizontal overflow at 1366px, 430px, or 390px.
