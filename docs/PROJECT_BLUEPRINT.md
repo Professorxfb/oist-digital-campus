@@ -72,17 +72,22 @@ The system must provide:
 
 The public website should follow a premium blue university/institution design direction inspired by `https://univet.rstheme.com/blue-two/`.
 
-The reference is approved for visual inspiration only. The project must not copy WordPress source code, proprietary assets, exact HTML/CSS, copyrighted images, icons, text, branding, or implementation details from the reference. The OIST frontend must be rebuilt with project-owned Next.js components, Tailwind CSS, shadcn/ui where appropriate, and CMS API data.
+The approved reference URL and user-provided screenshots are visual guidance for the next public frontend redesign. The reference is approved for visual inspiration only. The project must not copy WordPress source code, proprietary assets, exact HTML/CSS, copyrighted images, icons, text, branding, or implementation details from the reference. OIST is not using WordPress; the frontend must be rebuilt with project-owned Next.js components, Tailwind CSS, shadcn/ui where appropriate, and Laravel CMS API data.
 
 Target visual qualities:
 
 - Premium university/institution feel.
-- White institutional header.
-- Navy/blue hero section.
-- Strong typography and clear hierarchy.
-- Modern card-based sections.
+- Dark navy institutional header.
+- Yellow accent buttons and highlighted actions.
+- Large hero image/banner section.
+- Navy/blue hero and overlay sections.
+- White/off-white content sections.
+- Premium university typography and clear hierarchy.
+- Modern rounded card-based sections.
 - Dropdown navigation.
-- Notice section replacing a generic academics/programs-heavy homepage section.
+- Strong section spacing and rhythm comparable to the reference.
+- Latest notices section replacing a generic academics/programs-heavy homepage section.
+- Departments section replacing the faculties/departments reference pattern.
 - Chairman or leadership message section.
 - Video showcase section.
 - Dark blue institutional footer.
@@ -93,16 +98,17 @@ Target visual qualities:
 The public homepage should be CMS-driven and composed from these planned sections:
 
 - Premium hero.
+- Hero feature/stat cards.
 - Notice strip.
 - About or institutional intro.
-- Latest notices.
+- Latest notices replacing a generic academics/programs section.
+- Departments replacing the reference faculties/departments section pattern.
 - Chairman message.
-- Departments/faculties.
 - Scholarships.
 - Facilities.
-- Videos.
+- Video showcase.
 - News and events.
-- Gallery.
+- Gallery/campus life.
 - Footer.
 
 Empty homepage sections should be hidden in production-style UI unless the architect explicitly requests a development empty state.
@@ -113,10 +119,11 @@ The public header should include:
 
 - CMS-managed logo, title, and tagline.
 - CMS-managed dropdown menu.
-- Search link to `/search`.
+- Search button/link to `/search`.
 - Student Portal placeholder link until real authentication is built.
 - Faculty Portal placeholder link until real authentication is built.
 - Apply Now CTA using CMS-managed admission CTA settings.
+- Dark navy visual treatment with yellow accent actions.
 
 The header must not hard-code editable institutional content. Search, Student Portal, and Faculty Portal links are structural navigation affordances, not CMS content requirements.
 
@@ -450,6 +457,7 @@ The homepage must support backend-controlled sections. Authorized staff should b
 Examples of configurable homepage sections:
 
 - Hero
+- Hero feature/stat cards
 - Banner/slider
 - Notices
 - Admission call-to-action

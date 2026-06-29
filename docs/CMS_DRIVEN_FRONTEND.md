@@ -8,7 +8,20 @@ The Next.js frontend must render public website content from Laravel API data. I
 
 Hard-coded public website content is allowed only when it is structural UI text that staff should not need to edit, such as generic loading labels, fallback labels, form control text, accessibility text, and layout mechanics.
 
-The approved public website design direction is a premium blue university/institution style inspired by `https://univet.rstheme.com/blue-two/`. This reference may be used only for broad visual inspiration. Do not copy WordPress source code, proprietary assets, exact HTML/CSS, copyrighted images, icons, text, branding, or implementation details from the reference.
+The approved public website design direction is a premium blue university/institution style inspired by `https://univet.rstheme.com/blue-two/` and the user-provided reference screenshots. This reference may be used only for broad visual inspiration. Do not copy WordPress source code, proprietary assets, exact HTML/CSS, copyrighted images, icons, text, branding, or implementation details from the reference. OIST is not using WordPress; rebuild the visual style inside the project-owned Next.js frontend using Laravel CMS API data.
+
+Visual style rules:
+
+- Use a dark navy header treatment.
+- Use yellow accent buttons for high-priority actions such as Apply Now.
+- Use a large hero image/banner section with CMS-provided image/video content.
+- Use premium university typography, strong heading hierarchy, and generous section spacing.
+- Use navy/blue overlay sections where appropriate.
+- Use white/off-white content sections for readability.
+- Use rounded cards for notices, departments, scholarships, facilities, videos, news, events, and gallery previews.
+- Use dropdown navigation with a polished institutional feel.
+- Use a dark blue footer.
+- Match the reference's level of layout quality and section rhythm without copying its source, assets, CSS, text, or branding.
 
 ## 2. CMS-Controlled Content List
 
@@ -103,7 +116,7 @@ Public endpoints must not expose unpublished, private, draft, expired, sensitive
 - The frontend must not duplicate backend business rules for publication, scheduling, permissions, or content eligibility.
 - Production-style homepage UI should hide empty sections instead of rendering large empty boxes.
 - Header Search, Student Portal, and Faculty Portal links are structural navigation affordances. They may be hard-coded as route links, but they must not replace CMS-managed menus or editable content.
-- Search is a public page/link to `/search`, not a CMS content item requirement.
+- Search is a public header action/link to `/search`, not a CMS content item requirement.
 - Student Portal and Faculty Portal links are visible placeholder links only until real authentication and portal features are built.
 
 ## 5. Backend Admin Management Rules
@@ -147,6 +160,7 @@ The homepage must be controlled by backend configuration. Filament should allow 
 Planned section types:
 
 - Hero
+- Hero feature/stat cards
 - Banner/slider
 - Popup notices
 - Notices
@@ -160,6 +174,7 @@ Planned section types:
 - News
 - Events
 - Gallery
+- Gallery/campus life
 - Scholarship information
 - Facilities
 - Video showcase
@@ -185,7 +200,7 @@ The frontend should render known active sections in the order provided by the ba
 
 CMS data source rules:
 
-- Hero content, CTA text, CTA URLs, hero image, and hero video must come from CMS homepage sections and site settings.
+- Hero content, CTA text, CTA URLs, hero image, hero video, and hero feature/stat card content must come from CMS homepage sections and site settings.
 - Notice strip and latest notices must come from published notice APIs.
 - About/institution intro must come from institutional page CMS content or homepage section CMS content.
 - Chairman message must come from published leadership profile or homepage section CMS content.
@@ -227,8 +242,9 @@ The CMS-managed header menu should support this public structure:
 - Dropdowns must be keyboard accessible and have visible focus states.
 - Menu labels, URLs, targets, ordering, active status, and child structure must come from CMS menu data.
 - Unknown or inactive menu items should be ignored safely.
-- The header Search control should link to `/search`.
+- The header Search control should be a public action button/link to `/search`.
 - Student Portal and Faculty Portal controls may be visible as placeholder links only; they must not open protected portal functionality until real authentication exists.
+- The Apply Now CTA should use CMS-managed admission CTA settings and the approved yellow accent style when available.
 
 ### Footer Link Behavior
 

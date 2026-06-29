@@ -26,7 +26,7 @@ This file is the permanent instruction rulebook for all future Codex work in thi
 - Keep backend business rules in the backend.
 - Keep frontend code focused on presentation, user interaction, routing, data fetching, and client-side state needed for the UI.
 - Keep the public website CMS-driven and backend-controlled for all editable institutional content.
-- Build the public website toward a premium blue university/institution design direction inspired by `https://univet.rstheme.com/blue-two/`: white header, navy/blue hero, strong typography, modern cards, dropdown navigation, notice-focused homepage content, chairman/leadership message, video showcase, dark blue footer, and clean responsive layouts.
+- Build the public website toward the approved Univet Blue Two inspired premium university design direction using the reference URL and user-provided screenshots as visual guidance: dark navy header, yellow accent buttons, large hero image/banner section, premium university typography, navy/blue overlay sections, white/off-white content sections, rounded cards, dropdown navigation, strong section spacing, dark blue footer, and clean responsive layouts.
 - Use the approved design reference only as visual inspiration. Never copy WordPress source code, proprietary assets, exact HTML/CSS, copyrighted images, icons, text, branding, or layout internals from the reference.
 - Keep public pages fast, crawlable, and SEO-friendly.
 - Keep portal workflows simple, reliable, and mobile-first.
@@ -56,7 +56,7 @@ This file is the permanent instruction rulebook for all future Codex work in thi
 - Frontend public website components must be reusable, data-driven, and able to render backend-provided content safely.
 - Backend must expose clean public API endpoints for CMS-managed public website content.
 - The Filament admin panel must allow authorized staff to update CMS content without developer help.
-- Public Search is a structural public page/link that points to `/search`; it is not a CMS content item requirement.
+- Public Search is a structural public header action/link that points to `/search`; it is not a CMS content item requirement.
 - Student Portal and Faculty Portal links may appear publicly as structural placeholder links until real authentication and portal workflows are built. They must not imply working protected portal functionality before auth exists.
 
 ## 5. Folder Ownership Rules
@@ -78,7 +78,7 @@ This file is the permanent instruction rulebook for all future Codex work in thi
 - Fetch editable public website content from Laravel public CMS APIs.
 - Do not hard-code institutional content in frontend pages or components.
 - Treat frontend public website components as data-driven renderers for backend-managed content.
-- Follow the approved public website visual direction: premium university style, white institutional header, navy/blue hero, polished card sections, dropdown navigation, notice-first content, chairman/leadership message, video showcase, and dark blue footer.
+- Follow the approved Univet Blue Two inspired public website visual direction: premium university style, dark navy institutional header, yellow accent buttons, large hero image/banner section, premium typography, navy/blue overlay sections, white/off-white content sections, rounded cards, dropdown navigation, notice-first content, chairman/leadership message, video showcase, strong section rhythm, and dark blue footer.
 - Rebuild the design with project-owned Next.js components, Tailwind styles, and CMS API data. Do not copy WordPress theme implementation details or assets.
 - Header Search, Student Portal, and Faculty Portal links are structural navigation affordances. Header menus, footer menus, logos, titles, taglines, CTA text, notices, hero content, messages, media, and footer content must remain backend-controlled.
 - Do not duplicate backend validation or business rules as authoritative logic in the frontend.

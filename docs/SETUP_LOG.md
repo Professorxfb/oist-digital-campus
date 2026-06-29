@@ -1741,3 +1741,67 @@ Legal and quality boundary:
 ### Manual Next Step
 
 Commit these documentation updates, then implement the frontend redesign in a separate implementation task.
+
+---
+
+Date: 2026-06-29
+
+## Documentation Update: Approved Public Frontend Design Direction
+
+### Scope
+
+Updated permanent project documentation and instructions only.
+
+No frontend code was implemented.
+
+No backend application code was modified.
+
+No portal/auth features, fake content, copied content, or hard-coded OIST public content were added.
+
+### Design Reference Recorded
+
+Approved design reference:
+
+- `https://univet.rstheme.com/blue-two/`
+- User-provided reference screenshots.
+
+The approved direction is a premium blue university theme style with:
+
+- Dark navy header.
+- Yellow accent buttons.
+- Large hero image/banner section.
+- Premium university typography.
+- Navy/blue overlay sections.
+- White/off-white content sections.
+- Rounded cards.
+- Dropdown navigation.
+- Strong section spacing and rhythm.
+- Dark blue footer.
+
+This project is not using WordPress. The visual style must be rebuilt inside the project-owned Next.js frontend using Laravel CMS APIs.
+
+### Rules Added Or Clarified
+
+- All editable public content must remain CMS-driven.
+- No fake public content should be added to make the design look complete.
+- Do not copy source code, proprietary assets, copyrighted images, exact HTML/CSS, text, icons, or branding from the reference.
+- Search is a public header action linking to `/search`.
+- Student Portal and Faculty Portal are public placeholder links only until real authentication and portal features are built.
+- Homepage empty sections should be hidden in production-style UI.
+- Homepage requirements now explicitly include premium hero, hero feature/stat cards, about/institution intro, latest notices replacing academics/programs, departments replacing faculties/departments, chairman message, scholarships, facilities, video showcase, news/events, gallery/campus life, and dark blue footer.
+
+### Files Updated
+
+- `AGENTS.md`
+- `docs/PROJECT_BLUEPRINT.md`
+- `docs/CMS_DRIVEN_FRONTEND.md`
+- `docs/SETUP_LOG.md`
+
+### Verification
+
+- No application commands were required because this was documentation-only.
+- `git status --short` was used to confirm that only documentation/instruction files changed.
+
+### Manual Next Step
+
+Commit the documentation updates, then implement the frontend redesign in a separate implementation task.
