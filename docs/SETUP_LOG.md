@@ -2486,3 +2486,74 @@ Fixed only the frontend layout and typography for CMS-driven hero feature cards.
 - Browser measurement with CMS data confirmed three enabled hero feature cards render in one row at 1366px.
 - Browser measurement confirmed the third card title and description fit inside the desktop card without clipping.
 - Browser measurement confirmed no horizontal overflow at 1366px, 430px, or 390px.
+
+---
+
+Date: 2026-06-30
+
+## Homepage Body Section Polish
+
+### Scope
+
+Polished the CMS-driven homepage body sections after the hero while preserving the accepted header, search, hero, and hero feature card behavior. No backend application code, migrations, models, API routes, or Filament resources were changed.
+
+### Sections Implemented or Polished
+
+- About / Institution Intro now uses the `about` Homepage Section for section text/media controls and the published Institutional Page with `page_type=about` for editable page content.
+- Latest Notices now uses the notices API with a dark navy/yellow notice-board treatment, pinned notice emphasis, recent notice cards, and CMS-controlled section heading/body/button configuration.
+- Departments, Scholarships, Facilities, Professors, Videos, News & Events, Campus Life, Gallery Strip, Tuition Fee, and Chairman Message remain CMS-gated and render only when their matching Homepage Section is enabled and related public CMS data exists.
+- Campus Life now supports a larger feature layout using gallery albums and videos from CMS data.
+- Gallery Strip now supports a larger featured gallery album layout plus secondary albums.
+- Community Voices support was prepared through `HomepageSection.metadata` only; the section stays hidden unless real CMS metadata items exist.
+- Shared public content cards and the footer were polished to better match the approved Univet Blue Two inspired visual language.
+
+### CMS/Admin Control Notes
+
+- Homepage section title, eyebrow/subtitle, body/content, image, video, button text, button URL, sort order, and enabled/disabled status are controlled by `HomepageSection`.
+- About content is controlled by `InstitutionalPage` records and the matching Homepage Section.
+- Notices, departments, scholarships, facilities, faculty/professor profiles, videos, news, events, gallery albums, leadership/chairman content, menus, footer links, contact details, and social links remain controlled through existing Laravel/Filament CMS resources.
+- Tuition Fee does not yet have a dedicated structured fee CMS module; it will only show when real fee-related CMS scholarship/section data exists.
+- Community Voices does not yet have a dedicated testimonial/feedback CMS module; it can use structured `HomepageSection.metadata` temporarily, but a dedicated module is still recommended.
+
+### Public API Endpoints Used
+
+- `GET /api/v1/site-settings`
+- `GET /api/v1/homepage-sections`
+- `GET /api/v1/hero-feature-cards`
+- `GET /api/v1/menus/header`
+- `GET /api/v1/menus/footer`
+- `GET /api/v1/menus/quick_links`
+- `GET /api/v1/notices`
+- `GET /api/v1/news`
+- `GET /api/v1/events`
+- `GET /api/v1/gallery-albums`
+- `GET /api/v1/departments`
+- `GET /api/v1/facilities`
+- `GET /api/v1/faculty-profiles`
+- `GET /api/v1/scholarships`
+- `GET /api/v1/leadership-profiles`
+- `GET /api/v1/videos`
+- `GET /api/v1/institutional-pages/type/about`
+
+### Manual CMS Setup Needed
+
+- Create and enable Homepage Section records for `about`, `latest_notices`, `departments`, `tuition_fee`, `scholarships`, `campus_life`, `chairman_message`, `community_voices`, `professors`, `videos`, `news_events`, and `gallery_strip`.
+- Add real published CMS records for each section before it can appear on the homepage.
+- Upload approved CMS images/videos for visual sections such as About, Campus Life, Videos, Gallery, and Chairman Message.
+- Add real structured feedback/testimonial data later through a dedicated Community Voices CMS module, or temporarily through approved `HomepageSection.metadata`.
+- Add a dedicated Tuition Fee CMS module later if the institution needs structured fee tables or fee amount management.
+
+### Commands Run
+
+- `npm run lint`
+- `npm run build`
+- `npm run dev`
+
+### Verification Results
+
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully.
+- `npm run dev` started successfully on `http://localhost:3000`.
+- Browser checks confirmed no horizontal overflow at 390px, 430px, 768px, 1366px, and 1920px widths.
+- Browser checks confirmed the current local CMS data hides missing homepage body sections cleanly instead of showing fake public content.
+- Browser checks confirmed the footer remains visible and responsive when optional homepage body sections are missing.

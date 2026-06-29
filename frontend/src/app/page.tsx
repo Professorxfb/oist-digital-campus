@@ -70,6 +70,13 @@ type CampusLifePreviewItem =
       item: Video;
     };
 
+type CommunityVoice = {
+  quote: string;
+  name?: string;
+  role?: string;
+  image_path?: string | null;
+};
+
 export async function generateMetadata(): Promise<Metadata> {
   const { data: settings } = await getSiteSettings();
   const title =
@@ -186,6 +193,11 @@ export default async function Home() {
     "videos",
     "video_showcase",
   ]);
+  const communityVoicesSection = getHomepageSectionConfig(sections, [
+    "community_voices",
+    "feedback",
+    "testimonials",
+  ]);
   const newsEventsSection = getHomepageSectionConfig(sections, [
     "news_events",
     "news_and_events",
@@ -197,6 +209,9 @@ export default async function Home() {
 
   const chairmanProfile = getChairmanProfile(leadershipProfiles.data);
   const feeRelatedScholarships = getFeeRelatedScholarships(scholarships.data);
+  const communityVoices = communityVoicesSection
+    ? getCommunityVoices(communityVoicesSection)
+    : [];
   const nullableSectionBlocks: Array<SectionBlock | null> = [
     aboutSection && aboutPage.data
       ? {
@@ -299,6 +314,17 @@ export default async function Home() {
           ),
         }
       : null,
+    communityVoicesSection && communityVoices.length > 0
+      ? {
+          section: communityVoicesSection,
+          node: (
+            <CommunityVoicesSection
+              section={communityVoicesSection}
+              voices={communityVoices}
+            />
+          ),
+        }
+      : null,
     newsEventsSection && (newsPosts.data.length > 0 || events.data.length > 0)
       ? {
           section: newsEventsSection,
@@ -364,7 +390,7 @@ function PremiumSection({
   const toneClassName = {
     white: "bg-white",
     cream: "bg-[#f7f3ea]",
-    navy: "bg-[#071733] text-white",
+    navy: "bg-[#061f3f] text-white",
   }[tone];
   const titleClassName = tone === "navy" ? "text-white" : "text-slate-950";
   const eyebrowClassName = tone === "navy" ? "text-yellow-300" : "text-blue-800";
@@ -372,20 +398,26 @@ function PremiumSection({
   const description = getTextPreview(section.content, 260);
 
   return (
-    <section className={`py-20 sm:py-24 ${toneClassName}`}>
-      <Container>
-        <div className="mb-9 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+    <section className={`relative overflow-hidden py-20 sm:py-24 lg:py-28 ${toneClassName}`}>
+      {tone === "navy" ? (
+        <div
+          className="absolute inset-0 bg-[radial-gradient(circle_at_82%_18%,rgba(250,204,21,0.14),transparent_24%),linear-gradient(135deg,rgba(2,6,23,0.32),transparent_48%)]"
+          aria-hidden="true"
+        />
+      ) : null}
+      <Container className="relative">
+        <div className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between lg:mb-12">
           <div className="max-w-3xl">
             {section.subtitle ? (
-              <p className={`text-xs font-black uppercase tracking-[0.22em] ${eyebrowClassName}`}>
+              <p className={`text-xs font-black uppercase tracking-[0.18em] ${eyebrowClassName}`}>
                 {section.subtitle}
               </p>
             ) : null}
-            <h2 className={`mt-3 font-serif text-3xl font-bold tracking-tight sm:text-5xl ${titleClassName}`}>
+            <h2 className={`mt-3 font-serif text-[clamp(2.25rem,7vw,3.25rem)] font-bold leading-[1.05] tracking-normal ${titleClassName}`}>
               {section.title}
             </h2>
             {description ? (
-              <p className={`mt-4 text-base leading-7 ${descriptionClassName}`}>
+              <p className={`mt-5 max-w-2xl text-base leading-8 ${descriptionClassName}`}>
                 {description}
               </p>
             ) : null}
@@ -594,10 +626,14 @@ function AboutSection({
   }
 
   return (
-    <section className="bg-white py-16 sm:py-20">
+    <section className="relative overflow-hidden bg-[#f7f3ea] py-20 sm:py-24 lg:py-28">
+      <div
+        className="absolute inset-x-0 top-0 h-36 bg-white"
+        aria-hidden="true"
+      />
       <Container>
-        <div className="grid items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="relative min-h-[320px] overflow-hidden rounded-3xl bg-[#071733] shadow-2xl shadow-slate-950/10">
+        <div className="relative grid items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] xl:gap-16">
+          <div className="relative min-h-[360px] overflow-hidden rounded-[28px] bg-[#071733] shadow-[0_28px_70px_rgba(2,6,23,0.18)] sm:min-h-[460px]">
             {imageUrl ? (
               <div
                 className="absolute inset-0 bg-cover bg-center transition duration-500 hover:scale-105"
@@ -611,18 +647,22 @@ function AboutSection({
               />
             )}
             <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent,rgba(2,6,23,0.28))]" aria-hidden="true" />
+            <div
+              className="absolute bottom-6 right-6 h-24 w-24 rounded-full border-[10px] border-yellow-300/90 bg-[#061f3f]/90 shadow-2xl shadow-slate-950/20 sm:h-32 sm:w-32"
+              aria-hidden="true"
+            />
           </div>
-          <div>
+          <div className="rounded-[28px] bg-white p-7 shadow-[0_18px_55px_rgba(2,6,23,0.08)] sm:p-10 lg:bg-transparent lg:p-0 lg:shadow-none">
             {section.subtitle ? (
-              <p className="text-xs font-black uppercase tracking-[0.22em] text-blue-700">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-800">
                 {section.subtitle}
               </p>
             ) : null}
-            <h2 className="mt-3 font-serif text-3xl font-bold tracking-tight text-slate-950 sm:text-5xl">
+            <h2 className="mt-3 font-serif text-[clamp(2.35rem,7vw,3.6rem)] font-bold leading-[1.04] tracking-normal text-[#061f3f]">
               {section.title}
             </h2>
             {description ? (
-              <p className="mt-5 text-base leading-8 text-slate-600 sm:text-lg">
+              <p className="mt-6 text-base leading-8 text-slate-600 sm:text-lg">
                 {description}
               </p>
             ) : null}
@@ -670,7 +710,7 @@ function LatestNoticesSection({
 
   return (
     <PremiumSection section={section} tone="navy">
-      <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
+      <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
         {pinnedNotice ? <PinnedNoticeCard notice={pinnedNotice} /> : null}
         <div className="grid gap-4">
           {(pinnedNotice ? recentNotices : notices).map((notice) => (
@@ -684,20 +724,24 @@ function LatestNoticesSection({
 
 function PinnedNoticeCard({ notice }: Readonly<{ notice: Notice }>) {
   return (
-    <article className="rounded-3xl border border-yellow-300/30 bg-white p-7 text-slate-950 shadow-2xl shadow-slate-950/20">
-      <h3 className="text-2xl font-black tracking-tight">
+    <article className="group relative overflow-hidden rounded-[26px] bg-yellow-400 p-8 text-slate-950 shadow-[0_24px_70px_rgba(2,6,23,0.24)] transition duration-300 hover:-translate-y-1.5">
+      <div
+        className="absolute -right-8 -top-8 h-32 w-32 rounded-full border-[18px] border-white/30"
+        aria-hidden="true"
+      />
+      <NoticeMeta notice={notice} className="relative text-slate-800" />
+      <h3 className="relative mt-5 font-serif text-3xl font-bold leading-[1.12] tracking-normal">
         <a href={`/notices/${notice.slug}`} className="transition hover:text-blue-800">
           {notice.title}
         </a>
       </h3>
       {notice.body ? (
-        <p className="mt-4 text-sm leading-7 text-slate-600">
+        <p className="relative mt-5 text-[15px] leading-7 text-slate-800">
           {getTextPreview(notice.body, 180)}
         </p>
       ) : null}
-      <NoticeMeta notice={notice} className="mt-5 text-slate-500" />
       <div className="mt-6">
-        <CTAButton href={`/notices/${notice.slug}`} variant="subtle">
+        <CTAButton href={`/notices/${notice.slug}`} variant="secondary">
           Read More
         </CTAButton>
       </div>
@@ -707,15 +751,15 @@ function PinnedNoticeCard({ notice }: Readonly<{ notice: Notice }>) {
 
 function NoticeListCard({ notice }: Readonly<{ notice: Notice }>) {
   return (
-    <article className="rounded-2xl border border-white/10 bg-white/10 p-5 transition hover:border-yellow-300/40 hover:bg-white/15">
-      <NoticeMeta notice={notice} className="text-blue-100" />
-      <h3 className="mt-3 text-lg font-black tracking-tight text-white">
+    <article className="group rounded-[20px] border border-white/10 bg-white/[0.08] p-5 transition duration-300 hover:-translate-y-1 hover:border-yellow-300/50 hover:bg-white/[0.13]">
+      <NoticeMeta notice={notice} className="text-yellow-200" />
+      <h3 className="mt-3 font-serif text-[1.35rem] font-bold leading-snug tracking-normal text-white">
         <a href={`/notices/${notice.slug}`} className="transition hover:text-yellow-300">
           {notice.title}
         </a>
       </h3>
       {notice.body ? (
-        <p className="mt-2 text-sm leading-6 text-blue-100">
+        <p className="mt-2 text-sm leading-6 text-blue-100/90">
           {getTextPreview(notice.body, 110)}
         </p>
       ) : null}
@@ -762,13 +806,13 @@ function ChairmanMessageSection({
   }
 
   return (
-    <section className="bg-white py-16 sm:py-20">
+    <section className="bg-white py-20 sm:py-24 lg:py-28">
       <Container>
-        <div className="overflow-hidden rounded-3xl bg-[#071733] shadow-2xl shadow-slate-950/10 lg:grid lg:grid-cols-[0.82fr_1.18fr]">
-          <div className="relative min-h-[320px] bg-blue-950">
+        <div className="overflow-hidden rounded-[30px] bg-[#061f3f] shadow-[0_28px_80px_rgba(2,6,23,0.18)] lg:grid lg:grid-cols-[0.82fr_1.18fr]">
+          <div className="relative min-h-[340px] bg-blue-950">
             {photoUrl ? (
               <div
-                className="absolute inset-0 bg-cover bg-center"
+                className="absolute inset-0 bg-cover bg-center transition duration-500 hover:scale-105"
                 style={{ backgroundImage: `url(${photoUrl})` }}
                 aria-hidden="true"
               />
@@ -778,26 +822,31 @@ function ChairmanMessageSection({
                 aria-hidden="true"
               />
             )}
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent,rgba(2,6,23,0.25))]" aria-hidden="true" />
           </div>
-          <div className="p-7 text-white sm:p-10 lg:p-12">
+          <div className="relative overflow-hidden p-7 text-white sm:p-10 lg:p-14">
+            <div
+              className="absolute right-8 top-8 h-24 w-24 rounded-full border-[16px] border-yellow-300/20"
+              aria-hidden="true"
+            />
             {section.subtitle ? (
               <p className="text-xs font-black uppercase tracking-[0.22em] text-yellow-300">
                 {section.subtitle}
               </p>
             ) : null}
-            <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-5xl">
+            <h2 className="relative mt-4 font-serif text-[clamp(2.15rem,6vw,3.35rem)] font-bold leading-[1.08] tracking-normal">
               {section.title}
             </h2>
-            <div className="mt-6">
-              <h3 className="text-2xl font-black tracking-tight">{profile.name}</h3>
+            <div className="relative mt-7 border-l-4 border-yellow-300 pl-5">
+              <h3 className="font-serif text-2xl font-bold tracking-normal">{profile.name}</h3>
               {profile.designation ? (
-                <p className="mt-3 text-sm font-bold uppercase tracking-[0.16em] text-blue-100">
+                <p className="mt-2 text-xs font-black uppercase tracking-[0.16em] text-blue-100">
                   {profile.designation}
                 </p>
               ) : null}
             </div>
             {message ? (
-              <p className="mt-6 text-base leading-8 text-blue-50">{message}</p>
+              <p className="relative mt-6 text-base leading-8 text-blue-50 sm:text-lg">{message}</p>
             ) : null}
             {section.button_text && section.button_url ? (
               <div className="mt-8">
@@ -839,18 +888,68 @@ function CampusLifeSection({
     return null;
   }
 
+  const [featuredItem, ...secondaryItems] = items;
+
   return (
     <PremiumSection section={section} tone="cream">
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {items.map((preview) =>
-          preview.type === "gallery" ? (
-            <GalleryCard key={`gallery-${preview.item.slug}`} album={preview.item} />
-          ) : (
-            <VideoCompactCard key={`video-${preview.item.slug}`} video={preview.item} />
-          ),
-        )}
+      <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+        <CampusLifeFeature item={featuredItem} />
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-1">
+          {secondaryItems.map((preview) =>
+            preview.type === "gallery" ? (
+              <GalleryCard key={`gallery-${preview.item.slug}`} album={preview.item} />
+            ) : (
+              <VideoCompactCard key={`video-${preview.item.slug}`} video={preview.item} />
+            ),
+          )}
+        </div>
       </div>
     </PremiumSection>
+  );
+}
+
+function CampusLifeFeature({
+  item,
+}: Readonly<{
+  item: CampusLifePreviewItem;
+}>) {
+  if (item.type === "video") {
+    return <VideoFeatureCard video={item.item} compactAction />;
+  }
+
+  const imageUrl = getCmsAssetUrl(item.item.cover_image_path ?? null);
+
+  return (
+    <article className="group relative min-h-[430px] overflow-hidden rounded-[30px] bg-[#061f3f] shadow-[0_24px_70px_rgba(2,6,23,0.16)]">
+      {imageUrl ? (
+        <div
+          className="absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-105"
+          style={{ backgroundImage: `url(${imageUrl})` }}
+          aria-hidden="true"
+        />
+      ) : (
+        <div
+          className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(250,204,21,0.22),transparent_28%),linear-gradient(135deg,#061f3f,#1d4ed8_58%,#082f49)]"
+          aria-hidden="true"
+        />
+      )}
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.08),rgba(2,6,23,0.82))]" aria-hidden="true" />
+      <div className="absolute inset-x-0 bottom-0 p-7 text-white sm:p-9">
+        <h3 className="max-w-xl font-serif text-3xl font-bold leading-tight tracking-normal">
+          {item.item.title}
+        </h3>
+        {item.item.description ? (
+          <p className="mt-3 max-w-xl text-sm leading-7 text-blue-50">
+            {getTextPreview(item.item.description, 150)}
+          </p>
+        ) : null}
+        <div className="mt-6">
+          <CTAButton href={`/gallery/${item.item.slug}`}>
+            Read More
+          </CTAButton>
+        </div>
+      </div>
+    </article>
   );
 }
 
@@ -959,23 +1058,25 @@ function ProfessorCard({
   const photoUrl = getCmsAssetUrl(profile.photo_path ?? null);
 
   return (
-    <article className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-2xl hover:shadow-slate-950/10">
-      <div
-        className="aspect-[4/5] bg-cover bg-center"
-        style={{
-          backgroundImage: photoUrl
-            ? `url(${photoUrl})`
-            : "radial-gradient(circle at 30% 20%, rgba(250,204,21,0.24), transparent 28%), linear-gradient(135deg,#071733,#1d4ed8 58%,#e0f2fe)",
-        }}
-        aria-hidden="true"
-      />
+    <article className="group overflow-hidden rounded-[24px] border border-slate-200/80 bg-white shadow-[0_14px_42px_rgba(2,6,23,0.06)] transition duration-300 hover:-translate-y-1.5 hover:border-yellow-300/60 hover:shadow-[0_24px_58px_rgba(2,6,23,0.13)]">
+      <div className="overflow-hidden">
+        <div
+          className="aspect-[4/5] bg-cover bg-center transition duration-700 group-hover:scale-105"
+          style={{
+            backgroundImage: photoUrl
+              ? `url(${photoUrl})`
+              : "radial-gradient(circle at 30% 20%, rgba(250,204,21,0.24), transparent 28%), linear-gradient(135deg,#071733,#1d4ed8 58%,#e0f2fe)",
+          }}
+          aria-hidden="true"
+        />
+      </div>
       <div className="p-6">
         {profile.designation ? (
           <p className="text-xs font-black uppercase tracking-[0.16em] text-blue-700">
             {profile.designation}
           </p>
         ) : null}
-        <h3 className="mt-2 text-xl font-black tracking-tight text-slate-950">
+        <h3 className="mt-2 font-serif text-2xl font-bold leading-tight tracking-normal text-slate-950">
           {profile.name}
         </h3>
         {profile.department?.name ? (
@@ -1017,31 +1118,47 @@ function VideoShowcase({
   );
 }
 
-function VideoFeatureCard({ video }: Readonly<{ video: Video }>) {
+function VideoFeatureCard({
+  compactAction = false,
+  video,
+}: Readonly<{
+  compactAction?: boolean;
+  video: Video;
+}>) {
   const thumbnailUrl = getCmsAssetUrl(video.thumbnail_path ?? null);
 
   return (
-    <article className="overflow-hidden rounded-3xl border border-white/10 bg-white text-slate-950 shadow-2xl shadow-slate-950/20">
-      <div
-        className="aspect-video bg-cover bg-center"
-        style={{
-          backgroundImage: thumbnailUrl
-            ? `url(${thumbnailUrl})`
-            : "linear-gradient(135deg,#0f172a,#1d4ed8 56%,#facc15)",
-        }}
-        aria-hidden="true"
-      />
-      <div className="p-6">
+    <article className="group overflow-hidden rounded-[30px] border border-white/10 bg-white text-slate-950 shadow-[0_24px_70px_rgba(2,6,23,0.2)] transition duration-300 hover:-translate-y-1.5">
+      <div className="relative overflow-hidden">
+        <div
+          className="aspect-video bg-cover bg-center transition duration-700 group-hover:scale-105"
+          style={{
+            backgroundImage: thumbnailUrl
+              ? `url(${thumbnailUrl})`
+              : "linear-gradient(135deg,#0f172a,#1d4ed8 56%,#facc15)",
+          }}
+          aria-hidden="true"
+        />
+        <div
+          className="absolute left-6 top-6 flex h-14 w-14 items-center justify-center rounded-full bg-yellow-400 text-[#061f3f] shadow-xl shadow-slate-950/20"
+          aria-hidden="true"
+        >
+          <svg className="ml-1 h-5 w-5" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M4.5 2.8v10.4L12.5 8 4.5 2.8Z" />
+          </svg>
+        </div>
+      </div>
+      <div className={compactAction ? "p-7" : "p-7 sm:p-8"}>
         <p className="text-xs font-black uppercase tracking-[0.16em] text-blue-700">
           {[video.category, formatDate(video.published_at ?? video.event_date)]
             .filter(Boolean)
             .join(" / ")}
         </p>
-        <h3 className="mt-3 text-2xl font-black tracking-tight">{video.title}</h3>
+        <h3 className="mt-3 font-serif text-3xl font-bold leading-[1.12] tracking-normal">{video.title}</h3>
         {video.excerpt ? (
-          <p className="mt-3 text-sm leading-6 text-slate-600">{video.excerpt}</p>
+          <p className="mt-3 text-[15px] leading-7 text-slate-600">{video.excerpt}</p>
         ) : null}
-        <div className="mt-6">
+        <div className={compactAction ? "mt-5" : "mt-6"}>
           <CTAButton href={`/videos/${video.slug}`} variant="subtle">
             Read More
           </CTAButton>
@@ -1105,6 +1222,56 @@ function NewsEventsSection({
   );
 }
 
+function CommunityVoicesSection({
+  section,
+  voices,
+}: Readonly<{
+  section: HomepageSection;
+  voices: CommunityVoice[];
+}>) {
+  return (
+    <PremiumSection section={section} tone="navy">
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {voices.map((voice, index) => {
+          const imageUrl = getCmsAssetUrl(voice.image_path ?? null);
+
+          return (
+            <article
+              key={`${voice.name ?? "voice"}-${index}`}
+              className="group rounded-[26px] border border-white/10 bg-white/[0.08] p-7 text-white transition duration-300 hover:-translate-y-1.5 hover:border-yellow-300/50 hover:bg-white/[0.13]"
+            >
+              <div className="mb-6 flex items-center gap-4">
+                <span
+                  className="h-14 w-14 shrink-0 rounded-full border border-yellow-300/40 bg-white/10 bg-cover bg-center"
+                  style={{
+                    backgroundImage: imageUrl
+                      ? `url(${imageUrl})`
+                      : "linear-gradient(135deg,#facc15,#1d4ed8)",
+                  }}
+                  aria-hidden="true"
+                />
+                <span className="min-w-0">
+                  {voice.name ? (
+                    <span className="block font-serif text-xl font-bold leading-tight">
+                      {voice.name}
+                    </span>
+                  ) : null}
+                  {voice.role ? (
+                    <span className="mt-1 block text-xs font-black uppercase tracking-[0.14em] text-yellow-300">
+                      {voice.role}
+                    </span>
+                  ) : null}
+                </span>
+              </div>
+              <p className="text-base leading-8 text-blue-50">{voice.quote}</p>
+            </article>
+          );
+        })}
+      </div>
+    </PremiumSection>
+  );
+}
+
 function GalleryStripSection({
   galleryAlbums,
   section,
@@ -1112,14 +1279,58 @@ function GalleryStripSection({
   galleryAlbums: GalleryAlbum[];
   section: HomepageSection;
 }>) {
+  const [featuredAlbum, ...otherAlbums] = galleryAlbums;
+
   return (
     <PremiumSection section={section} tone="white">
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-        {galleryAlbums.map((album) => (
-          <GalleryCard key={album.slug} album={album} />
-        ))}
+      <div className={`grid gap-5 ${otherAlbums.length > 0 ? "lg:grid-cols-[1.25fr_0.75fr]" : ""}`}>
+        <GalleryFeatureCard album={featuredAlbum} />
+        {otherAlbums.length > 0 ? (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-1">
+            {otherAlbums.map((album) => (
+              <GalleryCard key={album.slug} album={album} />
+            ))}
+          </div>
+        ) : null}
       </div>
     </PremiumSection>
+  );
+}
+
+function GalleryFeatureCard({ album }: Readonly<{ album: GalleryAlbum }>) {
+  const imageUrl = getCmsAssetUrl(album.cover_image_path ?? null);
+
+  return (
+    <article className="group relative min-h-[440px] overflow-hidden rounded-[30px] bg-[#061f3f] shadow-[0_24px_70px_rgba(2,6,23,0.16)]">
+      {imageUrl ? (
+        <div
+          className="absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-105"
+          style={{ backgroundImage: `url(${imageUrl})` }}
+          aria-hidden="true"
+        />
+      ) : (
+        <div
+          className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(250,204,21,0.24),transparent_28%),linear-gradient(135deg,#071733,#1d4ed8_58%,#e0f2fe)]"
+          aria-hidden="true"
+        />
+      )}
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.04),rgba(2,6,23,0.82))]" aria-hidden="true" />
+      <div className="absolute inset-x-0 bottom-0 p-7 text-white sm:p-9">
+        <h3 className="max-w-xl font-serif text-3xl font-bold leading-tight tracking-normal">
+          {album.title}
+        </h3>
+        {album.description ? (
+          <p className="mt-3 max-w-xl text-sm leading-7 text-blue-50">
+            {getTextPreview(album.description, 150)}
+          </p>
+        ) : null}
+        <div className="mt-6">
+          <CTAButton href={`/gallery/${album.slug}`}>
+            Read More
+          </CTAButton>
+        </div>
+      </div>
+    </article>
   );
 }
 
@@ -1161,6 +1372,55 @@ function getFeeRelatedScholarships(scholarships: Scholarship[]): Scholarship[] {
 
     return feeKeywords.some((keyword) => text.includes(keyword));
   });
+}
+
+function getCommunityVoices(section: HomepageSection): CommunityVoice[] {
+  const rawItems =
+    section.metadata.items ??
+    section.metadata.voices ??
+    section.metadata.testimonials ??
+    section.metadata.feedback;
+
+  if (!Array.isArray(rawItems)) {
+    return [];
+  }
+
+  return rawItems
+    .map((item): CommunityVoice | null => {
+      if (!item || typeof item !== "object") {
+        return null;
+      }
+
+      const record = item as Record<string, unknown>;
+      const quote = getMetadataText(record, ["quote", "message", "content", "body"]);
+
+      if (!quote) {
+        return null;
+      }
+
+      return {
+        quote,
+        name: getMetadataText(record, ["name", "title"]),
+        role: getMetadataText(record, ["role", "designation", "type"]),
+        image_path: getMetadataText(record, ["image_path", "photo_path", "avatar_path"]),
+      };
+    })
+    .filter((item): item is CommunityVoice => item !== null);
+}
+
+function getMetadataText(
+  record: Record<string, unknown>,
+  keys: string[],
+): string | undefined {
+  for (const key of keys) {
+    const value = record[key];
+
+    if (typeof value === "string" && value.trim().length > 0) {
+      return value.trim();
+    }
+  }
+
+  return undefined;
 }
 
 function getHomepageSectionConfig(

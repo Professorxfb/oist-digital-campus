@@ -47,34 +47,38 @@ export function SiteFooter({
   ].filter((item): item is { label: string; href: string } => Boolean(item.href));
 
   return (
-    <footer className="border-t border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(250,204,21,0.12),transparent_30%),linear-gradient(135deg,#020617,#071733_48%,#0a2a5e)] text-white">
-      <Container className="py-14 sm:py-16">
-        <div className="grid gap-10 lg:grid-cols-[1.15fr_0.7fr_0.7fr_0.7fr]">
+    <footer className="relative overflow-hidden border-t border-white/10 bg-[#061f3f] text-white">
+      <div
+        className="absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(250,204,21,0.16),transparent_24%),radial-gradient(circle_at_86%_10%,rgba(14,165,233,0.14),transparent_24%),linear-gradient(135deg,#020617,#061f3f_48%,#0a2a5e)]"
+        aria-hidden="true"
+      />
+      <Container className="relative py-16 sm:py-20">
+        <div className="grid gap-10 lg:grid-cols-[1.2fr_0.7fr_0.7fr_0.7fr]">
           <div>
             <div className="flex items-center gap-3">
               {logoUrl ? (
                 <span
-                  className="h-12 w-12 shrink-0 rounded-full border border-white/10 bg-white/5 bg-contain bg-center bg-no-repeat"
+                  className="h-14 w-14 shrink-0 rounded-2xl border border-white/10 bg-white bg-contain bg-center bg-no-repeat shadow-lg shadow-slate-950/20"
                   style={{ backgroundImage: `url(${logoUrl})` }}
                   aria-hidden="true"
                 />
               ) : (
-                <span className="h-12 w-12 shrink-0 rounded-full bg-[linear-gradient(135deg,#facc15,#1d4ed8_54%,#082f49)]" aria-hidden="true" />
+                <span className="h-14 w-14 shrink-0 rounded-2xl bg-[linear-gradient(135deg,#facc15,#1d4ed8_54%,#082f49)]" aria-hidden="true" />
               )}
-              <p className="text-lg font-black tracking-tight">{title}</p>
+              <p className="font-serif text-2xl font-bold tracking-normal">{title}</p>
             </div>
             {settings.footer_text ? (
-              <p className="mt-5 max-w-xl text-sm leading-7 text-slate-300">
+              <p className="mt-6 max-w-xl text-sm leading-7 text-blue-100">
                 {settings.footer_text}
               </p>
             ) : null}
             {contactItems.length > 0 ? (
-              <ul className="mt-6 space-y-3 text-sm text-slate-300">
+              <ul className="mt-7 space-y-3 text-sm text-blue-100">
                 {contactItems.map((item) => (
                   <li key={item.label} className="leading-6">
-                    <span className="mr-2 font-bold text-slate-100">{item.label}:</span>
+                    <span className="mr-2 font-bold text-white">{item.label}:</span>
                     {item.href ? (
-                      <a className="hover:text-white" href={item.href}>
+                      <a className="transition hover:text-yellow-300" href={item.href}>
                         {item.value}
                       </a>
                     ) : (
@@ -85,11 +89,11 @@ export function SiteFooter({
               </ul>
             ) : null}
             {socialLinks.length > 0 ? (
-              <div className="mt-6 flex flex-wrap gap-2">
+              <div className="mt-7 flex flex-wrap gap-2">
                 {socialLinks.map((link) => (
                   <a
                     key={link.label}
-                    className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-200 transition hover:border-yellow-300/70 hover:bg-yellow-300 hover:text-slate-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300"
+                    className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-blue-100 transition duration-300 hover:-translate-y-0.5 hover:border-yellow-300/70 hover:bg-yellow-300 hover:text-slate-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300"
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -141,11 +145,11 @@ function FooterLinkGroup({
         {title}
       </h2>
       {items.length > 0 ? (
-        <ul className="mt-5 space-y-3 text-sm">
+        <ul className="mt-6 space-y-3 text-sm">
           {items.map((item) => (
             <li key={`${item.label}-${item.url}`}>
               <a
-                className="text-slate-300 transition-colors hover:text-yellow-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300"
+                className="inline-flex text-blue-100 transition duration-300 hover:translate-x-1 hover:text-yellow-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300"
                 href={item.url}
                 target={item.target === "_blank" ? "_blank" : undefined}
                 rel={item.target === "_blank" ? "noopener noreferrer" : undefined}

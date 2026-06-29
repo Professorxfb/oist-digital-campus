@@ -28,33 +28,35 @@ export function ContentCard({
   const shouldShowMedia = media === "auto" && imagePath !== undefined;
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-2xl hover:shadow-slate-950/10">
+    <article className="group flex h-full flex-col overflow-hidden rounded-[22px] border border-slate-200/80 bg-white shadow-[0_14px_42px_rgba(2,6,23,0.06)] transition duration-300 hover:-translate-y-1.5 hover:border-yellow-300/60 hover:shadow-[0_24px_58px_rgba(2,6,23,0.13)]">
       {shouldShowMedia ? (
-        imageUrl ? (
-          <div
-            className="aspect-[16/9] bg-slate-100 bg-cover bg-center transition duration-300 group-hover:scale-[1.02]"
-            style={{ backgroundImage: `url(${imageUrl})` }}
-            aria-hidden="true"
-          />
-        ) : (
-          <div className="aspect-[16/9] bg-[radial-gradient(circle_at_30%_20%,rgba(250,204,21,0.24),transparent_28%),linear-gradient(135deg,#071733,#1d4ed8_58%,#e0f2fe)]" aria-hidden="true" />
-        )
+        <div className="overflow-hidden">
+          {imageUrl ? (
+            <div
+              className="aspect-[16/9] bg-slate-100 bg-cover bg-center transition duration-500 group-hover:scale-105"
+              style={{ backgroundImage: `url(${imageUrl})` }}
+              aria-hidden="true"
+            />
+          ) : (
+            <div className="aspect-[16/9] bg-[radial-gradient(circle_at_30%_20%,rgba(250,204,21,0.24),transparent_28%),linear-gradient(135deg,#071733,#1d4ed8_58%,#e0f2fe)]" aria-hidden="true" />
+          )}
+        </div>
       ) : null}
       <div className="flex flex-1 flex-col p-6">
         {visibleMeta.length > 0 ? (
-          <ul className="mb-3 flex flex-wrap gap-2 text-xs font-black uppercase tracking-[0.08em] text-blue-800">
+          <ul className="mb-4 flex flex-wrap gap-2 text-[11px] font-black uppercase tracking-[0.1em] text-blue-900">
             {visibleMeta.map((item) => (
-              <li key={item} className="rounded-full bg-blue-50 px-2.5 py-1 ring-1 ring-blue-100">
+              <li key={item} className="rounded-full bg-yellow-300/25 px-2.5 py-1 ring-1 ring-yellow-300/40">
                 {item}
               </li>
             ))}
           </ul>
         ) : null}
-        <h3 className="text-xl font-black tracking-tight text-slate-950 transition group-hover:text-blue-800">
+        <h3 className="font-serif text-[1.55rem] font-bold leading-[1.16] tracking-normal text-slate-950 transition group-hover:text-blue-900">
           {title}
         </h3>
         {description ? (
-          <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">
+          <p className="mt-3 line-clamp-3 text-[15px] leading-7 text-slate-600">
             {description}
           </p>
         ) : null}
