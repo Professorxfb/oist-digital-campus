@@ -39,6 +39,7 @@ export async function fetchCmsApi<TData>(
 
     return {
       data: payload.data,
+      meta: payload.meta,
       error: null,
     };
   } catch (error) {
@@ -51,6 +52,7 @@ export async function fetchCmsApi<TData>(
 
     return {
       data: fallbackData,
+      meta: {},
       error: message,
     };
   }

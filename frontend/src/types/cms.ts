@@ -15,7 +15,24 @@ export interface ApiErrorResponse {
 
 export interface ApiFetchResult<TData> {
   data: TData;
+  meta: Record<string, unknown>;
   error: string | null;
+}
+
+export interface PaginationMeta {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+  from: number | null;
+  to: number | null;
+}
+
+export interface PaginatedApiResponse<TData> {
+  success: boolean;
+  message: string | null;
+  data: TData[];
+  meta: PaginationMeta;
 }
 
 export interface SiteSetting {
@@ -71,4 +88,106 @@ export interface MenuItem {
 export interface Menu {
   location: MenuLocation | string;
   items: MenuItem[];
+}
+
+export interface Notice {
+  title: string;
+  slug: string;
+  body?: string | null;
+  category?: string | null;
+  audience?: string | null;
+  attachment_path?: string | null;
+  is_pinned?: boolean;
+  published_at?: string | null;
+  expires_at?: string | null;
+  sort_order?: number;
+  meta_title?: string | null;
+  meta_description?: string | null;
+}
+
+export interface NewsPost {
+  title: string;
+  slug: string;
+  excerpt?: string | null;
+  body?: string | null;
+  featured_image_path?: string | null;
+  category?: string | null;
+  tags?: string[];
+  author_name?: string | null;
+  is_featured?: boolean;
+  published_at?: string | null;
+  meta_title?: string | null;
+  meta_description?: string | null;
+}
+
+export interface Event {
+  title: string;
+  slug: string;
+  excerpt?: string | null;
+  body?: string | null;
+  featured_image_path?: string | null;
+  location?: string | null;
+  event_date?: string | null;
+  start_time?: string | null;
+  end_time?: string | null;
+  registration_url?: string | null;
+  is_featured?: boolean;
+  published_at?: string | null;
+  meta_title?: string | null;
+  meta_description?: string | null;
+}
+
+export interface GalleryItem {
+  title?: string | null;
+  image_path: string;
+  caption?: string | null;
+  sort_order?: number;
+}
+
+export interface GalleryAlbum {
+  title: string;
+  slug: string;
+  description?: string | null;
+  cover_image_path?: string | null;
+  sort_order?: number;
+  items?: GalleryItem[];
+}
+
+export interface Download {
+  title: string;
+  slug: string;
+  description?: string | null;
+  file_path: string;
+  category?: string | null;
+  sort_order?: number;
+}
+
+export interface FacultyProfileDepartment {
+  name: string;
+  slug: string;
+}
+
+export interface FacultyProfile {
+  name: string;
+  slug: string;
+  designation?: string | null;
+  department?: FacultyProfileDepartment | null;
+  photo_path?: string | null;
+  short_bio?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  sort_order?: number;
+}
+
+export interface Department {
+  name: string;
+  slug: string;
+  short_description?: string | null;
+  description?: string | null;
+  featured_image_path?: string | null;
+  icon?: string | null;
+  sort_order?: number;
+  meta_title?: string | null;
+  meta_description?: string | null;
+  faculty_profiles?: FacultyProfile[];
 }

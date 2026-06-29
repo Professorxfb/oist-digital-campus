@@ -1,9 +1,16 @@
 import { fetchCmsApi } from "@/lib/api-client";
 import type {
   ApiFetchResult,
+  Department,
+  Download,
+  Event,
+  FacultyProfile,
+  GalleryAlbum,
   HomepageSection,
   Menu,
   MenuLocation,
+  NewsPost,
+  Notice,
   SiteSetting,
 } from "@/types/cms";
 
@@ -51,4 +58,62 @@ export function getMenuByLocation(
     location,
     items: [],
   });
+}
+
+export function getNotices(): Promise<ApiFetchResult<Notice[]>> {
+  return fetchCmsApi<Notice[]>("notices", []);
+}
+
+export function getNoticeBySlug(
+  slug: string,
+): Promise<ApiFetchResult<Notice | null>> {
+  return fetchCmsApi<Notice | null>(`notices/${slug}`, null);
+}
+
+export function getNewsPosts(): Promise<ApiFetchResult<NewsPost[]>> {
+  return fetchCmsApi<NewsPost[]>("news", []);
+}
+
+export function getNewsPostBySlug(
+  slug: string,
+): Promise<ApiFetchResult<NewsPost | null>> {
+  return fetchCmsApi<NewsPost | null>(`news/${slug}`, null);
+}
+
+export function getEvents(): Promise<ApiFetchResult<Event[]>> {
+  return fetchCmsApi<Event[]>("events", []);
+}
+
+export function getEventBySlug(
+  slug: string,
+): Promise<ApiFetchResult<Event | null>> {
+  return fetchCmsApi<Event | null>(`events/${slug}`, null);
+}
+
+export function getGalleryAlbums(): Promise<ApiFetchResult<GalleryAlbum[]>> {
+  return fetchCmsApi<GalleryAlbum[]>("gallery-albums", []);
+}
+
+export function getGalleryAlbumBySlug(
+  slug: string,
+): Promise<ApiFetchResult<GalleryAlbum | null>> {
+  return fetchCmsApi<GalleryAlbum | null>(`gallery-albums/${slug}`, null);
+}
+
+export function getDownloads(): Promise<ApiFetchResult<Download[]>> {
+  return fetchCmsApi<Download[]>("downloads", []);
+}
+
+export function getDepartments(): Promise<ApiFetchResult<Department[]>> {
+  return fetchCmsApi<Department[]>("departments", []);
+}
+
+export function getDepartmentBySlug(
+  slug: string,
+): Promise<ApiFetchResult<Department | null>> {
+  return fetchCmsApi<Department | null>(`departments/${slug}`, null);
+}
+
+export function getFacultyProfiles(): Promise<ApiFetchResult<FacultyProfile[]>> {
+  return fetchCmsApi<FacultyProfile[]>("faculty-profiles", []);
 }

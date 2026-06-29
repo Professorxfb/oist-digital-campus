@@ -1039,3 +1039,138 @@ Department detail responses include only published faculty profiles.
 
 - Run `php artisan storage:link` in environments where public CMS uploads need to be served from Laravel public storage.
 - Staff must create and publish real content through Filament before the frontend can render these modules.
+
+## Frontend Public CMS Module Integration
+
+Date: 2026-06-29
+
+### Scope
+
+Extended the Next.js frontend CMS API integration so the development preview can fetch public CMS modules from the Laravel backend.
+
+No backend files were modified.
+
+No final public website design was created.
+
+No student portal, teacher portal, admission portal, admin features, fake content, or hard-coded OIST public content was added.
+
+### Commands Used
+
+Documentation and inspection:
+
+- `Get-Content AGENTS.md`
+- `Get-Content docs\PROJECT_BLUEPRINT.md`
+- `Get-Content docs\CMS_DRIVEN_FRONTEND.md`
+- `Get-Content frontend\src\types\cms.ts`
+- `Get-Content frontend\src\lib\api-client.ts`
+- `Get-Content frontend\src\services\cms.ts`
+- `Get-Content frontend\src\app\page.tsx`
+- `Get-Content frontend\package.json`
+- `git status --short`
+
+Verification:
+
+- `npm run lint`
+- `npm run build`
+- `npm run dev`
+- `Invoke-WebRequest -Uri http://localhost:3000 -UseBasicParsing`
+
+### Frontend Types Added
+
+`frontend/src/types/cms.ts` now includes:
+
+- `PaginationMeta`
+- `PaginatedApiResponse`
+- `Notice`
+- `NewsPost`
+- `Event`
+- `GalleryAlbum`
+- `GalleryItem`
+- `Download`
+- `Department`
+- `FacultyProfile`
+- `FacultyProfileDepartment`
+
+`ApiFetchResult` now preserves response `meta` data so paginated API responses can be used by future frontend views.
+
+### API Client Updates
+
+`frontend/src/lib/api-client.ts` continues to handle the project JSON response envelope and now returns API `meta` values alongside typed data and safe errors.
+
+Fallback responses keep data empty and `meta` as an empty object when the API is unavailable or returns an unexpected response.
+
+### CMS Service Functions Added
+
+`frontend/src/services/cms.ts` now includes:
+
+- `getNotices()`
+- `getNoticeBySlug(slug)`
+- `getNewsPosts()`
+- `getNewsPostBySlug(slug)`
+- `getEvents()`
+- `getEventBySlug(slug)`
+- `getGalleryAlbums()`
+- `getGalleryAlbumBySlug(slug)`
+- `getDownloads()`
+- `getDepartments()`
+- `getDepartmentBySlug(slug)`
+- `getFacultyProfiles()`
+
+All list functions use empty arrays as safe fallbacks.
+
+All detail functions use `null` as the safe fallback.
+
+### Homepage Development Preview Updates
+
+The homepage development preview still renders:
+
+- Site settings
+- Header menu
+- Homepage sections
+
+It now also renders separate development preview sections for:
+
+- Latest Notices
+- Latest News
+- Upcoming Events
+- Departments
+- Faculty Profiles
+- Downloads
+- Gallery Albums
+
+Reusable preview helpers were added inside the page:
+
+- `PreviewSection`
+- `PreviewCard`
+- `EmptyState`
+
+These helpers are generic, structural, and data-driven. They render only backend-returned data and show safe empty-state messages when no published content is returned.
+
+### How To Verify With Backend Running
+
+1. Start the Laravel backend:
+   - `cd backend`
+   - `php artisan serve --host=127.0.0.1 --port=8000`
+2. Confirm `frontend/.env.local` contains:
+   - `NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000/api/v1`
+3. Start the frontend:
+   - `cd frontend`
+   - `npm run dev`
+4. Open:
+   - `http://localhost:3000`
+5. Confirm the development preview renders backend-published records for notices, news, events, gallery albums, downloads, departments, and faculty profiles when those records exist.
+6. If no CMS records exist yet, confirm each section shows a safe empty state instead of fake content.
+
+### Verification Results
+
+- `npm run lint` completed successfully with no warnings or errors.
+- `npm run build` completed successfully.
+- `npm run dev` started successfully at `http://localhost:3000`.
+- A request to `http://localhost:3000` returned HTTP 200.
+- The temporary dev server was stopped after verification.
+
+### Warnings And Manual Steps
+
+- The current page remains a development preview only and is not the final public website design.
+- Published backend CMS records are required before real content appears in the preview.
+- Run `php artisan storage:link` on the backend if public CMS media/files should be accessible from browser links.
