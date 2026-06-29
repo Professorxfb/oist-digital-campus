@@ -1,22 +1,18 @@
 import { Container } from "@/components/public-site/Container";
 import { CTAButton } from "@/components/public-site/CTAButton";
 import { getCmsAssetUrl, getTextPreview } from "@/lib/cms-display";
-import type { HomepageSection, SiteSetting } from "@/types/cms";
+import type { HomepageSection } from "@/types/cms";
 
 export function CMSHero({
   heroSection,
-  settings,
 }: Readonly<{
   heroSection: HomepageSection | null;
-  settings: SiteSetting;
 }>) {
-  const title =
-    heroSection?.title ?? settings.site_title ?? settings.institute_name ?? "Campus Website";
-  const subtitle =
-    heroSection?.subtitle ??
-    getTextPreview(heroSection?.content, 220) ??
-    settings.site_tagline ??
-    "Public content will appear here when it is published from the CMS.";
+  if (!heroSection?.title) {
+    return null;
+  }
+
+  const description = getTextPreview(heroSection.content, 220);
   const imageUrl = getCmsAssetUrl(heroSection?.image_path);
   const videoUrl = getCmsAssetUrl(heroSection?.video_path);
 
@@ -55,15 +51,19 @@ export function CMSHero({
       ) : null}
       <Container className="relative py-20 sm:py-24 lg:py-32">
         <div className="max-w-4xl">
-          <p className="inline-flex rounded-full border border-yellow-300/40 bg-yellow-300/10 px-4 py-2 text-xs font-black uppercase tracking-[0.24em] text-yellow-300">
-            Public Website
-          </p>
+          {heroSection.subtitle ? (
+            <p className="inline-flex rounded-full border border-yellow-300/40 bg-yellow-300/10 px-4 py-2 text-xs font-black uppercase tracking-[0.24em] text-yellow-300">
+              {heroSection.subtitle}
+            </p>
+          ) : null}
           <h1 className="mt-6 max-w-4xl text-5xl font-black leading-[1.02] tracking-tight text-white sm:text-6xl lg:text-7xl">
-            {title}
+            {heroSection.title}
           </h1>
-          <p className="mt-6 max-w-2xl text-base font-medium leading-8 text-blue-50 sm:text-xl">
-            {subtitle}
-          </p>
+          {description ? (
+            <p className="mt-6 max-w-2xl text-base font-medium leading-8 text-blue-50 sm:text-xl">
+              {description}
+            </p>
+          ) : null}
           {heroSection?.button_text && heroSection.button_url ? (
             <div className="mt-9">
               <CTAButton href={heroSection.button_url}>

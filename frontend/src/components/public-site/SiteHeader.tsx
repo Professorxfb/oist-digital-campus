@@ -68,7 +68,8 @@ export function SiteHeader({
               href="/search"
               aria-label="Search public content"
             >
-              Search
+              <SearchIcon />
+              <span className="ml-2">Search</span>
             </a>
             <a
               className="hidden min-h-10 items-center justify-center rounded-full px-3 py-2 text-sm font-bold text-blue-100 transition hover:bg-white/10 hover:text-yellow-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300 lg:inline-flex"
@@ -95,12 +96,31 @@ export function SiteHeader({
               href="/search"
               aria-label="Search public content"
             >
-              Search
+              <SearchIcon />
+              <span className="sr-only">Search</span>
             </a>
           </div>
         </div>
       </Container>
     </header>
+  );
+}
+
+function SearchIcon() {
+  return (
+    <svg
+      className="h-4 w-4"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      aria-hidden="true"
+    >
+      <circle cx="11" cy="11" r="7" />
+      <path d="m20 20-4-4" />
+    </svg>
   );
 }
 

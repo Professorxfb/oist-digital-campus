@@ -742,6 +742,10 @@ Verification:
 - `npm run lint`
 - `npm run build`
 - `npm run dev`
+- `Invoke-WebRequest -UseBasicParsing http://localhost:3000/ | Select-Object -ExpandProperty StatusCode`
+- `netstat -ano | findstr ":3000"`
+- `Stop-Process -Id 17552`
+- `npm run dev`
 - `Invoke-WebRequest` checks for `/`, listing pages, `/contact`, and representative missing slug routes
 
 ### Files Created
@@ -1901,3 +1905,172 @@ No source code, proprietary assets, copyrighted images, exact HTML/CSS, icons, t
 - Publish an `about` InstitutionalPage for the about/institution intro.
 - Publish notices, departments, leadership profiles, scholarships, facilities, videos, news, events, and gallery albums to populate the homepage.
 - Add a LeadershipProfile whose name or designation includes `Chairman` if the chairman message should be selected explicitly.
+
+---
+
+Date: 2026-06-29
+
+## Frontend Homepage Final Reference Alignment
+
+### Scope
+
+Applied the final homepage correction so the public homepage follows the approved Univet Blue Two inspired section structure more closely while keeping all editable public content CMS/API-driven.
+
+No backend application code was modified.
+
+No authentication, real student portal, real faculty portal, admission workflow, private portal feature, fake public content, copied source code, copied assets, or hard-coded OIST content was added.
+
+### Homepage Structure Updated
+
+- Preserved the dark navy reference-style header with CMS logo/title/tagline, CMS dropdown menu support, Search icon/button link, Apply Now CTA, Student Portal placeholder link, Faculty Portal placeholder link, and mobile menu support.
+- Preserved the large CMS-controlled hero banner with dark overlay and yellow CTA styling.
+- Preserved overlapping hero feature/info cards, rendered only from CMS homepage sections with feature/stat/info-style keys.
+- Added the About/Institution intro section from the published InstitutionalPage with page type `about`; it hides when CMS data is unavailable.
+- Moved Chairman Message into its own premium section after About; it now renders only when a published LeadershipProfile name or designation includes `Chairman`.
+- Kept the homepage section title `Departments` and renders it only from the Departments API.
+- Kept the homepage section title `Latest Notices` and renders pinned/recent notices without thumbnails.
+- Added a `Campus Life` section that uses real gallery albums and videos when CMS data exists.
+- Added a `Tuition Fee` section that renders only fee-related published scholarship/admission-fee-style CMS data when available; it does not invent fee amounts.
+- Added a separate `Scholarships` section that renders published scholarships when available.
+- Added a `Professors` section that renders public faculty profiles when available.
+- Kept a dedicated `Videos` section using the Videos API.
+- Kept the `News & Events` card layout using public news and event API data.
+- Preserved the dark blue CMS-driven footer with footer menu, quick links, social links, and portal placeholder links.
+
+### CMS And Empty-State Rules Applied
+
+- Production-style homepage sections hide when the related CMS/API data is empty.
+- Community Voices was intentionally not rendered because there is no Testimonial/Feedback CMS API yet.
+- A future Testimonial/Feedback CMS module is required before adding student, parent, or alumni feedback content.
+- Tuition Fee remains separate from Scholarships and hides unless real fee-related CMS data exists.
+- No fake statistics, testimonials, fee amounts, professor profiles, images, videos, notices, or institutional claims were added.
+
+### Files Updated
+
+- `frontend/src/app/page.tsx`
+- `frontend/src/components/public-site/SiteHeader.tsx`
+- `docs/SETUP_LOG.md`
+
+### Commands Run
+
+- `Get-Content AGENTS.md`
+- `Get-Content docs\PROJECT_BLUEPRINT.md`
+- `Get-Content docs\CMS_DRIVEN_FRONTEND.md`
+- `Get-Content frontend\src\app\page.tsx`
+- `rg --files frontend\src\app`
+- `npm run lint`
+- `npm run build`
+- `npm run dev`
+- `Invoke-WebRequest -UseBasicParsing http://localhost:3000/ | Select-Object -ExpandProperty StatusCode`
+- `netstat -ano | findstr ":3000"`
+- `Stop-Process -Id <Next.js dev server PID>`
+
+### Verification Results
+
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully.
+- `npm run dev` started successfully at `http://localhost:3000`.
+- A local request to `http://localhost:3000/` returned HTTP 200.
+- The local Next.js dev server was stopped after verification.
+- Build output included all existing public routes, including `/`, `/notices`, `/news`, `/events`, `/departments`, `/faculty`, `/downloads`, `/gallery`, `/contact`, `/search`, `/student-portal`, and `/faculty-portal`.
+
+### Warnings And Manual CMS Setup Steps
+
+- The Laravel backend was not running during `npm run build`, so CMS fetch warnings appeared for `127.0.0.1:8000`. The frontend still built successfully with safe fallback behavior.
+- Start the backend at `127.0.0.1:8000` to display live CMS data.
+- Publish CMS records for hero, hero feature/info cards, about page, chairman leadership profile, departments, notices, gallery albums, videos, scholarships, news, and events to populate the final homepage structure.
+- Add a Testimonial/Feedback CMS module before implementing `Community Voices`.
+
+---
+
+Date: 2026-06-29
+
+## Frontend Homepage CMS-Control Tightening
+
+### Scope
+
+Updated the public homepage implementation so visible homepage section headings, subtitles, body copy, media, section buttons, section ordering, and section item limits are controlled through backend CMS data as much as the current API supports.
+
+No backend application code was modified.
+
+No fake content, hard-coded OIST public content, copied reference assets, authentication features, portal dashboards, or admission workflows were added.
+
+### CMS-Control Changes
+
+- Homepage sections now require matching CMS `HomepageSection` configuration records before rendering.
+- Known homepage section keys are matched to frontend component types, but visible section copy comes from CMS fields.
+- Section heading uses `HomepageSection.title`.
+- Section eyebrow/subtitle uses `HomepageSection.subtitle`.
+- Section description/body uses `HomepageSection.content`.
+- Section image/video uses `HomepageSection.image_path` and `HomepageSection.video_path` where applicable, with module media used as secondary CMS data.
+- Section CTA label and URL use `HomepageSection.button_text` and `HomepageSection.button_url`.
+- Section order uses `HomepageSection.sort_order`.
+- Section item limits can use `HomepageSection.metadata.item_limit`, `metadata.limit`, `metadata.items_limit`, or `metadata.items_count`.
+- Homepage sections hide when the required CMS section config or module data is missing.
+- The homepage no longer renders hard-coded public section titles such as departments, notices, campus life, tuition fee, scholarships, facilities, professors, videos, news/events, or gallery.
+- The generic CMS connection warning banner was removed from the homepage to avoid hard-coded public page content.
+
+### Section Keys Expected From CMS
+
+The frontend can render these homepage component types when corresponding CMS section records exist:
+
+- `hero`
+- `notice_strip`, `top_notice`, or `notice_bar`
+- feature/stat/info sections for hero cards
+- `about`, `about_intro`, or `institution_intro`
+- `chairman`, `chairman_message`, or `leadership_message`
+- `departments` or `department`
+- `latest_notices`, `notice_board`, or `notices`
+- `campus_life` or `gallery_campus_life`
+- `tuition_fee`, `tuition`, or `fees`
+- `scholarships` or `scholarship`
+- `facilities` or `facility`
+- `professors`, `faculty`, or `faculty_profiles`
+- `videos` or `video_showcase`
+- `news_events` or `news_and_events`
+- `gallery_strip` or `gallery`
+
+### Dedicated CMS Modules Still Recommended
+
+- A dedicated Tuition/Fee CMS module is still recommended. The current homepage can only show the Tuition Fee section from fee-related scholarship/admission-fee-style CMS records when available.
+- A dedicated Testimonial/Feedback CMS module is required before implementing `Community Voices`.
+- If staff need custom labels for item status badges such as featured or pinned, backend API fields should expose those labels instead of relying on frontend-authored text.
+
+### Files Updated
+
+- `frontend/src/app/page.tsx`
+- `frontend/src/components/public-site/CMSHero.tsx`
+- `frontend/src/components/public-site/NoticeStrip.tsx`
+- `frontend/src/components/public-site/ContentCard.tsx`
+- `frontend/src/components/public-site/EventCard.tsx`
+- `docs/SETUP_LOG.md`
+
+### Commands Run
+
+- `Get-Content AGENTS.md`
+- `Get-Content docs\PROJECT_BLUEPRINT.md`
+- `Get-Content docs\CMS_DRIVEN_FRONTEND.md`
+- `Get-Content frontend\src\app\page.tsx`
+- `Get-Content frontend\src\components\public-site\CMSHero.tsx`
+- `Get-Content frontend\src\components\public-site\NoticeStrip.tsx`
+- `rg`
+- `npm run lint`
+- `npm run build`
+- `npm run dev`
+- `Invoke-WebRequest -UseBasicParsing http://localhost:3000/ | Select-Object -ExpandProperty StatusCode`
+- `netstat -ano | findstr ":3000"`
+- `Stop-Process -Id <Next.js dev server PID>`
+
+### Verification Results
+
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully.
+- `npm run dev` started successfully at `http://localhost:3000`.
+- A local request to `http://localhost:3000/` returned HTTP 200.
+- The local Next.js dev server was stopped after verification.
+
+### Warnings And Manual CMS Setup Steps
+
+- The Laravel backend was not running during build and dev verification, so CMS fetch warnings appeared for `127.0.0.1:8000`. The frontend still compiled and served the homepage safely.
+- Until staff create matching `HomepageSection` records in the CMS, the corresponding homepage sections will intentionally stay hidden.
+- Publish homepage section records with titles, subtitles, content, CTA text, CTA URLs, sort order, and item-limit metadata for the public homepage sections that should appear.

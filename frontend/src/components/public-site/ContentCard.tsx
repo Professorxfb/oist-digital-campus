@@ -9,7 +9,7 @@ export function ContentCard({
   href,
   filePath,
   media = "auto",
-  actionLabel = "View",
+  actionLabel = "Read More",
   downloadLabel = "Download",
 }: Readonly<{
   title: string;
