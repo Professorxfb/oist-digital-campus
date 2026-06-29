@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Container } from "@/components/public-site/Container";
 import { CTAButton } from "@/components/public-site/CTAButton";
 import { ResponsiveMenu } from "@/components/public-site/ResponsiveMenu";
 import { getCmsAssetUrl } from "@/lib/cms-display";
@@ -26,34 +25,51 @@ export function SiteHeader({
       : null;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-[#071733]/95 text-white shadow-2xl shadow-slate-950/20 backdrop-blur">
-      <Container>
-        <div className="flex min-h-20 items-center justify-between gap-4">
-          <Link className="flex min-w-0 items-center gap-3" href="/">
+    <header className="absolute inset-x-0 top-0 z-50 pt-5 text-white sm:pt-7">
+      <div className="mx-auto max-w-[1620px] px-4 sm:px-6 lg:px-8">
+        <div className="flex min-h-[86px] items-center justify-between gap-4 rounded-[10px] bg-[#061f3f] px-4 py-4 shadow-2xl shadow-slate-950/30 sm:px-7">
+          <Link className="flex min-w-0 shrink-0 items-center gap-3" href="/">
             {logoUrl ? (
               <span
-                className="h-12 w-12 shrink-0 rounded-full border border-white/15 bg-white bg-contain bg-center bg-no-repeat shadow-sm"
+                className="h-14 w-14 shrink-0 rounded-xl border border-white/15 bg-white bg-contain bg-center bg-no-repeat shadow-sm"
                 style={{ backgroundImage: `url(${logoUrl})` }}
                 aria-hidden="true"
               />
             ) : (
               <span
-                className="h-12 w-12 shrink-0 rounded-full bg-[linear-gradient(135deg,#facc15,#1d4ed8_54%,#082f49)]"
+                className="h-14 w-14 shrink-0 rounded-xl bg-[linear-gradient(135deg,#ffcc00,#1d4ed8_54%,#082f49)]"
                 aria-hidden="true"
               />
             )}
             <span className="min-w-0">
-              <span className="block truncate text-base font-black tracking-tight text-white sm:text-lg">
+              <span className="block truncate text-base font-black leading-tight tracking-tight text-white sm:text-xl">
                 {title}
               </span>
               {settings.site_tagline ? (
-                <span className="mt-0.5 hidden truncate text-xs font-semibold uppercase tracking-[0.16em] text-blue-100/80 sm:block">
+                <span className="mt-0.5 hidden max-w-56 truncate text-[11px] font-black uppercase tracking-[0.16em] text-blue-100/80 md:block">
                   {settings.site_tagline}
                 </span>
               ) : null}
             </span>
           </Link>
-          <div className="flex items-center gap-2">
+
+          <div className="hidden min-w-0 flex-1 justify-center xl:flex">
+            <ResponsiveMenu
+              items={visibleMenuItems}
+              label="Primary menu"
+              variant="desktop"
+            />
+          </div>
+
+          <div className="flex shrink-0 items-center gap-2 sm:gap-4">
+            <a
+              className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition hover:border-yellow-300 hover:bg-yellow-300 hover:text-slate-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300"
+              href="/search"
+              aria-label="Search public content"
+            >
+              <SearchIcon />
+            </a>
+            <span className="hidden h-8 w-px bg-white/20 sm:block" aria-hidden="true" />
             <ResponsiveMenu
               items={visibleMenuItems}
               label="Menu"
@@ -62,46 +78,20 @@ export function SiteHeader({
                 { href: "/student-portal", label: "Student Portal" },
                 { href: "/faculty-portal", label: "Faculty Portal" },
               ]}
+              settings={settings}
+              variant="drawer"
             />
-            <a
-              className="hidden min-h-10 items-center justify-center rounded-full border border-white/15 bg-white/10 px-3 py-2 text-sm font-bold text-white transition hover:border-yellow-300 hover:bg-yellow-300 hover:text-slate-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300 sm:inline-flex"
-              href="/search"
-              aria-label="Search public content"
-            >
-              <SearchIcon />
-              <span className="ml-2">Search</span>
-            </a>
-            <a
-              className="hidden min-h-10 items-center justify-center rounded-full px-3 py-2 text-sm font-bold text-blue-100 transition hover:bg-white/10 hover:text-yellow-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300 lg:inline-flex"
-              href="/student-portal"
-            >
-              Student Portal
-            </a>
-            <a
-              className="hidden min-h-10 items-center justify-center rounded-full px-3 py-2 text-sm font-bold text-blue-100 transition hover:bg-white/10 hover:text-yellow-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300 lg:inline-flex"
-              href="/faculty-portal"
-            >
-              Faculty Portal
-            </a>
             {admissionAction ? (
               <CTAButton
                 href={admissionAction.href}
-                className="hidden min-h-10 px-4 py-2 xl:inline-flex"
+                className="hidden min-h-12 px-7 py-3 text-sm xl:inline-flex"
               >
                 {admissionAction.label}
               </CTAButton>
             ) : null}
-            <a
-              className="inline-flex min-h-10 items-center justify-center rounded-full border border-white/15 bg-white/10 px-3 py-2 text-sm font-bold text-white shadow-sm transition hover:border-yellow-300 hover:bg-yellow-300 hover:text-slate-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300 sm:hidden"
-              href="/search"
-              aria-label="Search public content"
-            >
-              <SearchIcon />
-              <span className="sr-only">Search</span>
-            </a>
           </div>
         </div>
-      </Container>
+      </div>
     </header>
   );
 }

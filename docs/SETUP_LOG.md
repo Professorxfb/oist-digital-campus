@@ -2074,3 +2074,73 @@ The frontend can render these homepage component types when corresponding CMS se
 - The Laravel backend was not running during build and dev verification, so CMS fetch warnings appeared for `127.0.0.1:8000`. The frontend still compiled and served the homepage safely.
 - Until staff create matching `HomepageSection` records in the CMS, the corresponding homepage sections will intentionally stay hidden.
 - Publish homepage section records with titles, subtitles, content, CTA text, CTA URLs, sort order, and item-limit metadata for the public homepage sections that should appear.
+
+---
+
+Date: 2026-06-29
+
+## Frontend Header, Hero, And Feature Card Visual Correction
+
+### Scope
+
+Updated the public frontend visual shell to more closely match the approved Univet Blue Two inspired reference screenshots while keeping all editable public content CMS/API-driven.
+
+No backend code, authentication features, portal implementations, copied WordPress source, copied assets, fake OIST content, or hard-coded public content were added.
+
+### Visual Corrections Made
+
+- Reworked the public header into a floating dark navy rounded bar positioned over the hero area on desktop and mobile.
+- Kept CMS logo, site title, tagline, and CMS-managed dropdown menu rendering in the header.
+- Changed Search to an icon-only header action linking to `/search`.
+- Kept the Apply Now CTA as a yellow rounded pill only when the CMS admission CTA settings are present.
+- Removed Student Portal and Faculty Portal buttons from the main desktop header.
+- Added Student Portal and Faculty Portal placeholder links to the dark navy side drawer, while footer portal links remain available.
+- Added a reference-style side drawer opened by the menu icon, using CMS logo/title, CMS tagline/footer text, CMS menu items, CMS contact details, and structural portal placeholder links.
+- Reworked the hero into a large full-width banner with CMS image/video media, dark navy overlay, yellow CMS subtitle/eyebrow, large serif-style CMS heading, CMS body text, and CMS CTA.
+- Reworked hero feature/info cards into three large overlapping cards beneath the hero, using CMS homepage section data only.
+- Feature cards now support CMS-provided icon/image, title, subtitle, description, CTA label, and CTA URL.
+
+### CMS Fields Used
+
+- Site settings: `logo_path`, `site_title`, `institute_name`, `site_tagline`, `footer_text`, `primary_phone`, `secondary_phone`, `email`, `address`, `admission_cta_text`, `admission_cta_url`, `is_admission_open`.
+- Header menu: CMS-managed `header` menu tree.
+- Hero section: CMS `HomepageSection` with key `hero`, including `title`, `subtitle`, `content`, `image_path`, `video_path`, `button_text`, and `button_url`.
+- Hero feature cards: CMS `HomepageSection` records with feature/stat/info-style keys, using `title`, `subtitle`, `content`, `image_path`, `button_text`, `button_url`, and `sort_order`.
+
+### Manual CMS Setup Needed
+
+- Upload and publish a strong hero image or video through the CMS hero homepage section to match the approved reference style.
+- Create and enable up to three hero feature/info card homepage sections with real CMS-managed icon/image, title, description, and optional CTA content.
+- Configure header menu items in the CMS with parent/child relationships for dropdown navigation.
+- Configure site settings for logo, title, tagline, contact values, and admission CTA.
+- Keep Student Portal and Faculty Portal as placeholder routes only until real authentication and portal workflows are implemented.
+
+### Commands Run
+
+- `Get-Content AGENTS.md`
+- `Get-Content docs\PROJECT_BLUEPRINT.md`
+- `Get-Content docs\CMS_DRIVEN_FRONTEND.md`
+- `Get-Content frontend\src\components\public-site\SiteHeader.tsx`
+- `Get-Content frontend\src\components\public-site\ResponsiveMenu.tsx`
+- `Get-Content frontend\src\components\public-site\CMSHero.tsx`
+- `Get-Content frontend\src\app\page.tsx`
+- `npx tsc --noEmit`
+- `npm run lint`
+- `npm run build`
+- `npm run dev`
+- `Invoke-WebRequest -UseBasicParsing http://localhost:3000/ | Select-Object -ExpandProperty StatusCode`
+- `netstat -ano | findstr ":3000"`
+
+### Verification Results
+
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully.
+- `npm run dev` started successfully at `http://localhost:3000`.
+- A local request to `http://localhost:3000/` returned HTTP 200.
+- The local Next.js dev server was stopped after verification.
+- Browser smoke check confirmed the floating navy header and large serif hero are rendering from CMS-backed data.
+
+### Warnings
+
+- The Laravel backend was not running during build and dev verification, so CMS fetch warnings appeared for `127.0.0.1:8000`. The frontend still compiled, generated routes, and served the homepage safely.
+- To visually match the approved reference closely in production, staff must upload real CMS hero media and create real CMS hero feature/info card records.

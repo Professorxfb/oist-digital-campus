@@ -407,31 +407,71 @@ function HeroFeatureCards({
 }: Readonly<{
   sections: HomepageSection[];
 }>) {
+  const visibleSections = sections.slice(0, 3);
+
   return (
-    <Container className="relative z-10 -mt-10">
-      <div className="grid overflow-hidden rounded-3xl border border-white/80 bg-white shadow-2xl shadow-slate-950/10 md:grid-cols-3">
-        {sections.map((section) => (
+    <Container className="relative z-20 -mt-24 pb-8 lg:-mt-36">
+      <div className="mx-auto grid max-w-6xl gap-5 lg:grid-cols-3">
+        {visibleSections.map((section, index) => {
+          const iconUrl = getCmsAssetUrl(section.image_path);
+          const isAccent = index === 1;
+
+          return (
           <article
             key={section.key}
-            className="border-b border-slate-100 p-6 last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0"
+            className={`min-h-44 rounded-[10px] p-7 shadow-2xl shadow-slate-950/15 sm:p-8 ${
+              isAccent ? "bg-yellow-400 text-slate-950" : "bg-[#082f57] text-white"
+            }`}
           >
-            {section.subtitle ? (
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-700">
-                {section.subtitle}
-              </p>
-            ) : null}
-            {section.title ? (
-              <h2 className="mt-3 text-2xl font-black tracking-tight text-slate-950">
-                {section.title}
-              </h2>
-            ) : null}
-            {section.content ? (
-              <p className="mt-3 text-sm leading-6 text-slate-600">
-                {getTextPreview(section.content, 110)}
-              </p>
+            <div className="flex gap-5">
+              {iconUrl ? (
+                <span
+                  className={`h-16 w-16 shrink-0 rounded-2xl bg-contain bg-center bg-no-repeat ${
+                    isAccent ? "bg-slate-950/5" : "bg-white/10"
+                  }`}
+                  style={{ backgroundImage: `url(${iconUrl})` }}
+                  aria-hidden="true"
+                />
+              ) : null}
+              <div className="min-w-0">
+                {section.subtitle ? (
+                  <p
+                    className={`text-xs font-black uppercase tracking-[0.18em] ${
+                      isAccent ? "text-slate-700" : "text-yellow-300"
+                    }`}
+                  >
+                    {section.subtitle}
+                  </p>
+                ) : null}
+                {section.title ? (
+                  <h2 className="font-serif text-2xl font-bold leading-tight sm:text-3xl">
+                    {section.title}
+                  </h2>
+                ) : null}
+                {section.content ? (
+                  <p
+                    className={`mt-3 text-sm font-semibold leading-7 ${
+                      isAccent ? "text-slate-800" : "text-blue-50"
+                    }`}
+                  >
+                    {getTextPreview(section.content, 130)}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+            {section.button_text && section.button_url ? (
+              <a
+                className={`mt-5 inline-flex text-sm font-black transition ${
+                  isAccent ? "text-slate-950 hover:text-blue-950" : "text-yellow-300 hover:text-white"
+                }`}
+                href={section.button_url}
+              >
+                {section.button_text}
+              </a>
             ) : null}
           </article>
-        ))}
+        );
+        })}
       </div>
     </Container>
   );

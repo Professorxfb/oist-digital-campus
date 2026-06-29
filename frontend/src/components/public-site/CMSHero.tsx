@@ -15,23 +15,24 @@ export function CMSHero({
   const description = getTextPreview(heroSection.content, 220);
   const imageUrl = getCmsAssetUrl(heroSection?.image_path);
   const videoUrl = getCmsAssetUrl(heroSection?.video_path);
+  const ctaLabel = heroSection.button_text ?? (heroSection.button_url ? "Read More" : null);
 
   return (
-    <section className="relative overflow-hidden bg-[#06142d] text-white">
+    <section className="relative min-h-[760px] overflow-hidden bg-[#06142d] text-white lg:min-h-[940px]">
       <div
-        className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(250,204,21,0.16),transparent_28%),linear-gradient(120deg,rgba(2,6,23,0.96),rgba(8,47,73,0.82)_48%,rgba(30,64,175,0.62))]"
+        className="absolute inset-0 bg-[linear-gradient(120deg,rgba(2,6,23,0.98),rgba(8,47,73,0.84)_48%,rgba(30,64,175,0.62))]"
         aria-hidden="true"
       />
       {imageUrl ? (
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-45"
+          className="absolute inset-0 bg-cover bg-center opacity-75"
           style={{ backgroundImage: `url(${imageUrl})` }}
           aria-hidden="true"
         />
       ) : null}
       {videoUrl ? (
         <video
-          className="absolute inset-0 h-full w-full object-cover opacity-45"
+          className="absolute inset-0 h-full w-full object-cover opacity-70"
           src={videoUrl}
           autoPlay
           muted
@@ -40,34 +41,34 @@ export function CMSHero({
         />
       ) : null}
       <div
-        className="absolute inset-0 bg-[linear-gradient(90deg,rgba(2,6,23,0.92),rgba(7,23,51,0.68)_54%,rgba(2,6,23,0.35))]"
+        className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,30,57,0.96),rgba(3,30,57,0.78)_43%,rgba(3,30,57,0.38)_68%,rgba(3,30,57,0.5)),linear-gradient(180deg,rgba(2,6,23,0.2),rgba(2,6,23,0.22))]"
         aria-hidden="true"
       />
       {!imageUrl && !videoUrl ? (
         <div
-          className="absolute inset-0 bg-[linear-gradient(135deg,rgba(30,64,175,0.32),transparent_45%),radial-gradient(circle_at_82%_28%,rgba(250,204,21,0.18),transparent_24%),radial-gradient(circle_at_75%_72%,rgba(14,165,233,0.18),transparent_26%)]"
+          className="absolute inset-0 bg-[linear-gradient(135deg,rgba(30,64,175,0.28),transparent_45%),radial-gradient(circle_at_82%_28%,rgba(250,204,21,0.15),transparent_24%),radial-gradient(circle_at_75%_72%,rgba(14,165,233,0.16),transparent_26%)]"
           aria-hidden="true"
         />
       ) : null}
-      <Container className="relative py-20 sm:py-24 lg:py-32">
+      <Container className="relative flex min-h-[760px] items-center pb-44 pt-40 sm:pt-48 lg:min-h-[940px] lg:pb-72 lg:pt-56">
         <div className="max-w-4xl">
           {heroSection.subtitle ? (
-            <p className="inline-flex rounded-full border border-yellow-300/40 bg-yellow-300/10 px-4 py-2 text-xs font-black uppercase tracking-[0.24em] text-yellow-300">
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-yellow-300 sm:text-sm">
               {heroSection.subtitle}
             </p>
           ) : null}
-          <h1 className="mt-6 max-w-4xl text-5xl font-black leading-[1.02] tracking-tight text-white sm:text-6xl lg:text-7xl">
+          <h1 className="mt-8 max-w-4xl font-serif text-[clamp(4rem,8vw,7.8rem)] font-semibold leading-[0.98] text-white">
             {heroSection.title}
           </h1>
           {description ? (
-            <p className="mt-6 max-w-2xl text-base font-medium leading-8 text-blue-50 sm:text-xl">
+            <p className="mt-7 max-w-2xl text-base font-semibold leading-8 text-blue-50 sm:text-xl">
               {description}
             </p>
           ) : null}
-          {heroSection?.button_text && heroSection.button_url ? (
-            <div className="mt-9">
-              <CTAButton href={heroSection.button_url}>
-                {heroSection.button_text}
+          {ctaLabel && heroSection.button_url ? (
+            <div className="mt-10">
+              <CTAButton href={heroSection.button_url} className="min-h-14 px-8 py-3">
+                {ctaLabel}
               </CTAButton>
             </div>
           ) : null}
