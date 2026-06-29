@@ -26,23 +26,24 @@ export function DetailArticle({
 
   return (
     <article>
-      <section className="border-b border-slate-200 bg-white">
-        <Container className="py-12 sm:py-16">
+      <section className="relative overflow-hidden border-b border-white/10 bg-[#071733] text-white">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_22%,rgba(250,204,21,0.16),transparent_24%),linear-gradient(135deg,#020617,#071733_58%,#0a2a5e)]" aria-hidden="true" />
+        <Container className="relative py-14 sm:py-20">
           <div className="max-w-4xl">
             {visibleMeta.length > 0 ? (
-              <ul className="mb-5 flex flex-wrap gap-2 text-xs font-semibold text-teal-700">
+              <ul className="mb-5 flex flex-wrap gap-2 text-xs font-black uppercase tracking-[0.1em] text-yellow-300">
                 {visibleMeta.map((item) => (
-                  <li key={item} className="rounded-full bg-teal-50 px-3 py-1">
+                  <li key={item} className="rounded-full border border-yellow-300/30 bg-yellow-300/10 px-3 py-1">
                     {item}
                   </li>
                 ))}
               </ul>
             ) : null}
-            <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
+            <h1 className="text-4xl font-black tracking-tight text-white sm:text-6xl">
               {title}
             </h1>
             {summary ? (
-              <p className="mt-5 text-lg leading-8 text-slate-600">{summary}</p>
+              <p className="mt-5 text-lg leading-8 text-blue-50">{summary}</p>
             ) : null}
             {action ? (
               <div className="mt-7">
@@ -53,16 +54,16 @@ export function DetailArticle({
         </Container>
       </section>
 
-      <Container className="py-10 sm:py-14">
+      <Container className="py-12 sm:py-16">
         {shouldShowMedia ? (
           imageUrl ? (
             <div
-              className="mb-8 aspect-[16/9] rounded-lg bg-slate-200 bg-cover bg-center shadow-sm"
+              className="mb-8 aspect-[16/9] rounded-3xl bg-slate-200 bg-cover bg-center shadow-2xl shadow-slate-950/10"
               style={{ backgroundImage: `url(${imageUrl})` }}
               aria-hidden="true"
             />
           ) : (
-            <div className="mb-8 aspect-[16/9] rounded-lg bg-[linear-gradient(135deg,#eff6ff,#ccfbf1_52%,#e2e8f0)] shadow-sm" aria-hidden="true" />
+            <div className="mb-8 aspect-[16/9] rounded-3xl bg-[radial-gradient(circle_at_30%_20%,rgba(250,204,21,0.24),transparent_28%),linear-gradient(135deg,#071733,#1d4ed8_58%,#e0f2fe)] shadow-2xl shadow-slate-950/10" aria-hidden="true" />
           )
         ) : null}
         {body ? (
@@ -70,9 +71,7 @@ export function DetailArticle({
             {body.replace(/<[^>]+>/g, " ").replace(/\n{3,}/g, "\n\n")}
           </div>
         ) : (
-          <p className="max-w-3xl text-base leading-8 text-slate-600">
-            Detailed content will appear here when it is published.
-          </p>
+          null
         )}
       </Container>
     </article>

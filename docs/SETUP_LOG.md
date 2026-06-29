@@ -1805,3 +1805,99 @@ This project is not using WordPress. The visual style must be rebuilt inside the
 ### Manual Next Step
 
 Commit the documentation updates, then implement the frontend redesign in a separate implementation task.
+
+---
+
+Date: 2026-06-29
+
+## Frontend Public Website Redesign
+
+### Scope
+
+Redesigned the public Next.js frontend toward the approved Univet Blue Two inspired premium university style.
+
+No backend application code was modified.
+
+No real authentication, student dashboard, faculty dashboard, attendance, result, fee, or portal business features were created.
+
+No fake OIST public content was added. Editable public content remains CMS/API controlled.
+
+No source code, proprietary assets, copyrighted images, exact HTML/CSS, icons, text, or branding were copied from the reference site.
+
+### Header Redesign
+
+- Reworked the public header into a dark navy university-style header.
+- Logo, site title, and tagline continue to come from CMS site settings.
+- Main menu remains CMS-driven.
+- CMS child menu items now render as desktop dropdowns.
+- Mobile menu supports nested child links.
+- Search is a structural public action linking to `/search`.
+- Student Portal and Faculty Portal links were added as public placeholder links.
+- Apply Now CTA remains controlled by CMS admission CTA settings and uses the yellow accent style.
+- Search menu items from CMS are filtered from the rendered menu to avoid duplicate Search actions.
+
+### Hero Redesign
+
+- Rebuilt the homepage hero as a large navy/blue university banner.
+- Hero title, subtitle/content, image/video, button text, and button URL remain CMS-controlled through homepage section key `hero`.
+- CMS hero image/video renders behind a dark navy overlay.
+- If CMS media is missing, an original abstract navy/blue visual fallback is used.
+- CTA uses the approved yellow accent treatment.
+
+### Homepage Section Behavior
+
+- Production-style homepage sections now hide when the related CMS/API data is empty.
+- Hero feature/stat cards render only from CMS homepage sections whose keys indicate feature/stat/info content.
+- About/institution intro uses the published InstitutionalPage with page type `about`.
+- Latest Notices replaces the previous generic academic/program style section.
+- Pinned notice is highlighted when available.
+- Recent notices show date/category/audience/pinned metadata when provided.
+- Departments replace the reference faculties/departments section using the Departments API.
+- Chairman Message uses LeadershipProfile data, preferring a profile whose name or designation includes `Chairman`, then falling back to the first published leadership profile.
+- Scholarships and Facilities render only when their CMS APIs return records.
+- Video Showcase uses the Videos API and links to `/videos` and `/videos/{slug}`.
+- News and Events render from CMS news and event APIs.
+- Gallery/campus life renders from published gallery albums.
+
+### Footer Redesign
+
+- Footer now uses a darker blue university-style visual treatment.
+- CMS logo/site title, contact information, footer menu, quick links, and social links remain backend-controlled.
+- Student Portal and Faculty Portal placeholder links were added to the footer.
+- Empty footer link groups no longer show large placeholder text.
+
+### Portal Link Behavior
+
+- Created public placeholder pages:
+  - `/student-portal`
+  - `/faculty-portal`
+- Placeholder pages state that portal access is coming soon.
+- No login forms, authentication logic, dashboards, or protected portal features were created.
+
+### Commands Run
+
+- `Get-Content AGENTS.md`
+- `Get-Content docs\PROJECT_BLUEPRINT.md`
+- `Get-Content docs\CMS_DRIVEN_FRONTEND.md`
+- `rg --files frontend\src`
+- `npm run lint`
+- `npm run build`
+- `npm run dev`
+
+### Verification Results
+
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully.
+- `npm run dev` started successfully at `http://localhost:3000`.
+- Build output included the preserved public routes and the new `/student-portal` and `/faculty-portal` placeholder routes.
+
+### Warnings And Manual CMS Setup Steps
+
+- The Laravel backend was not running during `npm run build`, so CMS fetch warnings appeared for `127.0.0.1:8000`. The frontend still built successfully using safe fallback behavior.
+- Publish CMS menu items for the clean main menu structure: About, Academics, Admission, News & Events, Media, and Contact.
+- Add child menu items in Filament for dropdowns.
+- Publish a homepage section with key `hero` for the hero banner.
+- Optionally publish homepage feature/stat/info sections for overlapping hero cards.
+- Publish an `about` InstitutionalPage for the about/institution intro.
+- Publish notices, departments, leadership profiles, scholarships, facilities, videos, news, events, and gallery albums to populate the homepage.
+- Add a LeadershipProfile whose name or designation includes `Chairman` if the chairman message should be selected explicitly.

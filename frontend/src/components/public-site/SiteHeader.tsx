@@ -14,6 +14,7 @@ export function SiteHeader({
 }>) {
   const logoUrl = getCmsAssetUrl(settings.logo_path);
   const title = settings.site_title ?? settings.institute_name ?? "Campus Website";
+  const visibleMenuItems = removeSearchMenuItems(menuItems);
   const admissionAction =
     settings.is_admission_open &&
     settings.admission_cta_text &&
@@ -25,52 +26,72 @@ export function SiteHeader({
       : null;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 shadow-sm backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-white/10 bg-[#071733]/95 text-white shadow-2xl shadow-slate-950/20 backdrop-blur">
       <Container>
         <div className="flex min-h-20 items-center justify-between gap-4">
           <Link className="flex min-w-0 items-center gap-3" href="/">
             {logoUrl ? (
               <span
-                className="h-12 w-12 shrink-0 rounded-md border border-slate-200 bg-white bg-contain bg-center bg-no-repeat shadow-sm"
+                className="h-12 w-12 shrink-0 rounded-full border border-white/15 bg-white bg-contain bg-center bg-no-repeat shadow-sm"
                 style={{ backgroundImage: `url(${logoUrl})` }}
                 aria-hidden="true"
               />
             ) : (
               <span
-                className="h-12 w-12 shrink-0 rounded-md bg-[linear-gradient(135deg,#1d4ed8,#0f766e)]"
+                className="h-12 w-12 shrink-0 rounded-full bg-[linear-gradient(135deg,#facc15,#1d4ed8_54%,#082f49)]"
                 aria-hidden="true"
               />
             )}
             <span className="min-w-0">
-              <span className="block truncate text-base font-semibold tracking-tight text-slate-950 sm:text-lg">
+              <span className="block truncate text-base font-black tracking-tight text-white sm:text-lg">
                 {title}
               </span>
               {settings.site_tagline ? (
-                <span className="mt-0.5 hidden truncate text-xs font-medium text-slate-500 sm:block">
+                <span className="mt-0.5 hidden truncate text-xs font-semibold uppercase tracking-[0.16em] text-blue-100/80 sm:block">
                   {settings.site_tagline}
                 </span>
               ) : null}
             </span>
           </Link>
-          <div className="flex items-center gap-3">
-            <ResponsiveMenu items={menuItems} label="Menu" action={admissionAction} />
+          <div className="flex items-center gap-2">
+            <ResponsiveMenu
+              items={visibleMenuItems}
+              label="Menu"
+              action={admissionAction}
+              links={[
+                { href: "/student-portal", label: "Student Portal" },
+                { href: "/faculty-portal", label: "Faculty Portal" },
+              ]}
+            />
             <a
-              className="hidden min-h-10 items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 sm:inline-flex"
+              className="hidden min-h-10 items-center justify-center rounded-full border border-white/15 bg-white/10 px-3 py-2 text-sm font-bold text-white transition hover:border-yellow-300 hover:bg-yellow-300 hover:text-slate-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300 sm:inline-flex"
               href="/search"
               aria-label="Search public content"
             >
               Search
             </a>
+            <a
+              className="hidden min-h-10 items-center justify-center rounded-full px-3 py-2 text-sm font-bold text-blue-100 transition hover:bg-white/10 hover:text-yellow-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300 lg:inline-flex"
+              href="/student-portal"
+            >
+              Student Portal
+            </a>
+            <a
+              className="hidden min-h-10 items-center justify-center rounded-full px-3 py-2 text-sm font-bold text-blue-100 transition hover:bg-white/10 hover:text-yellow-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300 lg:inline-flex"
+              href="/faculty-portal"
+            >
+              Faculty Portal
+            </a>
             {admissionAction ? (
               <CTAButton
                 href={admissionAction.href}
-                className="hidden min-h-10 px-4 py-2 lg:inline-flex"
+                className="hidden min-h-10 px-4 py-2 xl:inline-flex"
               >
                 {admissionAction.label}
               </CTAButton>
             ) : null}
             <a
-              className="inline-flex min-h-10 items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 sm:hidden"
+              className="inline-flex min-h-10 items-center justify-center rounded-full border border-white/15 bg-white/10 px-3 py-2 text-sm font-bold text-white shadow-sm transition hover:border-yellow-300 hover:bg-yellow-300 hover:text-slate-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300 sm:hidden"
               href="/search"
               aria-label="Search public content"
             >
@@ -81,4 +102,18 @@ export function SiteHeader({
       </Container>
     </header>
   );
+}
+
+function removeSearchMenuItems(items: MenuItem[]): MenuItem[] {
+  return items
+    .filter((item) => {
+      const label = item.label.trim().toLowerCase();
+      const url = item.url.trim().toLowerCase();
+
+      return label !== "search" && url !== "/search";
+    })
+    .map((item) => ({
+      ...item,
+      children: removeSearchMenuItems(item.children),
+    }));
 }

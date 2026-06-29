@@ -18,7 +18,7 @@ export async function PublicSiteShell({
   ]);
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-950">
+    <main className="min-h-screen bg-[#f7f3ea] text-slate-950">
       <SiteHeader settings={siteSettings.data} menuItems={headerMenu.data.items} />
       {children}
       <SiteFooter

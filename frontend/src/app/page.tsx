@@ -4,23 +4,19 @@ import { Container } from "@/components/public-site/Container";
 import { ContentCard } from "@/components/public-site/ContentCard";
 import { CTAButton } from "@/components/public-site/CTAButton";
 import { DepartmentCard } from "@/components/public-site/DepartmentCard";
-import { EmptyState } from "@/components/public-site/EmptyState";
 import { EventCard } from "@/components/public-site/EventCard";
-import { FacultyCard } from "@/components/public-site/FacultyCard";
 import { NoticeStrip } from "@/components/public-site/NoticeStrip";
-import { SectionHeader } from "@/components/public-site/SectionHeader";
 import { SiteFooter } from "@/components/public-site/SiteFooter";
 import { SiteHeader } from "@/components/public-site/SiteHeader";
 import { resolveCmsAssetUrl } from "@/lib/api-client";
-import { findHomepageSection, formatDate, getTextPreview } from "@/lib/cms-display";
+import { findHomepageSection, formatDate, getCmsAssetUrl, getTextPreview } from "@/lib/cms-display";
 import {
   getDepartments,
-  getDownloads,
   getEvents,
   getFacilities,
-  getFacultyProfiles,
   getGalleryAlbums,
   getHomepageSections,
+  getInstitutionalPageByType,
   getLeadershipProfiles,
   getMenuByLocation,
   getNewsPosts,
@@ -30,7 +26,7 @@ import {
   getVideos,
 } from "@/services/cms";
 import type {
-  Download,
+  Event,
   Facility,
   GalleryAlbum,
   HomepageSection,
@@ -38,7 +34,6 @@ import type {
   NewsPost,
   Notice,
   Scholarship,
-  SiteSetting,
   Video,
 } from "@/types/cms";
 
@@ -79,13 +74,12 @@ export default async function Home() {
     newsPosts,
     events,
     galleryAlbums,
-    downloads,
     departments,
-    facultyProfiles,
     scholarships,
     facilities,
     leadershipProfiles,
     videos,
+    aboutPage,
   ] = await Promise.all([
     getSiteSettings(),
     getHomepageSections(),
@@ -96,18 +90,18 @@ export default async function Home() {
     getNewsPosts(),
     getEvents(),
     getGalleryAlbums(),
-    getDownloads(),
     getDepartments(),
-    getFacultyProfiles(),
     getScholarships(),
     getFacilities(),
     getLeadershipProfiles(),
     getVideos(),
+    getInstitutionalPageByType("about"),
   ]);
 
   const settings = siteSettings.data;
   const heroSection = findHomepageSection(homepageSections.data, "hero");
-  const nonHeroSections = homepageSections.data.filter((section) => section.key !== "hero");
+  const heroFeatureSections = getHeroFeatureSections(homepageSections.data);
+  const chairmanProfile = getChairmanProfile(leadershipProfiles.data);
   const hasCmsWarning = [
     siteSettings,
     homepageSections,
@@ -118,190 +112,84 @@ export default async function Home() {
     newsPosts,
     events,
     galleryAlbums,
-    downloads,
     departments,
-    facultyProfiles,
     scholarships,
     facilities,
     leadershipProfiles,
     videos,
+    aboutPage,
   ].some((result) => result.error !== null);
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc,#eef6ff_42%,#f8fafc)] text-slate-950">
+    <div className="min-h-screen bg-[#f7f3ea] text-slate-950">
       <SiteHeader settings={settings} menuItems={headerMenu.data.items} />
       <NoticeStrip notices={notices.data} />
       <main>
         <CMSHero heroSection={heroSection} settings={settings} />
+        {heroFeatureSections.length > 0 ? (
+          <HeroFeatureCards sections={heroFeatureSections} />
+        ) : null}
 
         {hasCmsWarning ? (
           <Container className="pt-8">
-            <div className="rounded-lg border border-amber-200 bg-amber-50/90 p-4 text-sm font-medium text-amber-900 shadow-sm">
-              Some public content is temporarily unavailable. Published content will appear when the CMS connection is ready.
+            <div className="rounded-2xl border border-yellow-300/60 bg-yellow-50 p-4 text-sm font-semibold text-yellow-950 shadow-sm">
+              Some public content is temporarily unavailable. Published CMS content will appear when the connection is ready.
             </div>
           </Container>
         ) : null}
 
-        <AdmissionCTA settings={settings} />
+        {aboutPage.data ? <AboutSection page={aboutPage.data} /> : null}
 
-        {nonHeroSections.length > 0 ? (
-          <section className="py-14 sm:py-20">
-            <SectionHeader
-              eyebrow="Homepage"
-              title="Featured Sections"
-              description="Visible homepage sections are controlled by the CMS."
-            />
-            <Container>
-              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-                {nonHeroSections.map((section) => (
-                  <HomepageSectionCard key={section.key} section={section} />
-                ))}
-              </div>
-            </Container>
-          </section>
-        ) : (
-          <ShellSection title="Featured Homepage Sections">
-            <EmptyState />
-          </ShellSection>
-        )}
+        {notices.data.length > 0 ? (
+          <LatestNoticesSection notices={notices.data} />
+        ) : null}
 
-        <ShellSection title="Latest Notices" eyebrow="Updates" actionHref="/notices">
-          {notices.data.length > 0 ? (
-            <div className="grid gap-4 lg:grid-cols-3">
-              {notices.data.slice(0, 3).map((notice) => (
-                <NoticeCard key={notice.slug} notice={notice} />
-              ))}
-            </div>
-          ) : (
-            <EmptyState />
-          )}
-        </ShellSection>
-
-        <ShellSection title="News Preview" eyebrow="Stories" actionHref="/news" tone="white">
-          {newsPosts.data.length > 0 ? (
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {newsPosts.data.slice(0, 3).map((post) => (
-                <NewsCard key={post.slug} post={post} />
-              ))}
-            </div>
-          ) : (
-            <EmptyState />
-          )}
-        </ShellSection>
-
-        <ShellSection title="Events Preview" eyebrow="Calendar" actionHref="/events">
-          {events.data.length > 0 ? (
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {events.data.slice(0, 3).map((event) => (
-                <EventCard key={event.slug} event={event} />
-              ))}
-            </div>
-          ) : (
-            <EmptyState />
-          )}
-        </ShellSection>
-
-        <ShellSection title="Departments" eyebrow="Academics" actionHref="/departments" tone="white">
-          {departments.data.length > 0 ? (
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {departments.data.length > 0 ? (
+          <PremiumSection
+            eyebrow="Academics"
+            title="Departments"
+            actionHref="/departments"
+            tone="cream"
+          >
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
               {departments.data.slice(0, 6).map((department) => (
                 <DepartmentCard key={department.slug} department={department} />
               ))}
             </div>
-          ) : (
-            <EmptyState />
-          )}
-        </ShellSection>
+          </PremiumSection>
+        ) : null}
 
-        {scholarships.data.length > 0 ? (
-          <ShellSection
-            title="Scholarships"
-            eyebrow="Support"
-            actionHref="/scholarships"
+        {chairmanProfile ? (
+          <ChairmanMessageSection profile={chairmanProfile} />
+        ) : null}
+
+        {scholarships.data.length > 0 || facilities.data.length > 0 ? (
+          <ScholarshipsFacilitiesSection
+            scholarships={scholarships.data}
+            facilities={facilities.data}
+          />
+        ) : null}
+
+        {videos.data.length > 0 ? <VideoShowcase videos={videos.data} /> : null}
+
+        {newsPosts.data.length > 0 || events.data.length > 0 ? (
+          <NewsEventsSection newsPosts={newsPosts.data} events={events.data} />
+        ) : null}
+
+        {galleryAlbums.data.length > 0 ? (
+          <PremiumSection
+            eyebrow="Campus Life"
+            title="Gallery"
+            actionHref="/gallery"
+            tone="cream"
           >
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {scholarships.data.slice(0, 3).map((scholarship) => (
-                <ScholarshipCard key={scholarship.slug} scholarship={scholarship} />
-              ))}
-            </div>
-          </ShellSection>
-        ) : null}
-
-        {facilities.data.length > 0 ? (
-          <ShellSection
-            title="Facilities"
-            eyebrow="Campus"
-            actionHref="/facilities"
-            tone="white"
-          >
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {facilities.data.slice(0, 3).map((facility) => (
-                <FacilityCard key={facility.slug} facility={facility} />
-              ))}
-            </div>
-          </ShellSection>
-        ) : null}
-
-        <ShellSection title="Faculty Profiles" eyebrow="People" actionHref="/faculty">
-          {facultyProfiles.data.length > 0 ? (
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-              {facultyProfiles.data.slice(0, 4).map((profile) => (
-                <FacultyCard key={profile.slug} profile={profile} />
-              ))}
-            </div>
-          ) : (
-            <EmptyState />
-          )}
-        </ShellSection>
-
-        {leadershipProfiles.data.length > 0 ? (
-          <ShellSection
-            title="Leadership"
-            eyebrow="Profiles"
-            actionHref="/leadership"
-            tone="white"
-          >
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {leadershipProfiles.data.slice(0, 3).map((profile) => (
-                <LeadershipCard key={profile.slug} profile={profile} />
-              ))}
-            </div>
-          </ShellSection>
-        ) : null}
-
-        <ShellSection title="Downloads" eyebrow="Resources" actionHref="/downloads" tone="white">
-          {downloads.data.length > 0 ? (
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {downloads.data.slice(0, 6).map((download) => (
-                <DownloadCard key={download.slug} download={download} />
-              ))}
-            </div>
-          ) : (
-            <EmptyState />
-          )}
-        </ShellSection>
-
-        {videos.data.length > 0 ? (
-          <ShellSection title="Videos" eyebrow="Media" actionHref="/videos">
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {videos.data.slice(0, 3).map((video) => (
-                <VideoCard key={video.slug} video={video} />
-              ))}
-            </div>
-          </ShellSection>
-        ) : null}
-
-        <ShellSection title="Gallery Albums" eyebrow="Media" actionHref="/gallery">
-          {galleryAlbums.data.length > 0 ? (
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
               {galleryAlbums.data.slice(0, 3).map((album) => (
                 <GalleryCard key={album.slug} album={album} />
               ))}
             </div>
-          ) : (
-            <EmptyState />
-          )}
-        </ShellSection>
+          </PremiumSection>
+        ) : null}
       </main>
       <SiteFooter
         settings={settings}
@@ -312,138 +200,490 @@ export default async function Home() {
   );
 }
 
-function ShellSection({
-  title,
+function PremiumSection({
   eyebrow,
+  title,
+  description,
   actionHref,
-  actionLabel = "View all",
-  tone = "soft",
+  actionLabel = "View All",
+  tone = "white",
   children,
 }: Readonly<{
+  eyebrow: string;
   title: string;
-  eyebrow?: string;
+  description?: string | null;
   actionHref?: string;
   actionLabel?: string;
-  tone?: "soft" | "white";
+  tone?: "white" | "cream" | "navy";
   children: React.ReactNode;
 }>) {
+  const toneClassName = {
+    white: "bg-white",
+    cream: "bg-[#f7f3ea]",
+    navy: "bg-[#071733] text-white",
+  }[tone];
+  const titleClassName = tone === "navy" ? "text-white" : "text-slate-950";
+  const descriptionClassName = tone === "navy" ? "text-blue-100" : "text-slate-600";
+
   return (
-    <section className={`py-14 sm:py-16 ${tone === "white" ? "bg-white" : ""}`}>
-      <Container className="mb-8">
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+    <section className={`py-16 sm:py-20 ${toneClassName}`}>
+      <Container>
+        <div className="mb-9 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-3xl">
-            {eyebrow ? (
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">
-                {eyebrow}
-              </p>
-            ) : null}
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
+            <p className="text-xs font-black uppercase tracking-[0.22em] text-blue-700">
+              {eyebrow}
+            </p>
+            <h2 className={`mt-3 text-3xl font-black tracking-tight sm:text-5xl ${titleClassName}`}>
               {title}
             </h2>
+            {description ? (
+              <p className={`mt-4 text-base leading-7 ${descriptionClassName}`}>
+                {description}
+              </p>
+            ) : null}
           </div>
           {actionHref ? (
-            <CTAButton href={actionHref} variant="secondary" className="self-start sm:self-auto">
+            <CTAButton
+              href={actionHref}
+              variant={tone === "navy" ? "primary" : "subtle"}
+              className="self-start sm:self-auto"
+            >
               {actionLabel}
             </CTAButton>
           ) : null}
         </div>
+        {children}
       </Container>
-      <Container>{children}</Container>
     </section>
   );
 }
 
-function AdmissionCTA({ settings }: Readonly<{ settings: SiteSetting }>) {
-  const hasAdmissionCta = Boolean(settings.admission_cta_text && settings.admission_cta_url);
-  const admissionCtaUrl = settings.admission_cta_url ?? "";
+function HeroFeatureCards({
+  sections,
+}: Readonly<{
+  sections: HomepageSection[];
+}>) {
+  return (
+    <Container className="relative z-10 -mt-10">
+      <div className="grid overflow-hidden rounded-3xl border border-white/80 bg-white shadow-2xl shadow-slate-950/10 md:grid-cols-3">
+        {sections.slice(0, 3).map((section) => (
+          <article
+            key={section.key}
+            className="border-b border-slate-100 p-6 last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0"
+          >
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-700">
+              {section.subtitle ?? section.key.replaceAll("_", " ")}
+            </p>
+            {section.title ? (
+              <h2 className="mt-3 text-2xl font-black tracking-tight text-slate-950">
+                {section.title}
+              </h2>
+            ) : null}
+            {section.content ? (
+              <p className="mt-3 text-sm leading-6 text-slate-600">
+                {getTextPreview(section.content, 110)}
+              </p>
+            ) : null}
+          </article>
+        ))}
+      </div>
+    </Container>
+  );
+}
+
+function AboutSection({
+  page,
+}: Readonly<{
+  page: {
+    title: string;
+    excerpt?: string | null;
+    body?: string | null;
+    featured_image_path?: string | null;
+  };
+}>) {
+  const imageUrl = getCmsAssetUrl(page.featured_image_path ?? null);
+  const description = page.excerpt ?? getTextPreview(page.body, 260);
 
   return (
-    <section className="border-y border-slate-200 bg-white py-10">
+    <section className="bg-white py-16 sm:py-20">
       <Container>
-        <div className="grid gap-6 overflow-hidden rounded-lg border border-blue-100 bg-[linear-gradient(135deg,#eff6ff,#f8fafc_48%,#ecfeff)] p-6 shadow-sm md:grid-cols-[1fr_auto] md:items-center">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-teal-700">
-              Admission
-            </p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">
-              {settings.is_admission_open
-                ? "Admission information is available"
-                : "Admission information"}
-            </h2>
-            <p className="mt-2 text-sm leading-6 text-slate-600">
-              {hasAdmissionCta
-                ? "Admission call-to-action content is managed from the CMS."
-                : "Admission call-to-action content will appear here when published from the CMS."}
-            </p>
+        <div className="grid items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="relative min-h-[320px] overflow-hidden rounded-3xl bg-[#071733] shadow-2xl shadow-slate-950/10">
+            {imageUrl ? (
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{ backgroundImage: `url(${imageUrl})` }}
+                aria-hidden="true"
+              />
+            ) : (
+              <div
+                className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(250,204,21,0.24),transparent_28%),linear-gradient(135deg,#071733,#1d4ed8_62%,#082f49)]"
+                aria-hidden="true"
+              />
+            )}
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent,rgba(2,6,23,0.28))]" aria-hidden="true" />
           </div>
-          {hasAdmissionCta ? (
-            <CTAButton href={admissionCtaUrl}>
-              {settings.admission_cta_text}
-            </CTAButton>
-          ) : null}
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.22em] text-blue-700">
+              Institution
+            </p>
+            <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-5xl">
+              {page.title}
+            </h2>
+            {description ? (
+              <p className="mt-5 text-base leading-8 text-slate-600 sm:text-lg">
+                {description}
+              </p>
+            ) : null}
+            <div className="mt-8">
+              <CTAButton href="/about" variant="subtle">
+                Learn More
+              </CTAButton>
+            </div>
+          </div>
         </div>
       </Container>
     </section>
   );
 }
 
-function HomepageSectionCard({ section }: Readonly<{ section: HomepageSection }>) {
+function LatestNoticesSection({ notices }: Readonly<{ notices: Notice[] }>) {
+  const pinnedNotice = notices.find((notice) => notice.is_pinned) ?? null;
+  const recentNotices = notices
+    .filter((notice) => notice.slug !== pinnedNotice?.slug)
+    .slice(0, pinnedNotice ? 4 : 5);
+
   return (
-    <ContentCard
-      title={section.title ?? section.key}
-      description={section.subtitle ?? getTextPreview(section.content)}
-      imagePath={section.image_path}
-      href={section.button_url ?? undefined}
-      actionLabel={section.button_text ?? "View"}
-      meta={[`Order ${section.sort_order}`]}
-    />
+    <PremiumSection
+      eyebrow="Updates"
+      title="Latest Notices"
+      description="Published notices from the CMS appear here."
+      actionHref="/notices"
+      tone="navy"
+    >
+      <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
+        {pinnedNotice ? <PinnedNoticeCard notice={pinnedNotice} /> : null}
+        <div className="grid gap-4">
+          {(pinnedNotice ? recentNotices : notices.slice(0, 5)).map((notice) => (
+            <NoticeListCard key={notice.slug} notice={notice} />
+          ))}
+        </div>
+      </div>
+    </PremiumSection>
   );
 }
 
-function NoticeCard({ notice }: Readonly<{ notice: Notice }>) {
+function PinnedNoticeCard({ notice }: Readonly<{ notice: Notice }>) {
   return (
-    <article className="group rounded-lg border border-slate-200 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-lg">
-      <div className="flex flex-wrap gap-2 text-xs font-semibold text-blue-700">
-        {notice.is_pinned ? <span className="rounded-full bg-blue-50 px-2.5 py-1 ring-1 ring-blue-100">Pinned</span> : null}
-        {notice.category ? <span className="rounded-full bg-slate-100 px-2.5 py-1 ring-1 ring-slate-200">{notice.category}</span> : null}
-      </div>
-      <h3 className="mt-4 text-lg font-semibold tracking-tight text-slate-950">
-        <a href={`/notices/${notice.slug}`} className="transition group-hover:text-blue-800">
+    <article className="rounded-3xl border border-yellow-300/30 bg-white p-7 text-slate-950 shadow-2xl shadow-slate-950/20">
+      <span className="inline-flex rounded-full bg-yellow-400 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-slate-950">
+        Pinned
+      </span>
+      <h3 className="mt-5 text-2xl font-black tracking-tight">
+        <a href={`/notices/${notice.slug}`} className="transition hover:text-blue-800">
           {notice.title}
         </a>
       </h3>
       {notice.body ? (
-        <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">
-          {getTextPreview(notice.body, 120)}
+        <p className="mt-4 text-sm leading-7 text-slate-600">
+          {getTextPreview(notice.body, 180)}
         </p>
       ) : null}
-      {notice.published_at ? (
-        <p className="mt-3 text-sm text-slate-500">{formatDate(notice.published_at)}</p>
+      <NoticeMeta notice={notice} className="mt-5 text-slate-500" />
+      <div className="mt-6">
+        <CTAButton href={`/notices/${notice.slug}`} variant="subtle">
+          Read Notice
+        </CTAButton>
+      </div>
+    </article>
+  );
+}
+
+function NoticeListCard({ notice }: Readonly<{ notice: Notice }>) {
+  return (
+    <article className="rounded-2xl border border-white/10 bg-white/10 p-5 transition hover:border-yellow-300/40 hover:bg-white/15">
+      <NoticeMeta notice={notice} className="text-blue-100" />
+      <h3 className="mt-3 text-lg font-black tracking-tight text-white">
+        <a href={`/notices/${notice.slug}`} className="transition hover:text-yellow-300">
+          {notice.title}
+        </a>
+      </h3>
+      {notice.body ? (
+        <p className="mt-2 text-sm leading-6 text-blue-100">
+          {getTextPreview(notice.body, 110)}
+        </p>
       ) : null}
     </article>
   );
 }
 
-function NewsCard({ post }: Readonly<{ post: NewsPost }>) {
+function NoticeMeta({
+  notice,
+  className = "",
+}: Readonly<{
+  notice: Notice;
+  className?: string;
+}>) {
+  const values = [
+    formatDate(notice.published_at),
+    notice.category,
+    notice.audience,
+    notice.is_pinned ? "Pinned" : null,
+  ].filter(Boolean);
+
+  if (values.length === 0) {
+    return null;
+  }
+
+  return (
+    <p className={`text-xs font-bold uppercase tracking-[0.14em] ${className}`}>
+      {values.join(" / ")}
+    </p>
+  );
+}
+
+function ChairmanMessageSection({
+  profile,
+}: Readonly<{
+  profile: LeadershipProfile;
+}>) {
+  const photoUrl = getCmsAssetUrl(profile.photo_path ?? null);
+  const message = getTextPreview(profile.message ?? profile.short_bio, 260);
+
+  return (
+    <section className="bg-white py-16 sm:py-20">
+      <Container>
+        <div className="overflow-hidden rounded-3xl bg-[#071733] shadow-2xl shadow-slate-950/10 lg:grid lg:grid-cols-[0.82fr_1.18fr]">
+          <div className="relative min-h-[320px] bg-blue-950">
+            {photoUrl ? (
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{ backgroundImage: `url(${photoUrl})` }}
+                aria-hidden="true"
+              />
+            ) : (
+              <div
+                className="absolute inset-0 bg-[radial-gradient(circle_at_34%_24%,rgba(250,204,21,0.24),transparent_30%),linear-gradient(135deg,#0f172a,#1d4ed8_65%,#082f49)]"
+                aria-hidden="true"
+              />
+            )}
+          </div>
+          <div className="p-7 text-white sm:p-10 lg:p-12">
+            <p className="text-xs font-black uppercase tracking-[0.22em] text-yellow-300">
+              Chairman Message
+            </p>
+            <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-5xl">
+              {profile.name}
+            </h2>
+            {profile.designation ? (
+              <p className="mt-3 text-sm font-bold uppercase tracking-[0.16em] text-blue-100">
+                {profile.designation}
+              </p>
+            ) : null}
+            {message ? (
+              <p className="mt-6 text-base leading-8 text-blue-50">{message}</p>
+            ) : null}
+            <div className="mt-8">
+              <CTAButton href={`/leadership/${profile.slug}`}>
+                Read Message
+              </CTAButton>
+            </div>
+          </div>
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+function ScholarshipsFacilitiesSection({
+  scholarships,
+  facilities,
+}: Readonly<{
+  scholarships: Scholarship[];
+  facilities: Facility[];
+}>) {
+  return (
+    <PremiumSection
+      eyebrow="Campus Resources"
+      title="Scholarships And Facilities"
+      tone="cream"
+    >
+      <div className="grid gap-6 lg:grid-cols-2">
+        {scholarships.length > 0 ? (
+          <div className="space-y-4">
+            <SectionMiniHeader title="Scholarships" href="/scholarships" />
+            {scholarships.slice(0, 3).map((scholarship) => (
+              <ContentCard
+                key={scholarship.slug}
+                title={scholarship.title}
+                description={scholarship.summary ?? getTextPreview(scholarship.description)}
+                href={`/scholarships/${scholarship.slug}`}
+                meta={[
+                  scholarship.is_featured ? "Featured" : null,
+                  scholarship.deadline ? formatDate(scholarship.deadline) : null,
+                ]}
+                media="none"
+              />
+            ))}
+          </div>
+        ) : null}
+        {facilities.length > 0 ? (
+          <div className="space-y-4">
+            <SectionMiniHeader title="Facilities" href="/facilities" />
+            {facilities.slice(0, 3).map((facility) => (
+              <ContentCard
+                key={facility.slug}
+                title={facility.title}
+                description={facility.summary}
+                imagePath={facility.image_path ?? null}
+                href={`/facilities/${facility.slug}`}
+                meta={[facility.icon]}
+              />
+            ))}
+          </div>
+        ) : null}
+      </div>
+    </PremiumSection>
+  );
+}
+
+function SectionMiniHeader({
+  title,
+  href,
+}: Readonly<{
+  title: string;
+  href: string;
+}>) {
+  return (
+    <div className="flex items-center justify-between gap-4">
+      <h3 className="text-2xl font-black tracking-tight text-slate-950">{title}</h3>
+      <a
+        className="text-sm font-black text-blue-800 underline-offset-4 hover:underline"
+        href={href}
+      >
+        View All
+      </a>
+    </div>
+  );
+}
+
+function VideoShowcase({ videos }: Readonly<{ videos: Video[] }>) {
+  const featuredVideo = videos.find((video) => video.is_featured) ?? videos[0];
+  const otherVideos = videos.filter((video) => video.slug !== featuredVideo.slug).slice(0, 3);
+
+  return (
+    <PremiumSection
+      eyebrow="Video Showcase"
+      title="Campus In Motion"
+      actionHref="/videos"
+      tone="navy"
+    >
+      <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+        <VideoFeatureCard video={featuredVideo} />
+        <div className="grid gap-4">
+          {otherVideos.map((video) => (
+            <VideoCompactCard key={video.slug} video={video} />
+          ))}
+        </div>
+      </div>
+    </PremiumSection>
+  );
+}
+
+function VideoFeatureCard({ video }: Readonly<{ video: Video }>) {
+  const thumbnailUrl = getCmsAssetUrl(video.thumbnail_path ?? null);
+
+  return (
+    <article className="overflow-hidden rounded-3xl border border-white/10 bg-white text-slate-950 shadow-2xl shadow-slate-950/20">
+      <div
+        className="aspect-video bg-cover bg-center"
+        style={{
+          backgroundImage: thumbnailUrl
+            ? `url(${thumbnailUrl})`
+            : "linear-gradient(135deg,#0f172a,#1d4ed8 56%,#facc15)",
+        }}
+        aria-hidden="true"
+      />
+      <div className="p-6">
+        <p className="text-xs font-black uppercase tracking-[0.16em] text-blue-700">
+          {[video.category, formatDate(video.published_at ?? video.event_date)]
+            .filter(Boolean)
+            .join(" / ")}
+        </p>
+        <h3 className="mt-3 text-2xl font-black tracking-tight">{video.title}</h3>
+        {video.excerpt ? (
+          <p className="mt-3 text-sm leading-6 text-slate-600">{video.excerpt}</p>
+        ) : null}
+        <div className="mt-6">
+          <CTAButton href={`/videos/${video.slug}`} variant="subtle">
+            Watch
+          </CTAButton>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function VideoCompactCard({ video }: Readonly<{ video: Video }>) {
   return (
     <ContentCard
-      title={post.title}
-      description={post.excerpt ?? post.category}
-      imagePath={post.featured_image_path ?? null}
-      href={`/news/${post.slug}`}
-      meta={[post.is_featured ? "Featured" : null, post.category, formatDate(post.published_at)]}
+      title={video.title}
+      description={video.excerpt}
+      imagePath={video.thumbnail_path ?? null}
+      href={`/videos/${video.slug}`}
+      actionLabel="Watch"
+      meta={[video.category, formatDate(video.published_at ?? video.event_date)]}
     />
   );
 }
 
-function DownloadCard({ download }: Readonly<{ download: Download }>) {
+function NewsEventsSection({
+  newsPosts,
+  events,
+}: Readonly<{
+  newsPosts: NewsPost[];
+  events: Event[];
+}>) {
   return (
-    <ContentCard
-      title={download.title}
-      description={download.description}
-      filePath={download.file_path}
-      meta={[download.category]}
-    />
+    <PremiumSection
+      eyebrow="News & Events"
+      title="Stories And Calendar"
+      tone="white"
+    >
+      <div className="grid gap-8 xl:grid-cols-2">
+        {newsPosts.length > 0 ? (
+          <div>
+            <SectionMiniHeader title="News" href="/news" />
+            <div className="mt-5 grid gap-5 sm:grid-cols-2">
+              {newsPosts.slice(0, 2).map((post) => (
+                <ContentCard
+                  key={post.slug}
+                  title={post.title}
+                  description={post.excerpt ?? getTextPreview(post.body)}
+                  imagePath={post.featured_image_path ?? null}
+                  href={`/news/${post.slug}`}
+                  meta={[
+                    post.is_featured ? "Featured" : null,
+                    post.category,
+                    formatDate(post.published_at),
+                  ]}
+                />
+              ))}
+            </div>
+          </div>
+        ) : null}
+        {events.length > 0 ? (
+          <div>
+            <SectionMiniHeader title="Events" href="/events" />
+            <div className="mt-5 grid gap-5 sm:grid-cols-2">
+              {events.slice(0, 2).map((event) => (
+                <EventCard key={event.slug} event={event} />
+              ))}
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </PremiumSection>
   );
 }
 
@@ -461,64 +701,25 @@ function GalleryCard({ album }: Readonly<{ album: GalleryAlbum }>) {
   );
 }
 
-function ScholarshipCard({
-  scholarship,
-}: Readonly<{
-  scholarship: Scholarship;
-}>) {
-  return (
-    <ContentCard
-      title={scholarship.title}
-      description={scholarship.summary ?? getTextPreview(scholarship.description)}
-      href={`/scholarships/${scholarship.slug}`}
-      meta={[
-        scholarship.is_featured ? "Featured" : null,
-        scholarship.deadline ? formatDate(scholarship.deadline) : null,
-      ]}
-    />
-  );
+function getHeroFeatureSections(sections: HomepageSection[]): HomepageSection[] {
+  return sections.filter((section) => {
+    const key = section.key.toLowerCase();
+    const hasContent = Boolean(section.title || section.subtitle || section.content);
+
+    return (
+      hasContent &&
+      key !== "hero" &&
+      (key.includes("feature") || key.includes("stat") || key.includes("info"))
+    );
+  });
 }
 
-function FacilityCard({ facility }: Readonly<{ facility: Facility }>) {
+function getChairmanProfile(profiles: LeadershipProfile[]): LeadershipProfile | null {
   return (
-    <ContentCard
-      title={facility.title}
-      description={facility.summary}
-      imagePath={facility.image_path ?? null}
-      href={`/facilities/${facility.slug}`}
-      meta={[facility.icon]}
-    />
-  );
-}
-
-function LeadershipCard({
-  profile,
-}: Readonly<{
-  profile: LeadershipProfile;
-}>) {
-  return (
-    <ContentCard
-      title={profile.name}
-      description={profile.short_bio ?? profile.designation}
-      imagePath={profile.photo_path ?? null}
-      href={`/leadership/${profile.slug}`}
-      meta={[profile.designation]}
-    />
-  );
-}
-
-function VideoCard({ video }: Readonly<{ video: Video }>) {
-  return (
-    <ContentCard
-      title={video.title}
-      description={video.excerpt}
-      imagePath={video.thumbnail_path ?? null}
-      href={`/videos/${video.slug}`}
-      meta={[
-        video.is_featured ? "Featured" : null,
-        video.category,
-        formatDate(video.published_at ?? video.event_date),
-      ]}
-    />
+    profiles.find((profile) =>
+      `${profile.name} ${profile.designation ?? ""}`.toLowerCase().includes("chairman"),
+    ) ??
+    profiles[0] ??
+    null
   );
 }

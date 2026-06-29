@@ -21,55 +21,56 @@ export function CMSHero({
   const videoUrl = getCmsAssetUrl(heroSection?.video_path);
 
   return (
-    <section className="relative overflow-hidden border-b border-slate-200 bg-slate-950 text-white">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(20,184,166,0.28),transparent_32%),linear-gradient(135deg,#020617,#0f2d5c_48%,#0f766e)]" aria-hidden="true" />
-      <Container className="relative py-16 sm:py-20 lg:py-24">
-        <div className="grid items-center gap-10 lg:grid-cols-[1fr_0.82fr]">
-          <div className="max-w-3xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-teal-200">
-              Public Website
-            </p>
-            <h1 className="mt-5 text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl">
-              {title}
-            </h1>
-            <p className="mt-6 max-w-2xl text-base leading-8 text-slate-200 sm:text-lg">
-              {subtitle}
-            </p>
-            {heroSection?.button_text && heroSection.button_url ? (
-              <div className="mt-8">
-                <CTAButton href={heroSection.button_url} variant="secondary">
-                  {heroSection.button_text}
-                </CTAButton>
-              </div>
-            ) : null}
-          </div>
-
-          <div className="relative min-h-[280px] overflow-hidden rounded-lg border border-white/15 bg-white/10 shadow-2xl shadow-slate-950/30">
-            {videoUrl ? (
-              <video
-                className="absolute inset-0 h-full w-full object-cover"
-                src={videoUrl}
-                autoPlay
-                muted
-                loop
-                playsInline
-              />
-            ) : imageUrl ? (
-              <div
-                className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: `url(${imageUrl})` }}
-                aria-hidden="true"
-              />
-            ) : (
-              <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.22),rgba(14,165,233,0.18)_40%,rgba(20,184,166,0.26))]" aria-hidden="true" />
-            )}
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent,rgba(2,6,23,0.25))]" aria-hidden="true" />
-            <div className="absolute bottom-5 left-5 right-5 grid grid-cols-3 gap-3" aria-hidden="true">
-              <span className="h-2 rounded-full bg-white/75" />
-              <span className="h-2 rounded-full bg-teal-200/80" />
-              <span className="h-2 rounded-full bg-blue-200/80" />
+    <section className="relative overflow-hidden bg-[#06142d] text-white">
+      <div
+        className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(250,204,21,0.16),transparent_28%),linear-gradient(120deg,rgba(2,6,23,0.96),rgba(8,47,73,0.82)_48%,rgba(30,64,175,0.62))]"
+        aria-hidden="true"
+      />
+      {imageUrl ? (
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-45"
+          style={{ backgroundImage: `url(${imageUrl})` }}
+          aria-hidden="true"
+        />
+      ) : null}
+      {videoUrl ? (
+        <video
+          className="absolute inset-0 h-full w-full object-cover opacity-45"
+          src={videoUrl}
+          autoPlay
+          muted
+          loop
+          playsInline
+        />
+      ) : null}
+      <div
+        className="absolute inset-0 bg-[linear-gradient(90deg,rgba(2,6,23,0.92),rgba(7,23,51,0.68)_54%,rgba(2,6,23,0.35))]"
+        aria-hidden="true"
+      />
+      {!imageUrl && !videoUrl ? (
+        <div
+          className="absolute inset-0 bg-[linear-gradient(135deg,rgba(30,64,175,0.32),transparent_45%),radial-gradient(circle_at_82%_28%,rgba(250,204,21,0.18),transparent_24%),radial-gradient(circle_at_75%_72%,rgba(14,165,233,0.18),transparent_26%)]"
+          aria-hidden="true"
+        />
+      ) : null}
+      <Container className="relative py-20 sm:py-24 lg:py-32">
+        <div className="max-w-4xl">
+          <p className="inline-flex rounded-full border border-yellow-300/40 bg-yellow-300/10 px-4 py-2 text-xs font-black uppercase tracking-[0.24em] text-yellow-300">
+            Public Website
+          </p>
+          <h1 className="mt-6 max-w-4xl text-5xl font-black leading-[1.02] tracking-tight text-white sm:text-6xl lg:text-7xl">
+            {title}
+          </h1>
+          <p className="mt-6 max-w-2xl text-base font-medium leading-8 text-blue-50 sm:text-xl">
+            {subtitle}
+          </p>
+          {heroSection?.button_text && heroSection.button_url ? (
+            <div className="mt-9">
+              <CTAButton href={heroSection.button_url}>
+                {heroSection.button_text}
+              </CTAButton>
             </div>
-          </div>
+          ) : null}
         </div>
       </Container>
     </section>

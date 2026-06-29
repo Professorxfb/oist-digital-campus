@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
+  --background: #f7f3ea;
   --foreground: #0f172a;
 }
 
@@ -20,6 +20,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 a {
   text-decoration-thickness: 0.08em;
   text-underline-offset: 0.18em;
@@ -32,6 +38,6 @@ summary {
 }
 
 ::selection {
-  background: #0f766e;
-  color: #ffffff;
+  background: #facc15;
+  color: #020617;
 }

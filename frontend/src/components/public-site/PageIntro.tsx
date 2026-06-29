@@ -10,19 +10,20 @@ export function PageIntro({
   description?: string | null;
 }>) {
   return (
-    <section className="border-b border-slate-200 bg-white">
-      <Container className="py-12 sm:py-16">
+    <section className="relative overflow-hidden border-b border-white/10 bg-[#071733] text-white">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_22%,rgba(250,204,21,0.16),transparent_24%),linear-gradient(135deg,#020617,#071733_58%,#0a2a5e)]" aria-hidden="true" />
+      <Container className="relative py-14 sm:py-20">
         <div className="max-w-3xl">
           {eyebrow ? (
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-teal-700">
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-yellow-300">
               {eyebrow}
             </p>
           ) : null}
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
+          <h1 className="mt-3 text-4xl font-black tracking-tight text-white sm:text-6xl">
             {title}
           </h1>
           {description ? (
-            <p className="mt-4 text-base leading-7 text-slate-600 sm:text-lg">
+            <p className="mt-5 text-base font-medium leading-8 text-blue-50 sm:text-lg">
               {description}
             </p>
           ) : null}

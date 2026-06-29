@@ -9,16 +9,16 @@ export function NoticeStrip({ notices }: Readonly<{ notices: Notice[] }>) {
   }
 
   return (
-    <section className="border-b border-blue-100 bg-[linear-gradient(90deg,#eff6ff,#f0fdfa)]">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-2 px-4 py-3 text-sm text-slate-700 sm:flex-row sm:items-center sm:px-6 lg:px-8">
-        <span className="shrink-0 rounded-full bg-blue-700 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-white shadow-sm">
+    <section className="border-b border-yellow-300/30 bg-[#0a2a5e]">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-2 px-4 py-3 text-sm text-blue-50 sm:flex-row sm:items-center sm:px-6 lg:px-8">
+        <span className="shrink-0 rounded-full bg-yellow-400 px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-slate-950 shadow-sm">
           Notice
         </span>
-        <a className="font-semibold text-slate-950 transition hover:text-blue-800" href={`/notices/${notice.slug}`}>
+        <a className="font-bold text-white transition hover:text-yellow-300" href={`/notices/${notice.slug}`}>
           {notice.title}
         </a>
         {notice.published_at ? (
-          <span className="text-slate-500">{formatDate(notice.published_at)}</span>
+          <span className="text-blue-100">{formatDate(notice.published_at)}</span>
         ) : null}
       </div>
     </section>
