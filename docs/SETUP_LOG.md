@@ -1174,3 +1174,126 @@ These helpers are generic, structural, and data-driven. They render only backend
 - The current page remains a development preview only and is not the final public website design.
 - Published backend CMS records are required before real content appears in the preview.
 - Run `php artisan storage:link` on the backend if public CMS media/files should be accessible from browser links.
+
+---
+
+Date: 2026-06-29
+
+## Frontend Public Website Shell And Design System
+
+### Scope
+
+Created a premium, CMS-driven public website shell for the Next.js frontend.
+
+No backend application files were changed.
+
+No student portal, teacher portal, admission portal, authentication UI, admin UI, or inner detail pages were created.
+
+No hard-coded institute public content was added. Editable public content continues to come from the Laravel CMS API.
+
+### Commands Used
+
+Documentation and inspection:
+
+- `Get-Content AGENTS.md`
+- `Get-Content docs\PROJECT_BLUEPRINT.md`
+- `Get-Content docs\CMS_DRIVEN_FRONTEND.md`
+- `Get-Content frontend\package.json`
+- `Get-Content frontend\src\app\page.tsx`
+- `Get-Content frontend\src\app\globals.css`
+- `Get-Content frontend\src\types\cms.ts`
+- `Get-Content frontend\src\services\cms.ts`
+- `Get-Content frontend\src\lib\api-client.ts`
+- `git status --short`
+
+Verification:
+
+- `npm run lint`
+- `npm run build`
+- `npm run dev`
+- `Invoke-WebRequest -Uri http://localhost:3000 -UseBasicParsing`
+- Restarted `npm run dev` after production build verification
+- In-app browser desktop check at `http://localhost:3000`
+- In-app browser mobile viewport check at `390x844`
+
+### Frontend Components Created
+
+Created reusable public website shell components in `frontend/src/components/public-site`:
+
+- `CMSHero`
+- `Container`
+- `ContentCard`
+- `CTAButton`
+- `DepartmentCard`
+- `EmptyState`
+- `EventCard`
+- `FacultyCard`
+- `NoticeStrip`
+- `ResponsiveMenu`
+- `SectionHeader`
+- `SiteFooter`
+- `SiteHeader`
+
+Created CMS display helpers in `frontend/src/lib/cms-display.ts`.
+
+### Design System Choices
+
+- Used a professional educational institution visual style with navy, blue, teal, white, and subtle slate-gray tones.
+- Kept the implementation Tailwind CSS based because shadcn/ui and lucide-react were not installed in the current frontend and no new package installation was requested for this task.
+- Used mobile-first responsive grids, semantic sections, accessible labels, visible focus styles, and restrained card styling.
+- Kept cards at a conservative radius and avoided decorative placeholder content.
+- Used server-rendered CMS data fetching and `revalidate = 60` for the public shell.
+
+### CMS Data Usage
+
+The homepage shell now consumes backend CMS API data for:
+
+- Site title, institute name, tagline, logo, favicon, contact details, admission CTA, and footer text from site settings.
+- Header, footer, and quick links from CMS-managed menus.
+- Hero content from the homepage section with key `hero` when available.
+- Additional homepage sections from enabled CMS homepage sections.
+- Notices, news, events, departments, faculty profiles, downloads, and gallery albums from public CMS APIs.
+
+Generic fallback text is shown only when CMS data is missing or the API is unavailable.
+
+### Homepage Sections Implemented
+
+The public homepage shell includes:
+
+- CMS-driven header
+- Notice strip
+- CMS-driven hero
+- Admission CTA
+- Featured homepage sections
+- Latest notices
+- News preview
+- Events preview
+- Departments preview
+- Faculty profiles preview
+- Downloads preview
+- Gallery albums preview
+- CMS-driven footer
+
+Sections render backend-provided data when available. Empty states are generic and do not represent real institutional content.
+
+### SEO Foundation
+
+- `generateMetadata()` reads CMS site settings for meta title, site title, institute name, meta description, tagline, and favicon.
+- Safe generic metadata is used only when API data is missing.
+
+### Verification Results
+
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully.
+- `npm run dev` started successfully at `http://localhost:3000`.
+- `Invoke-WebRequest` returned HTTP 200 for `http://localhost:3000`.
+- Desktop browser check confirmed header, footer, hero, and public shell sections render.
+- Mobile browser check at `390x844` confirmed no horizontal overflow.
+
+### Warnings And Manual Steps
+
+- During build/dev verification, the frontend logged CMS API fetch failures when the Laravel backend was not reachable at `127.0.0.1:8000`; the public UI still rendered safely.
+- Running `npm run build` while `npm run dev` was active caused a temporary `.next` development manifest error; restarting the dev server resolved it and the homepage returned HTTP 200.
+- Start the backend with `php artisan serve --host=127.0.0.1 --port=8000` to display live CMS data.
+- Ensure `frontend/.env.local` sets `NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000/api/v1` for local development.
+- Run `php artisan storage:link` in the backend if public CMS media or downloads should render from storage URLs.

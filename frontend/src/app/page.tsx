@@ -1,5 +1,18 @@
 import type { Metadata } from "next";
+import { CMSHero } from "@/components/public-site/CMSHero";
+import { Container } from "@/components/public-site/Container";
+import { ContentCard } from "@/components/public-site/ContentCard";
+import { CTAButton } from "@/components/public-site/CTAButton";
+import { DepartmentCard } from "@/components/public-site/DepartmentCard";
+import { EmptyState } from "@/components/public-site/EmptyState";
+import { EventCard } from "@/components/public-site/EventCard";
+import { FacultyCard } from "@/components/public-site/FacultyCard";
+import { NoticeStrip } from "@/components/public-site/NoticeStrip";
+import { SectionHeader } from "@/components/public-site/SectionHeader";
+import { SiteFooter } from "@/components/public-site/SiteFooter";
+import { SiteHeader } from "@/components/public-site/SiteHeader";
 import { resolveCmsAssetUrl } from "@/lib/api-client";
+import { findHomepageSection, formatDate, getTextPreview } from "@/lib/cms-display";
 import {
   getDepartments,
   getDownloads,
@@ -13,10 +26,12 @@ import {
   getSiteSettings,
 } from "@/services/cms";
 import type {
-  Event,
+  Download,
   GalleryAlbum,
   HomepageSection,
-  MenuItem,
+  NewsPost,
+  Notice,
+  SiteSetting,
 } from "@/types/cms";
 
 export const revalidate = 60;
@@ -31,7 +46,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const description =
     settings.meta_description ??
     settings.site_tagline ??
-    "CMS-managed public website preview.";
+    "CMS-managed public website.";
   const faviconUrl = resolveCmsAssetUrl(settings.favicon_path);
 
   return {
@@ -50,6 +65,8 @@ export default async function Home() {
     siteSettings,
     homepageSections,
     headerMenu,
+    footerMenu,
+    quickLinks,
     notices,
     newsPosts,
     events,
@@ -61,6 +78,8 @@ export default async function Home() {
     getSiteSettings(),
     getHomepageSections(),
     getMenuByLocation("header"),
+    getMenuByLocation("footer"),
+    getMenuByLocation("quick_links"),
     getNotices(),
     getNewsPosts(),
     getEvents(),
@@ -71,12 +90,14 @@ export default async function Home() {
   ]);
 
   const settings = siteSettings.data;
-  const displayTitle =
-    settings.site_title ?? settings.institute_name ?? "Campus website";
+  const heroSection = findHomepageSection(homepageSections.data, "hero");
+  const nonHeroSections = homepageSections.data.filter((section) => section.key !== "hero");
   const hasCmsWarning = [
     siteSettings,
     homepageSections,
     headerMenu,
+    footerMenu,
+    quickLinks,
     notices,
     newsPosts,
     events,
@@ -87,401 +108,250 @@ export default async function Home() {
   ].some((result) => result.error !== null);
 
   return (
-    <main className="min-h-screen bg-background px-6 py-8 text-foreground sm:px-10">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
-        <header className="border-b border-foreground/10 pb-6">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-            <div className="max-w-2xl">
-              <p className="text-sm font-medium uppercase tracking-wide text-foreground/60">
-                Development preview
-              </p>
-              <h1 className="mt-3 text-3xl font-semibold sm:text-4xl">
-                {displayTitle}
-              </h1>
-              <p className="mt-3 max-w-2xl text-base leading-7 text-foreground/70">
-                {settings.site_tagline ??
-                  "CMS-controlled content will appear here when available."}
-              </p>
+    <div className="min-h-screen bg-slate-50 text-slate-950">
+      <SiteHeader settings={settings} menuItems={headerMenu.data.items} />
+      <NoticeStrip notices={notices.data} />
+      <main>
+        <CMSHero heroSection={heroSection} settings={settings} />
+
+        {hasCmsWarning ? (
+          <Container className="pt-8">
+            <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+              Some public content is temporarily unavailable. Published content will appear when the CMS connection is ready.
             </div>
-
-            {headerMenu.data.items.length > 0 ? (
-              <nav aria-label="Header menu preview">
-                <MenuList items={headerMenu.data.items} />
-              </nav>
-            ) : null}
-          </div>
-        </header>
-
-        <section
-          aria-live="polite"
-          className="border border-foreground/10 p-4 text-sm text-foreground/70"
-        >
-          {hasCmsWarning
-            ? "Using safe fallback content because one or more CMS API requests could not be completed."
-            : "CMS API connection ready. Rendering public content returned by the backend."}
-        </section>
-
-        <PreviewSection
-          title="Homepage sections"
-          description="Enabled sections are rendered in the order returned by the CMS API."
-          emptyMessage="No enabled homepage sections were returned by the CMS API."
-        >
-          {homepageSections.data.map((section) => (
-            <HomepageSectionPreview key={section.key} section={section} />
-          ))}
-        </PreviewSection>
-
-        <PreviewSection
-          title="Latest Notices"
-          emptyMessage="No published notices were returned by the CMS API."
-        >
-          {notices.data.map((notice) => (
-            <PreviewCard
-              key={notice.slug}
-              title={notice.title}
-              description={notice.category ?? notice.audience ?? null}
-              meta={[
-                notice.is_pinned ? "Pinned" : null,
-                formatDate(notice.published_at),
-              ]}
-              href={`/notices/${notice.slug}`}
-            />
-          ))}
-        </PreviewSection>
-
-        <PreviewSection
-          title="Latest News"
-          emptyMessage="No published news posts were returned by the CMS API."
-        >
-          {newsPosts.data.map((post) => (
-            <PreviewCard
-              key={post.slug}
-              title={post.title}
-              description={post.excerpt ?? post.category ?? null}
-              meta={[
-                post.is_featured ? "Featured" : null,
-                post.author_name ?? null,
-                formatDate(post.published_at),
-              ]}
-              mediaPath={post.featured_image_path ?? null}
-              href={`/news/${post.slug}`}
-            />
-          ))}
-        </PreviewSection>
-
-        <PreviewSection
-          title="Upcoming Events"
-          emptyMessage="No published events were returned by the CMS API."
-        >
-          {events.data.map((event) => (
-            <PreviewCard
-              key={event.slug}
-              title={event.title}
-              description={event.excerpt ?? event.location ?? null}
-              meta={[
-                event.is_featured ? "Featured" : null,
-                formatDate(event.event_date),
-                formatTimeRange(event),
-              ]}
-              mediaPath={event.featured_image_path ?? null}
-              href={`/events/${event.slug}`}
-            />
-          ))}
-        </PreviewSection>
-
-        <PreviewSection
-          title="Departments"
-          emptyMessage="No published departments were returned by the CMS API."
-        >
-          {departments.data.map((department) => (
-            <PreviewCard
-              key={department.slug}
-              title={department.name}
-              description={department.short_description ?? null}
-              meta={[department.icon ?? null]}
-              mediaPath={department.featured_image_path ?? null}
-              href={`/departments/${department.slug}`}
-            />
-          ))}
-        </PreviewSection>
-
-        <PreviewSection
-          title="Faculty Profiles"
-          emptyMessage="No published faculty profiles were returned by the CMS API."
-        >
-          {facultyProfiles.data.map((profile) => (
-            <PreviewCard
-              key={profile.slug}
-              title={profile.name}
-              description={profile.short_bio ?? null}
-              meta={[
-                profile.designation ?? null,
-                profile.department?.name ?? null,
-                profile.email ?? null,
-              ]}
-              mediaPath={profile.photo_path ?? null}
-              href={`/faculty/${profile.slug}`}
-            />
-          ))}
-        </PreviewSection>
-
-        <PreviewSection
-          title="Downloads"
-          emptyMessage="No published downloads were returned by the CMS API."
-        >
-          {downloads.data.map((download) => (
-            <PreviewCard
-              key={download.slug}
-              title={download.title}
-              description={download.description ?? null}
-              meta={[download.category ?? null]}
-              assetPath={download.file_path}
-            />
-          ))}
-        </PreviewSection>
-
-        <PreviewSection
-          title="Gallery Albums"
-          emptyMessage="No published gallery albums were returned by the CMS API."
-        >
-          {galleryAlbums.data.map((album) => (
-            <PreviewCard
-              key={album.slug}
-              title={album.title}
-              description={album.description ?? null}
-              meta={[getGalleryItemCount(album)]}
-              mediaPath={album.cover_image_path ?? null}
-              href={`/gallery/${album.slug}`}
-            />
-          ))}
-        </PreviewSection>
-      </div>
-    </main>
-  );
-}
-
-function PreviewSection({
-  title,
-  description,
-  emptyMessage,
-  children,
-}: {
-  title: string;
-  description?: string;
-  emptyMessage: string;
-  children: React.ReactNode[];
-}) {
-  return (
-    <section aria-labelledby={slugify(title)} className="space-y-4">
-      <div>
-        <h2 id={slugify(title)} className="text-xl font-semibold">
-          {title}
-        </h2>
-        {description ? (
-          <p className="mt-1 text-sm text-foreground/60">{description}</p>
-        ) : null}
-      </div>
-
-      {children.length > 0 ? (
-        <div className="grid gap-4 md:grid-cols-2">{children}</div>
-      ) : (
-        <EmptyState message={emptyMessage} />
-      )}
-    </section>
-  );
-}
-
-function PreviewCard({
-  title,
-  description,
-  meta,
-  mediaPath,
-  assetPath,
-  href,
-}: {
-  title: string;
-  description?: string | null;
-  meta?: Array<string | null | undefined>;
-  mediaPath?: string | null;
-  assetPath?: string | null;
-  href?: string;
-}) {
-  const mediaUrl = resolveCmsAssetUrl(mediaPath ?? null);
-  const assetUrl = resolveCmsAssetUrl(assetPath ?? null);
-  const visibleMeta = (meta ?? []).filter(Boolean);
-
-  return (
-    <article className="border border-foreground/10 p-5">
-      <h3 className="text-base font-semibold">{title}</h3>
-
-      {description ? (
-        <p className="mt-2 text-sm leading-6 text-foreground/70">
-          {description}
-        </p>
-      ) : null}
-
-      {visibleMeta.length > 0 ? (
-        <ul className="mt-3 flex flex-wrap gap-2 text-xs text-foreground/55">
-          {visibleMeta.map((item) => (
-            <li key={item} className="border border-foreground/10 px-2 py-1">
-              {item}
-            </li>
-          ))}
-        </ul>
-      ) : null}
-
-      <div className="mt-4 flex flex-wrap gap-3 text-sm">
-        {href ? (
-          <a className="border border-foreground/20 px-3 py-2" href={href}>
-            View preview route
-          </a>
+          </Container>
         ) : null}
 
-        {mediaUrl ? (
-          <a
-            className="border border-foreground/20 px-3 py-2"
-            href={mediaUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            View media
-          </a>
-        ) : null}
+        <AdmissionCTA settings={settings} />
 
-        {assetUrl ? (
-          <a
-            className="border border-foreground/20 px-3 py-2"
-            href={assetUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            View file
-          </a>
-        ) : null}
-      </div>
-    </article>
-  );
-}
+        {nonHeroSections.length > 0 ? (
+          <section className="py-16">
+            <SectionHeader
+              eyebrow="CMS Layout"
+              title="Featured Homepage Sections"
+              description="Visible homepage sections are controlled by the CMS."
+            />
+            <Container>
+              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                {nonHeroSections.map((section) => (
+                  <HomepageSectionCard key={section.key} section={section} />
+                ))}
+              </div>
+            </Container>
+          </section>
+        ) : (
+          <ShellSection title="Featured Homepage Sections">
+            <EmptyState />
+          </ShellSection>
+        )}
 
-function EmptyState({ message }: { message: string }) {
-  return (
-    <div className="border border-dashed border-foreground/20 p-5 text-sm text-foreground/60">
-      {message}
+        <ShellSection title="Latest Notices" eyebrow="Updates">
+          {notices.data.length > 0 ? (
+            <div className="grid gap-4 lg:grid-cols-3">
+              {notices.data.slice(0, 3).map((notice) => (
+                <NoticeCard key={notice.slug} notice={notice} />
+              ))}
+            </div>
+          ) : (
+            <EmptyState />
+          )}
+        </ShellSection>
+
+        <ShellSection title="News Preview" eyebrow="Stories">
+          {newsPosts.data.length > 0 ? (
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {newsPosts.data.slice(0, 3).map((post) => (
+                <NewsCard key={post.slug} post={post} />
+              ))}
+            </div>
+          ) : (
+            <EmptyState />
+          )}
+        </ShellSection>
+
+        <ShellSection title="Events Preview" eyebrow="Calendar">
+          {events.data.length > 0 ? (
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {events.data.slice(0, 3).map((event) => (
+                <EventCard key={event.slug} event={event} />
+              ))}
+            </div>
+          ) : (
+            <EmptyState />
+          )}
+        </ShellSection>
+
+        <ShellSection title="Departments" eyebrow="Academics">
+          {departments.data.length > 0 ? (
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {departments.data.slice(0, 6).map((department) => (
+                <DepartmentCard key={department.slug} department={department} />
+              ))}
+            </div>
+          ) : (
+            <EmptyState />
+          )}
+        </ShellSection>
+
+        <ShellSection title="Faculty Profiles" eyebrow="People">
+          {facultyProfiles.data.length > 0 ? (
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+              {facultyProfiles.data.slice(0, 4).map((profile) => (
+                <FacultyCard key={profile.slug} profile={profile} />
+              ))}
+            </div>
+          ) : (
+            <EmptyState />
+          )}
+        </ShellSection>
+
+        <ShellSection title="Downloads" eyebrow="Resources">
+          {downloads.data.length > 0 ? (
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {downloads.data.slice(0, 6).map((download) => (
+                <DownloadCard key={download.slug} download={download} />
+              ))}
+            </div>
+          ) : (
+            <EmptyState />
+          )}
+        </ShellSection>
+
+        <ShellSection title="Gallery Albums" eyebrow="Campus Media">
+          {galleryAlbums.data.length > 0 ? (
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {galleryAlbums.data.slice(0, 3).map((album) => (
+                <GalleryCard key={album.slug} album={album} />
+              ))}
+            </div>
+          ) : (
+            <EmptyState />
+          )}
+        </ShellSection>
+      </main>
+      <SiteFooter
+        settings={settings}
+        footerMenuItems={footerMenu.data.items}
+        quickLinks={quickLinks.data.items}
+      />
     </div>
   );
 }
 
-function HomepageSectionPreview({ section }: { section: HomepageSection }) {
-  const imageUrl = resolveCmsAssetUrl(section.image_path);
-  const videoUrl = resolveCmsAssetUrl(section.video_path);
+function ShellSection({
+  title,
+  eyebrow,
+  children,
+}: Readonly<{
+  title: string;
+  eyebrow?: string;
+  children: React.ReactNode;
+}>) {
+  return (
+    <section className="py-14 sm:py-16">
+      <SectionHeader title={title} eyebrow={eyebrow} />
+      <Container>{children}</Container>
+    </section>
+  );
+}
+
+function AdmissionCTA({ settings }: Readonly<{ settings: SiteSetting }>) {
+  const hasAdmissionCta = settings.admission_cta_text && settings.admission_cta_url;
 
   return (
-    <article className="border border-foreground/10 p-5">
-      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <div className="max-w-3xl">
-          <p className="text-xs font-medium uppercase tracking-wide text-foreground/50">
-            {section.key}
-          </p>
-          <h3 className="mt-2 text-lg font-semibold">
-            {section.title ?? section.key}
-          </h3>
-          {section.subtitle ? (
-            <p className="mt-2 text-sm text-foreground/70">{section.subtitle}</p>
-          ) : null}
-          {section.content ? (
-            <p className="mt-3 text-sm leading-6 text-foreground/70">
-              {section.content}
+    <section className="border-b border-slate-200 bg-white py-10">
+      <Container>
+        <div className="grid gap-6 rounded-lg border border-slate-200 bg-slate-50 p-6 shadow-sm md:grid-cols-[1fr_auto] md:items-center">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-teal-700">
+              Admission
             </p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">
+              {settings.is_admission_open
+                ? "Admission information is available"
+                : "Admission information"}
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              {hasAdmissionCta
+                ? "Admission call-to-action content is managed from the CMS."
+                : "Admission call-to-action content will appear here when published from the CMS."}
+            </p>
+          </div>
+          {hasAdmissionCta ? (
+            <CTAButton href={settings.admission_cta_url ?? "#"}>
+              {settings.admission_cta_text}
+            </CTAButton>
           ) : null}
         </div>
+      </Container>
+    </section>
+  );
+}
 
-        <p className="text-sm text-foreground/50">Order {section.sort_order}</p>
+function HomepageSectionCard({ section }: Readonly<{ section: HomepageSection }>) {
+  return (
+    <ContentCard
+      title={section.title ?? section.key}
+      description={section.subtitle ?? getTextPreview(section.content)}
+      imagePath={section.image_path}
+      href={section.button_url ?? undefined}
+      meta={[`Order ${section.sort_order}`]}
+    />
+  );
+}
+
+function NoticeCard({ notice }: Readonly<{ notice: Notice }>) {
+  return (
+    <article className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="flex flex-wrap gap-2 text-xs font-medium text-blue-700">
+        {notice.is_pinned ? <span className="rounded-full bg-blue-50 px-2.5 py-1">Pinned</span> : null}
+        {notice.category ? <span className="rounded-full bg-slate-100 px-2.5 py-1">{notice.category}</span> : null}
       </div>
-
-      <div className="mt-4 flex flex-wrap gap-3 text-sm">
-        {imageUrl ? (
-          <a
-            className="border border-foreground/20 px-3 py-2"
-            href={imageUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            View section image
-          </a>
-        ) : null}
-
-        {videoUrl ? (
-          <a
-            className="border border-foreground/20 px-3 py-2"
-            href={videoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            View section video
-          </a>
-        ) : null}
-
-        {section.button_text && section.button_url ? (
-          <a
-            className="border border-foreground/20 px-3 py-2"
-            href={section.button_url}
-          >
-            {section.button_text}
-          </a>
-        ) : null}
-      </div>
+      <h3 className="mt-4 text-lg font-semibold tracking-tight text-slate-950">
+        <a href={`/notices/${notice.slug}`} className="hover:text-blue-800">
+          {notice.title}
+        </a>
+      </h3>
+      {notice.published_at ? (
+        <p className="mt-3 text-sm text-slate-500">{formatDate(notice.published_at)}</p>
+      ) : null}
     </article>
   );
 }
 
-function MenuList({ items }: { items: MenuItem[] }) {
+function NewsCard({ post }: Readonly<{ post: NewsPost }>) {
   return (
-    <ul className="flex flex-wrap gap-3 text-sm">
-      {items.map((item) => (
-        <li key={`${item.label}-${item.url}`} className="space-y-2">
-          <a
-            className="inline-flex border border-foreground/15 px-3 py-2"
-            href={item.url}
-            target={item.target === "_blank" ? "_blank" : undefined}
-            rel={item.target === "_blank" ? "noopener noreferrer" : undefined}
-          >
-            {item.label}
-          </a>
-          {item.children.length > 0 ? <MenuList items={item.children} /> : null}
-        </li>
-      ))}
-    </ul>
+    <ContentCard
+      title={post.title}
+      description={post.excerpt ?? post.category}
+      imagePath={post.featured_image_path}
+      href={`/news/${post.slug}`}
+      meta={[post.is_featured ? "Featured" : null, post.category, formatDate(post.published_at)]}
+    />
   );
 }
 
-function formatDate(value?: string | null): string | null {
-  if (!value) {
-    return null;
-  }
-
-  return new Intl.DateTimeFormat("en", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  }).format(new Date(value));
+function DownloadCard({ download }: Readonly<{ download: Download }>) {
+  return (
+    <ContentCard
+      title={download.title}
+      description={download.description}
+      filePath={download.file_path}
+      meta={[download.category]}
+    />
+  );
 }
 
-function formatTimeRange(event: Event): string | null {
-  if (!event.start_time && !event.end_time) {
-    return null;
-  }
+function GalleryCard({ album }: Readonly<{ album: GalleryAlbum }>) {
+  const itemCount = album.items ? `${album.items.length} items` : null;
 
-  return [event.start_time, event.end_time].filter(Boolean).join(" - ");
-}
-
-function getGalleryItemCount(album: GalleryAlbum): string | null {
-  if (!album.items) {
-    return null;
-  }
-
-  return `${album.items.length} items`;
-}
-
-function slugify(value: string): string {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return (
+    <ContentCard
+      title={album.title}
+      description={album.description}
+      imagePath={album.cover_image_path}
+      href={`/gallery/${album.slug}`}
+      meta={[itemCount]}
+    />
+  );
 }
