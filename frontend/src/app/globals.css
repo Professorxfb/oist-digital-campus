@@ -46,6 +46,14 @@ summary {
   color: #020617;
 }
 
+.hide-scrollbar {
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 @keyframes hero-fade-up {
   from {
     opacity: 0;

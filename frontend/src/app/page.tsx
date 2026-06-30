@@ -208,11 +208,7 @@ export default async function Home() {
   const communityVoices = communityVoicesSection
     ? getCommunityVoices(communityVoicesSection)
     : [];
-  const effectiveDepartmentsSection =
-    departmentsSection ??
-    (departments.data.length > 0
-      ? createFallbackHomepageSection("departments", "Departments", aboutSection, 0.05)
-      : null);
+  const effectiveDepartmentsSection = departmentsSection;
   const effectiveNoticesSection =
     noticesSection ??
     (notices.data.length > 0
@@ -230,12 +226,6 @@ export default async function Home() {
           node: <AboutSection section={aboutSection} />,
         }
       : null,
-    chairmanSection && chairmanProfile
-      ? {
-          section: chairmanSection,
-          node: <ChairmanMessageSection profile={chairmanProfile} section={chairmanSection} />,
-        }
-      : null,
     effectiveDepartmentsSection && departments.data.length > 0
       ? {
           section: effectiveDepartmentsSection,
@@ -245,6 +235,12 @@ export default async function Home() {
               section={effectiveDepartmentsSection}
             />
           ),
+        }
+      : null,
+    chairmanSection && chairmanProfile
+      ? {
+          section: chairmanSection,
+          node: <ChairmanMessageSection profile={chairmanProfile} section={chairmanSection} />,
         }
       : null,
     effectiveNoticesSection && notices.data.length > 0
@@ -838,86 +834,162 @@ function DepartmentsSection({
   departments: Department[];
   section: HomepageSection;
 }>) {
-  const cardActionLabel =
-    getMetadataText(section.metadata, ["card_button_text", "card_action_label", "item_button_text"]) ??
-    "Explore Department";
-  const gridClassName =
+  if (!section.title || departments.length === 0) {
+    return null;
+  }
+
+  const description = getTextPreview(section.content, 260);
+  const backgroundImageUrl = getCmsAssetUrl(section.image_path);
+  const visibleDots = departments.length > 1 ? departments : [];
+  const carouselClassName =
     departments.length === 1
-      ? "mx-auto max-w-2xl"
-      : "grid gap-5 sm:grid-cols-2 lg:gap-6 xl:grid-cols-3";
+      ? "hide-scrollbar flex snap-x snap-mandatory justify-center overflow-x-auto scroll-smooth pb-5"
+      : "hide-scrollbar flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pb-5 sm:gap-7 lg:gap-8";
+  const cardFrameClassName =
+    departments.length === 1
+      ? "w-full max-w-xl snap-center scroll-mt-28"
+      : "min-w-[82%] snap-start scroll-mt-28 sm:min-w-[47%] lg:min-w-[31.8%]";
 
   return (
-    <PremiumSection section={section} tone="cream">
-      <div className={gridClassName}>
-        {departments.map((department, index) => (
-          <ScrollReveal key={department.slug} delay={index * 90}>
-            <HomepageDepartmentCard
-              actionLabel={cardActionLabel}
-              department={department}
-            />
-          </ScrollReveal>
-        ))}
-      </div>
-    </PremiumSection>
+    <section className="relative isolate overflow-hidden bg-[#061f3f] py-20 text-white sm:py-24 lg:py-28">
+      {backgroundImageUrl ? (
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-35"
+          style={{ backgroundImage: `url(${backgroundImageUrl})` }}
+          aria-hidden="true"
+        />
+      ) : (
+        <div
+          className="absolute inset-0 bg-[radial-gradient(circle_at_18%_16%,rgba(250,204,21,0.12),transparent_24%),radial-gradient(circle_at_82%_28%,rgba(37,99,235,0.22),transparent_30%),linear-gradient(135deg,#031632_0%,#073763_52%,#031632_100%)]"
+          aria-hidden="true"
+        />
+      )}
+      <div className="absolute inset-0 bg-[#05294f]/88" aria-hidden="true" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.24),rgba(2,6,23,0.08)_42%,rgba(2,6,23,0.34))]" aria-hidden="true" />
+      <div className="absolute inset-0 opacity-[0.08] [background-image:linear-gradient(90deg,rgba(255,255,255,0.38)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.38)_1px,transparent_1px)] [background-size:72px_72px]" aria-hidden="true" />
+
+      <Container className="relative">
+        <div className="mb-10 grid gap-8 lg:mb-12 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+          <div className="max-w-3xl">
+            {section.subtitle ? (
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-yellow-300">
+                {section.subtitle}
+              </p>
+            ) : null}
+            <h2 className="mt-4 font-serif text-[clamp(2.55rem,7vw,4rem)] font-bold leading-[1.04] tracking-normal text-white">
+              {section.title}
+            </h2>
+            {description ? (
+              <p className="mt-6 max-w-2xl text-base leading-8 text-blue-50/90">
+                {description}
+              </p>
+            ) : null}
+          </div>
+          {section.button_text && section.button_url ? (
+            <CTAButton
+              href={section.button_url}
+              variant="primary"
+              className="self-start px-7 py-3 lg:self-center"
+            >
+              {section.button_text}
+            </CTAButton>
+          ) : null}
+        </div>
+
+        <div
+          className={carouselClassName}
+          aria-label={`${section.title} carousel`}
+        >
+          {departments.map((department, index) => (
+            <ScrollReveal
+              key={department.slug}
+              className={cardFrameClassName}
+              delay={index * 80}
+            >
+              <HomepageDepartmentCard
+                department={department}
+                index={index}
+              />
+            </ScrollReveal>
+          ))}
+        </div>
+
+        {visibleDots.length > 0 ? (
+          <div className="mt-7 flex items-center justify-center gap-3" aria-label="Department carousel pagination">
+            {visibleDots.map((department, index) => (
+              <a
+                key={`${department.slug}-dot`}
+                href={`#homepage-department-${department.slug}`}
+                className={`h-3 w-3 rounded-full transition duration-300 hover:scale-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-300 ${
+                  index === 0 ? "bg-yellow-300" : "bg-white"
+                }`}
+                aria-label={`Show ${department.name}`}
+              />
+            ))}
+          </div>
+        ) : null}
+      </Container>
+    </section>
   );
 }
 
 function HomepageDepartmentCard({
-  actionLabel,
   department,
+  index,
 }: Readonly<{
-  actionLabel: string;
   department: Department;
+  index: number;
 }>) {
   const imageUrl = getCmsAssetUrl(department.featured_image_path ?? null);
-  const description = department.short_description ?? getTextPreview(department.description, 140);
+  const description = department.short_description ?? getTextPreview(department.description, 88);
   const iconText = getDepartmentIconText(department);
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-[28px] border border-slate-200/80 bg-white shadow-[0_16px_44px_rgba(2,6,23,0.07)] transition duration-300 hover:-translate-y-2 hover:border-yellow-300/70 hover:shadow-[0_28px_70px_rgba(2,6,23,0.15)]">
-      <div className="relative overflow-hidden">
+    <article
+      id={`homepage-department-${department.slug}`}
+      className="group h-full overflow-hidden rounded-[8px] bg-slate-900 shadow-[0_22px_58px_rgba(2,6,23,0.28)] ring-1 ring-white/10 transition duration-300 hover:-translate-y-1 hover:shadow-[0_30px_76px_rgba(2,6,23,0.4)]"
+    >
+      <a
+        href={`/departments/${department.slug}`}
+        className="relative block aspect-[1.28/1] min-h-[300px] overflow-hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-300 sm:min-h-[320px] lg:min-h-[300px]"
+        aria-label={`Open ${department.name}`}
+      >
         {imageUrl ? (
           <div
-            className="aspect-[16/10] bg-slate-100 bg-cover bg-center transition duration-700 group-hover:scale-105"
+            className="absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-105"
             style={{ backgroundImage: `url(${imageUrl})` }}
             aria-hidden="true"
           />
         ) : (
           <div
-            className="flex aspect-[16/10] items-center justify-center bg-[radial-gradient(circle_at_78%_16%,rgba(250,204,21,0.26),transparent_26%),linear-gradient(135deg,#061f3f,#0f4c81_60%,#082f49)]"
+            className="absolute inset-0 flex items-center justify-center bg-[radial-gradient(circle_at_78%_16%,rgba(250,204,21,0.28),transparent_28%),linear-gradient(135deg,#082f49,#0f4c81_58%,#031632)]"
             aria-hidden="true"
           >
-            <span className="flex h-20 w-20 items-center justify-center rounded-full border border-yellow-300/40 bg-white/10 font-serif text-4xl font-bold text-yellow-300 shadow-2xl shadow-slate-950/20">
+            <span className="flex h-24 w-24 items-center justify-center rounded-full border border-yellow-300/40 bg-white/10 font-serif text-5xl font-bold text-yellow-300 shadow-2xl shadow-slate-950/20">
               {iconText}
             </span>
           </div>
         )}
-        <div className="absolute inset-x-0 bottom-0 h-20 bg-[linear-gradient(0deg,rgba(2,6,23,0.38),transparent)]" aria-hidden="true" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.04)_10%,rgba(2,6,23,0.18)_44%,rgba(2,6,23,0.84)_100%)]" aria-hidden="true" />
+        <div className="absolute inset-x-0 bottom-0 p-7 text-white sm:p-8">
+          <p className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-yellow-300/90">
+            {String(index + 1).padStart(2, "0")}
+          </p>
+          <h3 className="font-serif text-[clamp(1.55rem,4vw,2rem)] font-bold leading-tight tracking-normal drop-shadow-sm">
+            {department.name}
+          </h3>
+          {description ? (
+            <p className="mt-3 line-clamp-2 max-w-sm text-sm leading-6 text-blue-50/85">
+              {description}
+            </p>
+          ) : null}
+        </div>
         {department.icon ? (
-          <span className="absolute left-5 top-5 rounded-full bg-yellow-400 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.12em] text-[#061f3f] shadow-lg shadow-slate-950/15">
+          <span className="absolute left-5 top-5 rounded-full bg-yellow-400 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.12em] text-[#061f3f] shadow-lg shadow-slate-950/20">
             {department.icon}
           </span>
         ) : null}
-      </div>
-      <div className="flex flex-1 flex-col p-6 sm:p-7">
-        <h3 className="font-serif text-[clamp(1.7rem,5vw,2.15rem)] font-bold leading-[1.08] tracking-normal text-slate-950 transition group-hover:text-blue-900">
-          <a href={`/departments/${department.slug}`} className="transition hover:text-blue-800">
-            {department.name}
-          </a>
-        </h3>
-        {description ? (
-          <p className="mt-4 line-clamp-3 text-[15px] leading-7 text-slate-600">
-            {description}
-          </p>
-        ) : null}
-        <a
-          href={`/departments/${department.slug}`}
-          className="mt-auto inline-flex w-fit items-center pt-6 text-sm font-black text-[#061f3f] transition duration-300 hover:-translate-y-0.5 hover:text-blue-800"
-        >
-          {actionLabel}
-          <span className="ml-2 h-px w-5 bg-current transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
-        </a>
-      </div>
+      </a>
     </article>
   );
 }
