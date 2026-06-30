@@ -72,7 +72,13 @@ export interface HomepageSection {
   button_text: string | null;
   button_url: string | null;
   sort_order: number;
-  metadata: Record<string, unknown>;
+  metadata: Record<string, unknown> & {
+    gallery_images?: string[] | string | null;
+    video_url?: string | null;
+    youtube_url?: string | null;
+    features?: unknown;
+    feature_list?: unknown;
+  };
 }
 
 export type HeroFeatureCardIconKey =

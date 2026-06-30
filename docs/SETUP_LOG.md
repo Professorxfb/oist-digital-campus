@@ -2649,3 +2649,60 @@ Date: 2026-06-30
 - Browser checks confirmed the About section still appears after the hero feature cards and its CMS image resolves through Laravel storage.
 - Browser checks confirmed no horizontal overflow at 390px, 430px, 768px, 1366px, and 1920px.
 - Interactive Filament media removal/replacement was not performed because no authenticated admin session was used during this pass; the FileUpload configuration is now set up for nullable, deletable, replaceable media.
+
+---
+
+Date: 2026-06-30
+
+## Homepage Drawer, About Media, and Overlay Follow-Up Fix
+
+### Root Cause
+
+- The desktop drawer was rendered inside the header bar, and the header bar used `backdrop-blur`. That CSS property created a containing block for fixed descendants, so the offcanvas panel could appear inset/broken instead of aligning to the viewport.
+- Homepage Sections only exposed one main image and one uploaded video. The `metadata` JSON field existed but did not have clear Filament controls for multiple About/gallery images or external video URLs.
+- The hero overlay was still too visually heavy compared with the approved Univet Blue Two inspired reference.
+- The About section was still closer to a simple image/text split than the reference-style collage/content/video rhythm.
+
+### Changes Made
+
+- Removed header `backdrop-blur` so the fixed drawer can align to the viewport correctly.
+- Polished the drawer overlay to use a clean dark dim layer without blurring the header into a broken state.
+- Updated the drawer panel to a premium right-side navy panel with stronger spacing, yellow square close button, logo/title/tagline area, menu list, portal/action links, and contact details.
+- Removed remaining header top padding so the fixed header sits at the top cleanly.
+- Reduced the hero overlay intensity again while preserving left-side readability for CMS text.
+- Added Filament controls for `metadata.gallery_images` using a multiple public image upload field with preview, reorder, replace, remove, open, download, and nullable behavior.
+- Added a Filament URL field for `metadata.video_url` so staff can manage a YouTube or external video link from the Homepage Section editor.
+- Updated the frontend Homepage Section type to document `gallery_images`, `video_url`, `youtube_url`, `features`, and `feature_list` metadata keys.
+- Reworked the About section to use CMS-controlled multiple images as a reference-style collage when available, with `image_path` preserved as the main fallback.
+- Added CMS-driven feature bullet support from `metadata.features`, `metadata.feature_list`, `metadata.bullets`, or `metadata.items`.
+- Added YouTube URL detection and embed conversion for About section video content; uploaded `video_path` remains the fallback.
+- Improved mobile About ordering: text, feature bullets, CTA, video/media block, then stacked images.
+
+### CMS/Admin Notes
+
+- Existing `image_path` values remain the main image fallback and continue to work.
+- Existing `video_path` values continue to work as uploaded video fallback.
+- Optional About collage images can now be managed in `metadata.gallery_images` from Filament.
+- Optional YouTube/external video can now be managed in `metadata.video_url` from Filament.
+- No new migration was required because the existing `metadata` JSON column stores the additional media controls.
+- Interactive Filament upload/removal testing still requires an authenticated admin session.
+
+### Commands Run
+
+- `npm run lint`
+- `npm run build`
+- `php artisan optimize:clear`
+- `php artisan route:list --path=api/v1`
+- `php artisan test`
+- `npm run dev`
+
+### Verification Results
+
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully with the backend API running.
+- `php artisan optimize:clear` completed successfully.
+- `php artisan route:list --path=api/v1` completed successfully.
+- `php artisan test` completed successfully: 38 tests, 237 assertions.
+- `npm run dev` started successfully on `http://localhost:3000`.
+- Browser automation confirmed the original desktop drawer issue was caused by the header blur containing block; the blur was removed in the final patch.
+- A full post-patch browser automation pass could not be completed because the in-app browser automation session timed out during navigation after the final header patch.

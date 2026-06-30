@@ -26,9 +26,9 @@ export function SiteHeader({
       : null;
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 pt-2 text-white sm:pt-3">
+    <header className="fixed inset-x-0 top-0 z-50 text-white">
       <div className="mx-auto w-[calc(100%-1rem)] max-w-[1620px] sm:w-[88%]">
-        <div className="flex h-[72px] items-center justify-between gap-2 rounded-[10px] border border-white/10 bg-[#061f3f]/95 px-3 shadow-2xl shadow-slate-950/30 backdrop-blur-md sm:h-[86px] sm:gap-4 sm:px-5 lg:px-7">
+        <div className="flex h-[72px] items-center justify-between gap-2 rounded-[10px] border border-white/10 bg-[#061f3f]/95 px-3 shadow-2xl shadow-slate-950/30 sm:h-[86px] sm:gap-4 sm:px-5 lg:px-7">
           <Link className="flex min-w-0 shrink-0 items-center gap-3" href="/">
             {logoUrl ? (
               <span

@@ -77,6 +77,34 @@ class HomepageSectionResource extends Resource
                         TextInput::make('button_text')->maxLength(255),
                         TextInput::make('button_url')->maxLength(255),
                     ])->columns(2),
+                Section::make('Additional CMS Media')
+                    ->description('Optional media for richer section layouts. Existing main image/video fields continue to work as fallbacks.')
+                    ->schema([
+                        FileUpload::make('metadata.gallery_images')
+                            ->label('Gallery Images')
+                            ->disk('public')
+                            ->directory('homepage-sections/gallery')
+                            ->visibility('public')
+                            ->image()
+                            ->multiple()
+                            ->reorderable()
+                            ->appendFiles()
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+                            ->maxSize(4096)
+                            ->maxFiles(8)
+                            ->imagePreviewHeight('140')
+                            ->previewable()
+                            ->openable()
+                            ->downloadable()
+                            ->deletable()
+                            ->nullable()
+                            ->columnSpanFull(),
+                        TextInput::make('metadata.video_url')
+                            ->label('External Video URL')
+                            ->url()
+                            ->maxLength(2048)
+                            ->helperText('Use a YouTube or other public video URL when the section needs an embedded video.'),
+                    ])->columns(2),
                 Section::make('Display Rules')
                     ->schema([
                         TextInput::make('sort_order')

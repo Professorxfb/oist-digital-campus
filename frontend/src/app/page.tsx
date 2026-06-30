@@ -613,50 +613,33 @@ function AboutSection({
   section: HomepageSection;
 }>) {
   const imageUrl = getCmsAssetUrl(section.image_path);
-  const videoUrl = getCmsAssetUrl(section.video_path);
+  const uploadedVideoUrl = getCmsAssetUrl(section.video_path);
+  const externalVideoUrl = getHomepageSectionExternalVideoUrl(section);
+  const youtubeEmbedUrl = externalVideoUrl ? getYouTubeEmbedUrl(externalVideoUrl) : null;
+  const imageUrls = getHomepageSectionGalleryImages(section)
+    .map((path) => getCmsAssetUrl(path))
+    .filter((url): url is string => Boolean(url));
+  const mediaImages = uniqueValues([imageUrl, ...imageUrls].filter((url): url is string => Boolean(url)));
+  const featureItems = getAboutFeatureItems(section);
+  const mediaBadge = getMetadataText(section.metadata, ["badge_text", "media_badge", "stat_text"]);
   const description = getTextPreview(section.content, 360);
-  const hasMedia = Boolean(videoUrl || imageUrl);
+  const hasVideo = Boolean(youtubeEmbedUrl || uploadedVideoUrl || externalVideoUrl);
+  const hasMedia = Boolean(hasVideo || mediaImages.length > 0);
 
   if (!section.title) {
     return null;
   }
 
   return (
-    <section className="relative overflow-hidden bg-[#f7f3ea] py-20 sm:py-24 lg:py-28">
+    <section className="relative overflow-hidden bg-[#f7f3ea] py-16 sm:py-22 lg:py-28">
       <Container>
         <div
-          className={`relative grid items-center gap-10 xl:gap-14 ${
-            hasMedia ? "lg:grid-cols-[0.95fr_1.05fr]" : ""
+          className={`relative grid items-center gap-10 xl:gap-16 ${
+            hasMedia ? "lg:grid-cols-[1.02fr_0.98fr]" : ""
           }`}
         >
-          {hasMedia ? (
-            <div className="relative min-h-[340px] overflow-hidden rounded-[24px] bg-[#061f3f] shadow-[0_26px_64px_rgba(2,6,23,0.16)] sm:min-h-[440px]">
-              {videoUrl ? (
-                <video
-                  className="absolute inset-0 h-full w-full object-cover"
-                  src={videoUrl}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  aria-hidden="true"
-                />
-              ) : imageUrl ? (
-                <div
-                  className="absolute inset-0 bg-cover bg-center transition duration-500 hover:scale-105"
-                  style={{ backgroundImage: `url(${imageUrl})` }}
-                  aria-hidden="true"
-                />
-              ) : null}
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.02),rgba(2,6,23,0.12))]" aria-hidden="true" />
-              <div
-                className="absolute bottom-5 right-5 h-20 w-20 rounded-full border-[9px] border-yellow-300/85 bg-[#061f3f]/80 shadow-2xl shadow-slate-950/20 sm:h-28 sm:w-28"
-                aria-hidden="true"
-              />
-            </div>
-          ) : null}
           <div
-            className={`rounded-[24px] bg-[#fffaf0] p-7 shadow-[0_18px_50px_rgba(2,6,23,0.07)] sm:p-9 ${
+            className={`order-1 rounded-[24px] bg-[#fffaf0] p-6 shadow-[0_18px_50px_rgba(2,6,23,0.07)] sm:p-9 lg:order-2 ${
               hasMedia ? "lg:bg-transparent lg:p-0 lg:shadow-none" : "max-w-4xl"
             }`}
           >
@@ -673,6 +656,32 @@ function AboutSection({
                 {description}
               </p>
             ) : null}
+            {featureItems.length > 0 ? (
+              <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                {featureItems.map((item, index) => (
+                  <div
+                    key={`${item.title}-${index}`}
+                    className="flex gap-3 rounded-2xl border border-blue-100/80 bg-white/70 p-4 shadow-sm"
+                  >
+                    <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-yellow-400 text-[#061f3f]" aria-hidden="true">
+                      <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5">
+                        <path d="M3 8.2 6.4 11.5 13 4.5" />
+                      </svg>
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-sm font-black leading-6 text-[#061f3f]">
+                        {item.title}
+                      </span>
+                      {item.description ? (
+                        <span className="mt-1 block text-sm leading-6 text-slate-600">
+                          {item.description}
+                        </span>
+                      ) : null}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : null}
             {section.button_text && section.button_url ? (
               <div className="mt-8">
                 <CTAButton href={section.button_url}>
@@ -681,9 +690,129 @@ function AboutSection({
               </div>
             ) : null}
           </div>
+          {hasMedia ? (
+            <AboutMediaCollage
+              badge={mediaBadge}
+              imageUrls={mediaImages}
+              uploadedVideoUrl={uploadedVideoUrl}
+              externalVideoUrl={externalVideoUrl}
+              youtubeEmbedUrl={youtubeEmbedUrl}
+            />
+          ) : null}
         </div>
       </Container>
     </section>
+  );
+}
+
+function AboutMediaCollage({
+  badge,
+  externalVideoUrl,
+  imageUrls,
+  uploadedVideoUrl,
+  youtubeEmbedUrl,
+}: Readonly<{
+  badge?: string;
+  externalVideoUrl: string | null;
+  imageUrls: string[];
+  uploadedVideoUrl: string | null;
+  youtubeEmbedUrl: string | null;
+}>) {
+  return (
+    <div className="order-2 space-y-5 lg:order-1">
+      {imageUrls.length > 0 ? (
+        <div className="relative">
+          <div className="grid gap-4 sm:grid-cols-[1.08fr_0.92fr]">
+            <AboutImageTile
+              imageUrl={imageUrls[0]}
+              className="min-h-[310px] sm:min-h-[470px]"
+            />
+            {imageUrls.length > 1 ? (
+              <div className="grid gap-4">
+                {imageUrls.slice(1, 3).map((url, index) => (
+                  <AboutImageTile
+                    key={url}
+                    imageUrl={url}
+                    className={index === 0 ? "min-h-[220px]" : "min-h-[220px]"}
+                  />
+                ))}
+              </div>
+            ) : null}
+          </div>
+          {badge ? (
+            <div className="absolute -bottom-5 left-5 max-w-[15rem] rounded-2xl bg-yellow-400 px-5 py-4 text-sm font-black leading-6 text-[#061f3f] shadow-[0_20px_45px_rgba(2,6,23,0.18)] sm:left-8">
+              {badge}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+      {youtubeEmbedUrl || uploadedVideoUrl || externalVideoUrl ? (
+        <AboutVideoCard
+          externalVideoUrl={externalVideoUrl}
+          uploadedVideoUrl={uploadedVideoUrl}
+          youtubeEmbedUrl={youtubeEmbedUrl}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+function AboutImageTile({
+  className,
+  imageUrl,
+}: Readonly<{
+  className?: string;
+  imageUrl: string;
+}>) {
+  return (
+    <div
+      className={`group overflow-hidden rounded-[24px] bg-[#061f3f] shadow-[0_24px_58px_rgba(2,6,23,0.13)] ${className ?? ""}`}
+    >
+      <div
+        className="h-full min-h-[inherit] bg-cover bg-center transition duration-700 group-hover:scale-105"
+        style={{ backgroundImage: `url(${imageUrl})` }}
+        aria-hidden="true"
+      />
+    </div>
+  );
+}
+
+function AboutVideoCard({
+  externalVideoUrl,
+  uploadedVideoUrl,
+  youtubeEmbedUrl,
+}: Readonly<{
+  externalVideoUrl: string | null;
+  uploadedVideoUrl: string | null;
+  youtubeEmbedUrl: string | null;
+}>) {
+  return (
+    <div className="overflow-hidden rounded-[24px] border border-white/70 bg-white shadow-[0_18px_48px_rgba(2,6,23,0.08)]">
+      {youtubeEmbedUrl ? (
+        <iframe
+          className="aspect-video w-full"
+          src={youtubeEmbedUrl}
+          title="Section video"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+        />
+      ) : uploadedVideoUrl ? (
+        <video className="aspect-video w-full bg-[#061f3f] object-cover" src={uploadedVideoUrl} controls />
+      ) : externalVideoUrl ? (
+        <a
+          className="group flex aspect-video items-center justify-center bg-[#061f3f] text-white transition hover:bg-[#082f57]"
+          href={externalVideoUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span className="flex h-16 w-16 items-center justify-center rounded-full bg-yellow-400 text-[#061f3f] transition duration-300 group-hover:scale-105 group-hover:bg-white" aria-hidden="true">
+            <svg className="ml-1 h-6 w-6" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M4.5 2.8v10.4L12.5 8 4.5 2.8Z" />
+            </svg>
+          </span>
+        </a>
+      ) : null}
+    </div>
   );
 }
 
@@ -1379,6 +1508,108 @@ function getFeeRelatedScholarships(scholarships: Scholarship[]): Scholarship[] {
 
     return feeKeywords.some((keyword) => text.includes(keyword));
   });
+}
+
+type AboutFeatureItem = {
+  title: string;
+  description?: string;
+};
+
+function getHomepageSectionGalleryImages(section: HomepageSection): string[] {
+  const rawImages =
+    section.metadata.gallery_images ??
+    section.metadata.images ??
+    section.metadata.media_images;
+
+  if (Array.isArray(rawImages)) {
+    return rawImages
+      .map((value) => (typeof value === "string" ? value.trim() : ""))
+      .filter(Boolean);
+  }
+
+  if (typeof rawImages === "string" && rawImages.trim().length > 0) {
+    return rawImages
+      .split(",")
+      .map((value) => value.trim())
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
+function getHomepageSectionExternalVideoUrl(section: HomepageSection): string | null {
+  return (
+    getMetadataText(section.metadata, ["video_url", "youtube_url", "embed_url", "external_video_url"]) ??
+    null
+  );
+}
+
+function getAboutFeatureItems(section: HomepageSection): AboutFeatureItem[] {
+  const rawItems =
+    section.metadata.features ??
+    section.metadata.feature_list ??
+    section.metadata.bullets ??
+    section.metadata.items;
+
+  if (!Array.isArray(rawItems)) {
+    return [];
+  }
+
+  return rawItems
+    .map((item): AboutFeatureItem | null => {
+      if (typeof item === "string" && item.trim().length > 0) {
+        return { title: item.trim() };
+      }
+
+      if (!item || typeof item !== "object") {
+        return null;
+      }
+
+      const record = item as Record<string, unknown>;
+      const title = getMetadataText(record, ["title", "label", "heading", "name", "text"]);
+
+      if (!title) {
+        return null;
+      }
+
+      return {
+        title,
+        description: getMetadataText(record, ["description", "body", "content", "summary"]),
+      };
+    })
+    .filter((item): item is AboutFeatureItem => item !== null);
+}
+
+function getYouTubeEmbedUrl(url: string): string | null {
+  try {
+    const parsedUrl = new URL(url);
+    const hostname = parsedUrl.hostname.replace(/^www\./, "");
+    let videoId: string | null = null;
+
+    if (hostname === "youtu.be") {
+      videoId = parsedUrl.pathname.split("/").filter(Boolean)[0] ?? null;
+    }
+
+    if (hostname === "youtube.com" || hostname === "m.youtube.com") {
+      videoId = parsedUrl.searchParams.get("v");
+
+      if (!videoId && parsedUrl.pathname.startsWith("/embed/")) {
+        videoId = parsedUrl.pathname.split("/").filter(Boolean)[1] ?? null;
+      }
+
+      if (!videoId && parsedUrl.pathname.startsWith("/shorts/")) {
+        videoId = parsedUrl.pathname.split("/").filter(Boolean)[1] ?? null;
+      }
+    }
+
+    return videoId ? `https://www.youtube.com/embed/${encodeURIComponent(videoId)}` : null;
+  } catch {
+    return null;
+  }
+}
+
+function uniqueValues(values: string[]): string[] {
+  return Array.from(new Set(values));
 }
 
 function getCommunityVoices(section: HomepageSection): CommunityVoice[] {
