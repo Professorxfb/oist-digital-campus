@@ -650,7 +650,7 @@ function AboutSection({
   const hasMediaImages = mediaImages.length > 0;
   const featureVideoGridClassName =
     featureItems.length > 0 && hasVideo
-      ? "mt-7 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(240px,320px)] lg:items-center xl:gap-6"
+      ? "mt-7 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(260px,340px)] lg:items-center xl:gap-6"
       : "mt-7 grid gap-5";
 
   if (!section.title) {
@@ -814,10 +814,10 @@ function AboutVideoCard({
   const videoHref = externalVideoUrl ?? youtubeEmbedUrl ?? uploadedVideoUrl;
 
   return (
-    <div className="w-full max-w-[320px] justify-self-start overflow-hidden rounded-[14px] border-[5px] border-white bg-white shadow-[0_16px_38px_rgba(2,6,23,0.13)] sm:max-w-[340px] lg:justify-self-end">
+    <div className="aspect-video w-full max-w-[430px] justify-self-center overflow-hidden rounded-[16px] border-[3px] border-white bg-white shadow-[0_16px_38px_rgba(2,6,23,0.13)] max-sm:-mx-6 max-sm:w-[calc(100%+3rem)] sm:max-w-[430px] lg:max-w-[340px] lg:justify-self-end">
       {videoHref ? (
         <a
-          className="group relative flex aspect-video max-h-[170px] min-h-[128px] items-center justify-center overflow-hidden rounded-[9px] bg-[#061f3f] text-white transition-colors duration-300 hover:bg-yellow-400 hover:text-[#061f3f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400"
+          className="group relative flex h-full w-full items-center justify-center overflow-hidden rounded-[12px] bg-[#061f3f] text-white transition duration-300 hover:bg-yellow-400 hover:text-[#061f3f] hover:shadow-[0_20px_42px_rgba(2,6,23,0.18)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400"
           href={videoHref}
           target="_blank"
           rel="noopener noreferrer"
@@ -831,7 +831,7 @@ function AboutVideoCard({
             />
           ) : null}
           <span className="absolute inset-0 bg-slate-950/18 transition-colors duration-300 group-hover:bg-yellow-400/12" aria-hidden="true" />
-          <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#061f3f] shadow-[0_12px_24px_rgba(2,6,23,0.22)] transition-colors duration-300 group-hover:bg-yellow-400 group-hover:text-[#061f3f] sm:h-14 sm:w-14" aria-hidden="true">
+          <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#061f3f] shadow-[0_12px_24px_rgba(2,6,23,0.22)] transition duration-300 group-hover:scale-105 group-hover:bg-yellow-400 group-hover:text-[#061f3f] sm:h-14 sm:w-14" aria-hidden="true">
             <svg className="ml-1 h-5 w-5 sm:h-6 sm:w-6" viewBox="0 0 16 16" fill="currentColor">
               <path d="M4.5 2.8v10.4L12.5 8 4.5 2.8Z" />
             </svg>

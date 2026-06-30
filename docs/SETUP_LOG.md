@@ -3062,3 +3062,48 @@ Fixed only the About section video placement and styling. Header, hero, hero fea
 - Browser MCP verified the local About section no longer contains a large iframe or video element in the section.
 - Browser MCP verified no horizontal overflow on desktop, 390px mobile, or 430px mobile.
 - Browser MCP verified the mobile video preview remains compact at 390px and 430px.
+
+---
+
+Date: 2026-06-30
+
+## About Video Card Sizing Polish
+
+### Scope
+
+Fixed only the About section compact video thumbnail/card sizing and responsive presentation. Header, hero, hero feature cards, Academics & Programs, backend/CMS logic, and other homepage sections were not redesigned.
+
+### Files Changed
+
+- `frontend/src/app/page.tsx`
+- `docs/SETUP_LOG.md`
+
+### CSS/Layout Fixes
+
+- Removed the conflicting inner video card height constraints by moving the 16:9 sizing responsibility to the outer card wrapper.
+- Replaced the previous thick white frame with a thin `3px` white border.
+- Made the video link fill the wrapper with `h-full w-full`, so the thumbnail area matches the card height without an empty bottom gap.
+- Kept the thumbnail as a full-cover background image and verified it fills the clickable card area.
+- Constrained desktop video width to a compact `340px` maximum in the About text/right content area.
+- Let mobile video break out only across the About text panel padding with `max-sm:-mx-6 max-sm:w-[calc(100%+3rem)]`, producing a clean full-width card within the safe content margin.
+- Preserved rounded corners, soft shadow, CMS-controlled video/thumbnail data, centered play button, and visible hover transition/scale treatment.
+
+### Commands Run
+
+- `npm run lint`
+- `npm run build`
+- `npm run dev -- --hostname 127.0.0.1 --port 3000`
+- `npm run dev -- --hostname 127.0.0.1 --port 3001`
+
+### Verification Results
+
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully.
+- An initial `npm run build` attempt failed with a transient Next/Turbopack `Cannot find module for page: /_error` error while the dev server was also running. After stopping the dev server and rerunning the build cleanly, it passed.
+- `http://127.0.0.1:3000` was blocked by an inaccessible stale `node` listener returning `500 Internal Server Error`; Windows denied stopping that process from this session, so final browser verification used the same frontend on `http://127.0.0.1:3001`.
+- Browser MCP opened the Univet Blue Two reference page and confirmed the reference About video treatment uses a compact framed media area with a centered popup play control.
+- Browser MCP verified local desktop `1366px`: card `340px x 191.3px`, 16:9 aspect, `3px` frame on each side, thumbnail fills link, play button centered, no horizontal overflow.
+- Browser MCP verified local desktop `1920px`: card `340px x 191.3px`, 16:9 aspect, `3px` frame on each side, thumbnail fills link, play button centered, no horizontal overflow.
+- Browser MCP verified local tablet `768px`: card `430px x 241.9px`, 16:9 aspect, thumbnail fills link, play button centered, no horizontal overflow.
+- Browser MCP verified local mobile `430px`: card `383px x 215.4px`, full-width within safe content margin, 16:9 aspect, thumbnail fills link, play button centered, no horizontal overflow.
+- Browser MCP verified local mobile `390px`: card `343px x 192.9px`, full-width within safe content margin, 16:9 aspect, thumbnail fills link, play button centered, no horizontal overflow.
