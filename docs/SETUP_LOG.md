@@ -2706,3 +2706,40 @@ Date: 2026-06-30
 - `npm run dev` started successfully on `http://localhost:3000`.
 - Browser automation confirmed the original desktop drawer issue was caused by the header blur containing block; the blur was removed in the final patch.
 - A full post-patch browser automation pass could not be completed because the in-app browser automation session timed out during navigation after the final header patch.
+
+---
+
+Date: 2026-06-30
+
+## Homepage Section Metadata Persistence and Sticky Header Follow-Up
+
+### Root Cause
+
+- `HomepageSectionResource` had nested fields for `metadata.gallery_images` and `metadata.video_url`, but it also had a root `metadata` key-value field in the same form. The root metadata field could overwrite the nested metadata state on save, so uploaded gallery images and external video URLs did not persist in the structure expected by the public API.
+- The public homepage sections API returned empty metadata as an empty array. For frontend consumers expecting object-style metadata keys, an empty object is safer and more consistent.
+- The public header remained a centered floating bar while scrolled. The approved Univet-inspired behavior requires the top header to stay floating/rounded at the top of the page, then become a full-width navy sticky bar after scroll.
+
+### Changes Made
+
+- Removed the conflicting root `metadata` key-value field from the Homepage Section Filament form.
+- Kept the CMS-specific nested controls for `metadata.gallery_images` and `metadata.video_url` as the source of truth for additional Homepage Section media.
+- Normalized public API serialization so `metadata` is returned as an object while preserving existing fields such as `image_path`, `video_path`, `title`, `subtitle`, `content`, `button_text`, and `button_url`.
+- Added a small scroll-state listener to the public header.
+- Preserved the normal top header as a centered floating rounded navy bar.
+- Updated the scrolled header state to become a full-width navy bar with centered max-width inner content, no top gap, no rounded outer edge, and no layout jump.
+
+### Verification Results
+
+- `php artisan route:list --path=api/v1` completed successfully and confirmed the public API routes remain registered.
+- `php artisan optimize:clear` could not complete because the local MySQL/cache database connection was unavailable: `SQLSTATE[HY000] [2002] No connection could be made`.
+- `php artisan test` could not complete because the same local MySQL connection issue prevented database-backed tests from running.
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully. Build-time CMS fetch warnings appeared because the Laravel API was unavailable, and the frontend fallback behavior handled them safely.
+- `npm run dev` started successfully on `http://localhost:3000`.
+
+### Manual Verification Needed
+
+- Start local MySQL and Laravel, then reopen a Homepage Section in Filament and confirm `metadata.gallery_images` and `metadata.video_url` persist after save.
+- Confirm `GET /api/v1/homepage-sections` returns metadata in this shape: `{"gallery_images":["homepage-sections/gallery/example.jpg"],"video_url":"https://www.youtube.com/watch?v=..."}`.
+- Confirm the frontend About section renders gallery images and the YouTube embed when those CMS fields are populated.
+- Browser-check the header at the page top and after scrolling: top state should be floating/rounded, scrolled state should be full-width navy with centered content.

@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { CTAButton } from "@/components/public-site/CTAButton";
 import { HeaderSearch } from "@/components/public-site/HeaderSearch";
 import { ResponsiveMenu } from "@/components/public-site/ResponsiveMenu";
@@ -24,11 +27,37 @@ export function SiteHeader({
           label: settings.admission_cta_text,
         }
       : null;
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const updateHeaderState = () => {
+      setIsScrolled(window.scrollY > 24);
+    };
+
+    updateHeaderState();
+    window.addEventListener("scroll", updateHeaderState, { passive: true });
+
+    return () => window.removeEventListener("scroll", updateHeaderState);
+  }, []);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 text-white">
-      <div className="mx-auto w-[calc(100%-1rem)] max-w-[1620px] sm:w-[88%]">
-        <div className="flex h-[72px] items-center justify-between gap-2 rounded-[10px] border border-white/10 bg-[#061f3f]/95 px-3 shadow-2xl shadow-slate-950/30 sm:h-[86px] sm:gap-4 sm:px-5 lg:px-7">
+    <header
+      className={`fixed inset-x-0 top-0 z-50 text-white transition-all duration-300 ${
+        isScrolled ? "bg-[#061f3f] shadow-2xl shadow-slate-950/25" : "bg-transparent"
+      }`}
+    >
+      <div
+        className={`mx-auto transition-all duration-300 ${
+          isScrolled ? "w-full max-w-none" : "w-[calc(100%-1rem)] max-w-[1620px] sm:w-[88%]"
+        }`}
+      >
+        <div
+          className={`mx-auto flex h-[72px] items-center justify-between gap-2 border px-3 transition-all duration-300 sm:h-[86px] sm:gap-4 sm:px-5 lg:px-7 ${
+            isScrolled
+              ? "max-w-[1620px] rounded-none border-transparent bg-transparent shadow-none"
+              : "rounded-[10px] border-white/10 bg-[#061f3f]/95 shadow-2xl shadow-slate-950/30"
+          }`}
+        >
           <Link className="flex min-w-0 shrink-0 items-center gap-3" href="/">
             {logoUrl ? (
               <span

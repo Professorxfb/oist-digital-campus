@@ -77,7 +77,7 @@ class PublicCmsController extends Controller
                 'button_text' => $section->button_text,
                 'button_url' => $section->button_url,
                 'sort_order' => $section->sort_order,
-                'metadata' => $section->metadata ?? [],
+                'metadata' => (object) ($section->metadata ?? []),
             ]);
 
         return $this->publicResponse($sections, 'Homepage sections retrieved.');

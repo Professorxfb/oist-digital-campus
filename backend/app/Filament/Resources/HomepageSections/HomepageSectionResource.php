@@ -10,7 +10,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -113,7 +112,6 @@ class HomepageSectionResource extends Resource
                             ->default(0)
                             ->required(),
                         Toggle::make('is_enabled')->inline(false),
-                        KeyValue::make('metadata')->columnSpanFull(),
                     ])->columns(2),
             ]);
     }
