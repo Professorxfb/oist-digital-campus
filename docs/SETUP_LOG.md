@@ -2743,3 +2743,72 @@ Date: 2026-06-30
 - Confirm `GET /api/v1/homepage-sections` returns metadata in this shape: `{"gallery_images":["homepage-sections/gallery/example.jpg"],"video_url":"https://www.youtube.com/watch?v=..."}`.
 - Confirm the frontend About section renders gallery images and the YouTube embed when those CMS fields are populated.
 - Browser-check the header at the page top and after scrolling: top state should be floating/rounded, scrolled state should be full-width navy with centered content.
+
+---
+
+Date: 2026-06-30
+
+## Homepage Latest Notices Section
+
+### Scope
+
+Built and polished the CMS-driven Latest Notices homepage section after the completed hero, hero feature cards, and About section. Header, hero, search, offcanvas, sticky header, hero cards, and About design were preserved.
+
+### Files Changed
+
+- `backend/app/Http/Controllers/Api/V1/PublicCmsController.php`
+- `frontend/src/app/page.tsx`
+- `frontend/src/types/cms.ts`
+- `docs/SETUP_LOG.md`
+
+### CMS/Admin Control Behavior
+
+- Notices are managed through the existing Filament `Public CMS > Notices` resource.
+- Notice fields already supported: title, slug, body/details, category, audience, attachment, pinned status, published status, published date, expiry date, sort order, and SEO metadata.
+- Homepage section title, subtitle/eyebrow, description/body, button text/link, enabled status, and sort order remain controlled by the existing `HomepageSection` CMS resource when a `latest_notices` section record exists.
+- If published notices exist but the `latest_notices` Homepage Section record has not been created yet, the frontend uses a minimal safe fallback title so the section can render during setup. Staff should create the CMS section record for full backend control.
+- No static or fake notice content was added to the frontend.
+
+### API Behavior
+
+- `GET /api/v1/notices` already returned only published, non-expired notices.
+- Notice ordering remains pinned first, then sort order, then newest published date, then newest ID.
+- The public notices list now includes a computed `excerpt` generated from the notice body so the homepage cards can show a short public-safe preview without exposing the full body on list responses.
+- Detail endpoint behavior is unchanged: `GET /api/v1/notices/{slug}` returns the full body only for published notices.
+
+### Frontend Implementation Notes
+
+- Added a Univet-inspired cream/off-white Latest Notices section using the existing CMS section render flow.
+- Rendered one featured notice from the pinned notice when available, otherwise the first published notice.
+- Rendered remaining notices as premium notice-board cards with date tiles, metadata, title, excerpt, and structural `Read More` links.
+- Added scroll reveal/stagger behavior using the existing `ScrollReveal` component.
+- Added hover lift, border/accent motion, and existing yellow/navy button behavior.
+- The section hides when no published notices exist.
+
+### Commands Run
+
+- `php artisan optimize:clear`
+- `php artisan route:list --path=api/v1`
+- `php artisan test`
+- `npm run lint`
+- `npm run build`
+- `npm run dev`
+- `Invoke-RestMethod http://127.0.0.1:8000/api/v1/homepage-sections`
+- `Invoke-RestMethod http://127.0.0.1:8000/api/v1/notices`
+
+### Verification Results
+
+- `php artisan optimize:clear` completed successfully.
+- `php artisan route:list --path=api/v1` completed successfully and confirmed `GET /api/v1/notices` remains registered.
+- `php artisan test` completed successfully: 38 tests, 237 assertions.
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully with Laravel running.
+- `npm run dev` started successfully on `http://localhost:3000`.
+- Direct API check confirmed `/api/v1/notices` returns published notice data with `title`, `slug`, `excerpt`, `category`, `is_pinned`, and `published_at`.
+- Browser MCP successfully opened and visually inspected the Univet reference page earlier in this pass, but browser navigation to local Next URLs was blocked by the browser client with `net::ERR_BLOCKED_BY_CLIENT` for `localhost`, `127.0.0.1`, and the LAN URL. Local visual browser verification should be repeated after the browser blocker is disabled.
+
+### Manual Admin Setup Needed
+
+- Create a `HomepageSection` record with key `latest_notices` to control the section title, eyebrow/subtitle, description, button text/link, enabled status, and sort order from Filament.
+- Publish real approved Notice records in Filament. The homepage section will stay hidden if no published notices exist.
+- Remove any local-only demo content before production.

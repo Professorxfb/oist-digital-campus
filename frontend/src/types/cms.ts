@@ -118,6 +118,7 @@ export interface Menu {
 export interface Notice {
   title: string;
   slug: string;
+  excerpt?: string | null;
   body?: string | null;
   category?: string | null;
   audience?: string | null;

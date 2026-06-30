@@ -596,6 +596,7 @@ class PublicCmsController extends Controller
         return array_filter([
             'title' => $notice->title,
             'slug' => $notice->slug,
+            'excerpt' => $this->plainText($notice->body),
             'body' => $includeBody ? $notice->body : null,
             'category' => $notice->category,
             'audience' => $notice->audience,

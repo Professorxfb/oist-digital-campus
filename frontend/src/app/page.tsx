@@ -208,6 +208,11 @@ export default async function Home() {
   const communityVoices = communityVoicesSection
     ? getCommunityVoices(communityVoicesSection)
     : [];
+  const effectiveNoticesSection =
+    noticesSection ??
+    (notices.data.length > 0
+      ? createFallbackHomepageSection("latest_notices", "Latest Notices", aboutSection)
+      : null);
   const nullableSectionBlocks: Array<SectionBlock | null> = [
     aboutSection
       ? {
@@ -232,13 +237,13 @@ export default async function Home() {
           ),
         }
       : null,
-    noticesSection && notices.data.length > 0
+    effectiveNoticesSection && notices.data.length > 0
       ? {
-          section: noticesSection,
+          section: effectiveNoticesSection,
           node: (
             <LatestNoticesSection
-              notices={limitItems(notices.data, noticesSection)}
-              section={noticesSection}
+              notices={limitItems(notices.data, effectiveNoticesSection)}
+              section={effectiveNoticesSection}
             />
           ),
         }
@@ -841,77 +846,188 @@ function LatestNoticesSection({
   notices: Notice[];
   section: HomepageSection;
 }>) {
-  const pinnedNotice = notices.find((notice) => notice.is_pinned) ?? null;
-  const recentNotices = notices.filter((notice) => notice.slug !== pinnedNotice?.slug);
+  const featuredNotice = notices.find((notice) => notice.is_pinned) ?? notices[0] ?? null;
+  const recentNotices = notices.filter((notice) => notice.slug !== featuredNotice?.slug);
+  const hasRecentNotices = recentNotices.length > 0;
 
   return (
-    <PremiumSection section={section} tone="navy">
-      <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        {pinnedNotice ? <PinnedNoticeCard notice={pinnedNotice} /> : null}
-        <div className="grid gap-4">
-          {(pinnedNotice ? recentNotices : notices).map((notice) => (
-            <NoticeListCard key={notice.slug} notice={notice} />
-          ))}
-        </div>
+    <PremiumSection section={section} tone="cream">
+      <div
+        className={`grid gap-6 xl:gap-8 ${
+          hasRecentNotices ? "lg:grid-cols-[0.92fr_1.08fr]" : "mx-auto max-w-3xl"
+        }`}
+      >
+        {featuredNotice ? (
+          <ScrollReveal delay={90}>
+            <FeaturedNoticeCard notice={featuredNotice} />
+          </ScrollReveal>
+        ) : null}
+        {hasRecentNotices ? (
+          <div className="grid gap-4 sm:gap-5">
+            {recentNotices.map((notice, index) => (
+              <ScrollReveal key={notice.slug} delay={140 + index * 80}>
+                <NoticeListCard notice={notice} />
+              </ScrollReveal>
+            ))}
+          </div>
+        ) : null}
       </div>
     </PremiumSection>
   );
 }
 
-function PinnedNoticeCard({ notice }: Readonly<{ notice: Notice }>) {
+function FeaturedNoticeCard({ notice }: Readonly<{ notice: Notice }>) {
+  const noticeSummary = getNoticeSummary(notice, 190);
+
   return (
-    <article className="group relative overflow-hidden rounded-[26px] bg-yellow-400 p-8 text-slate-950 shadow-[0_24px_70px_rgba(2,6,23,0.24)] transition duration-300 hover:-translate-y-1.5">
+    <article className="group relative flex h-full min-h-[360px] flex-col overflow-hidden rounded-[28px] bg-[#061f3f] p-7 text-white shadow-[0_26px_78px_rgba(2,6,23,0.16)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_34px_90px_rgba(2,6,23,0.24)] sm:p-8 lg:p-10">
       <div
-        className="absolute -right-8 -top-8 h-32 w-32 rounded-full border-[18px] border-white/30"
+        className="absolute -right-12 -top-12 h-40 w-40 rounded-full border-[22px] border-yellow-300/20 transition duration-500 group-hover:scale-110"
         aria-hidden="true"
       />
-      <NoticeMeta notice={notice} className="relative text-slate-800" />
-      <h3 className="relative mt-5 font-serif text-3xl font-bold leading-[1.12] tracking-normal">
-        <a href={`/notices/${notice.slug}`} className="transition hover:text-blue-800">
-          {notice.title}
-        </a>
-      </h3>
-      {notice.body ? (
-        <p className="relative mt-5 text-[15px] leading-7 text-slate-800">
-          {getTextPreview(notice.body, 180)}
-        </p>
-      ) : null}
-      <div className="mt-6">
-        <CTAButton href={`/notices/${notice.slug}`} variant="secondary">
-          Read More
-        </CTAButton>
+      <div
+        className="absolute inset-x-0 bottom-0 h-32 bg-[linear-gradient(0deg,rgba(250,204,21,0.18),transparent)]"
+        aria-hidden="true"
+      />
+      <NoticeDateBadge notice={notice} />
+      <div className="relative mt-auto pt-20">
+        <NoticeMeta notice={notice} className="text-yellow-200" />
+        <h3 className="mt-5 max-w-xl font-serif text-[clamp(2rem,6vw,3.05rem)] font-bold leading-[1.05] tracking-normal">
+          <a href={`/notices/${notice.slug}`} className="transition hover:text-yellow-300">
+            {notice.title}
+          </a>
+        </h3>
+        {noticeSummary ? (
+          <p className="mt-5 max-w-lg text-[15px] leading-7 text-blue-50 sm:text-base">
+            {noticeSummary}
+          </p>
+        ) : null}
+        <div className="mt-7">
+          <CTAButton href={`/notices/${notice.slug}`}>
+            Read More
+          </CTAButton>
+        </div>
       </div>
     </article>
   );
 }
 
 function NoticeListCard({ notice }: Readonly<{ notice: Notice }>) {
+  const noticeSummary = getNoticeSummary(notice, 130);
+  const hasDate = Boolean(getNoticeDateParts(notice));
+
   return (
-    <article className="group rounded-[20px] border border-white/10 bg-white/[0.08] p-5 transition duration-300 hover:-translate-y-1 hover:border-yellow-300/50 hover:bg-white/[0.13]">
-      <NoticeMeta notice={notice} className="text-yellow-200" />
-      <h3 className="mt-3 font-serif text-[1.35rem] font-bold leading-snug tracking-normal text-white">
-        <a href={`/notices/${notice.slug}`} className="transition hover:text-yellow-300">
-          {notice.title}
-        </a>
-      </h3>
-      {notice.body ? (
-        <p className="mt-2 text-sm leading-6 text-blue-100/90">
-          {getTextPreview(notice.body, 110)}
-        </p>
-      ) : null}
+    <article className="group relative overflow-hidden rounded-[22px] border border-slate-200/80 bg-white p-5 shadow-[0_14px_42px_rgba(2,6,23,0.06)] transition duration-300 hover:-translate-y-1.5 hover:border-yellow-300/70 hover:shadow-[0_24px_58px_rgba(2,6,23,0.13)] sm:p-6">
+      <div
+        className="absolute inset-y-0 left-0 w-1 bg-yellow-400 transition duration-300 group-hover:w-1.5"
+        aria-hidden="true"
+      />
+      <div
+        className={`gap-4 pl-2 sm:items-start sm:gap-6 ${
+          hasDate ? "grid sm:grid-cols-[94px_1fr]" : ""
+        }`}
+      >
+        {hasDate ? <NoticeDateTile notice={notice} /> : null}
+        <div className="min-w-0">
+          <NoticeMeta notice={notice} className="text-blue-800" compact />
+          <h3 className="mt-2 font-serif text-[1.45rem] font-bold leading-[1.16] tracking-normal text-slate-950 transition group-hover:text-blue-900 sm:text-[1.62rem]">
+            <a href={`/notices/${notice.slug}`} className="transition hover:text-blue-800">
+              {notice.title}
+            </a>
+          </h3>
+          {noticeSummary ? (
+            <p className="mt-3 line-clamp-2 text-[15px] leading-7 text-slate-600">
+              {noticeSummary}
+            </p>
+          ) : null}
+          <a
+            href={`/notices/${notice.slug}`}
+            className="mt-5 inline-flex items-center text-sm font-black text-[#061f3f] transition duration-300 hover:-translate-y-0.5 hover:text-blue-800"
+          >
+            Read More
+            <span className="ml-2 h-px w-4 bg-current transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
+          </a>
+        </div>
+      </div>
     </article>
+  );
+}
+
+function NoticeDateBadge({ notice }: Readonly<{ notice: Notice }>) {
+  const dateParts = getNoticeDateParts(notice);
+
+  if (!dateParts) {
+    return null;
+  }
+
+  return (
+    <span className="relative inline-flex w-fit flex-col rounded-2xl bg-yellow-400 px-5 py-4 text-center text-[#061f3f] shadow-xl shadow-slate-950/20">
+      <span className="font-serif text-4xl font-bold leading-none">{dateParts.day}</span>
+      <span className="mt-1 text-[11px] font-black uppercase tracking-[0.16em]">
+        {dateParts.month}
+      </span>
+    </span>
+  );
+}
+
+function NoticeDateTile({ notice }: Readonly<{ notice: Notice }>) {
+  const dateParts = getNoticeDateParts(notice);
+
+  if (!dateParts) {
+    return null;
+  }
+
+  return (
+    <time
+      dateTime={notice.published_at ?? undefined}
+      className="flex w-fit flex-row items-center gap-3 rounded-2xl bg-[#f7f3ea] px-4 py-3 text-[#061f3f] ring-1 ring-slate-200/80 sm:w-full sm:flex-col sm:gap-1 sm:px-3 sm:py-5 sm:text-center"
+    >
+      <span className="font-serif text-3xl font-bold leading-none sm:text-4xl">{dateParts.day}</span>
+      <span className="text-[11px] font-black uppercase tracking-[0.16em] text-blue-800">
+        {dateParts.month}
+      </span>
+      <span className="text-xs font-bold text-slate-500 sm:mt-1">{dateParts.year}</span>
+    </time>
+  );
+}
+
+function getNoticeDateParts(notice: Notice): { day: string; month: string; year: string } | null {
+  if (!notice.published_at) {
+    return null;
+  }
+
+  const date = new Date(notice.published_at);
+
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  return {
+    day: new Intl.DateTimeFormat("en", { day: "2-digit" }).format(date),
+    month: new Intl.DateTimeFormat("en", { month: "short" }).format(date),
+    year: new Intl.DateTimeFormat("en", { year: "numeric" }).format(date),
+  };
+}
+
+function getNoticeSummary(notice: Notice, limit = 140): string | null {
+  return (
+    notice.excerpt ??
+    getTextPreview(notice.body, limit) ??
+    getTextPreview(notice.meta_description, limit)
   );
 }
 
 function NoticeMeta({
   notice,
   className = "",
+  compact = false,
 }: Readonly<{
   notice: Notice;
   className?: string;
+  compact?: boolean;
 }>) {
   const values = [
-    formatDate(notice.published_at),
+    compact ? null : formatDate(notice.published_at),
     notice.category,
     notice.audience,
   ].filter(Boolean);
@@ -921,7 +1037,7 @@ function NoticeMeta({
   }
 
   return (
-    <p className={`text-xs font-bold uppercase tracking-[0.14em] ${className}`}>
+    <p className={`text-xs font-black uppercase tracking-[0.14em] ${className}`}>
       {values.join(" / ")}
     </p>
   );
@@ -1672,6 +1788,25 @@ function getHomepageSectionConfig(
       (section) => normalizedKeys.includes(normalizeSectionKey(section.key)) && Boolean(section.title),
     ) ?? null
   );
+}
+
+function createFallbackHomepageSection(
+  key: string,
+  title: string,
+  previousSection: HomepageSection | null,
+): HomepageSection {
+  return {
+    key,
+    title,
+    subtitle: null,
+    content: null,
+    image_path: null,
+    video_path: null,
+    button_text: null,
+    button_url: null,
+    sort_order: previousSection ? previousSection.sort_order + 0.1 : 30,
+    metadata: {},
+  };
 }
 
 function normalizeSectionKey(key: string): string {
