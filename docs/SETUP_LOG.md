@@ -3013,3 +3013,52 @@ Polished the existing Academics & Programs card internals to better match the pr
 - The rendered CTA button includes the required visible hover classes: navy default with white text, gold hover with navy text, and a smooth color transition.
 - Browser pointer movement in the automation layer did not toggle CSS `:hover`, so the hover behavior was verified through the rendered class/transition state rather than a live pseudo-state toggle.
 - Temporary local preview Academic Program records were used only for layout verification and then removed.
+
+---
+
+Date: 2026-06-30
+
+## About Video Layout Fix
+
+### Scope
+
+Fixed only the About section video placement and styling. Header, hero, hero feature cards, Academics & Programs, and other homepage sections were not redesigned.
+
+### Files Changed
+
+- `frontend/src/app/page.tsx`
+- `docs/SETUP_LOG.md`
+
+### CMS Behavior Preserved
+
+- About title, subtitle, description, gallery/images, video path, external video URL, button text, and button URL remain controlled by the `HomepageSection` CMS data.
+- Video thumbnail can come from CMS metadata keys `video_thumbnail_path`, `video_thumbnail`, `thumbnail_path`, or `thumbnail`.
+- If no CMS video thumbnail exists, YouTube URLs use a safe YouTube thumbnail URL.
+- If no video URL/path exists, the video preview card is hidden.
+- No final public About content or video URL was hard-coded.
+
+### Layout Changes
+
+- Removed the About video from the left media collage area.
+- Moved the video into the right content column beside the About feature/list area.
+- Replaced the large embedded iframe/video block with a compact thumbnail link card.
+- Constrained the video preview to a compact card around 260px-340px wide and about 120px-170px tall.
+- Added rounded corners, a white frame, subtle shadow, centered play button, and visible hover color treatment.
+- Kept the image collage on the left and text/button content on the right.
+- Prevented the video from creating extra full-width vertical height.
+
+### Commands Run
+
+- `npm run lint`
+- `npm run build`
+- `npm run dev -- --hostname 127.0.0.1 --port 3001`
+
+### Verification Results
+
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully.
+- Browser MCP opened the Univet Blue Two reference page and confirmed the reference About section was present.
+- Browser MCP verified the local desktop About video preview rendered as a compact 302px by 170px card beside the text/list area.
+- Browser MCP verified the local About section no longer contains a large iframe or video element in the section.
+- Browser MCP verified no horizontal overflow on desktop, 390px mobile, or 430px mobile.
+- Browser MCP verified the mobile video preview remains compact at 390px and 430px.

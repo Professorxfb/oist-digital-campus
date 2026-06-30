@@ -628,6 +628,17 @@ function AboutSection({
   const uploadedVideoUrl = getCmsAssetUrl(section.video_path);
   const externalVideoUrl = getHomepageSectionExternalVideoUrl(section);
   const youtubeEmbedUrl = externalVideoUrl ? getYouTubeEmbedUrl(externalVideoUrl) : null;
+  const videoThumbnailUrl =
+    getCmsAssetUrl(
+      getMetadataText(section.metadata, [
+        "video_thumbnail_path",
+        "video_thumbnail",
+        "thumbnail_path",
+        "thumbnail",
+      ]) ?? null,
+    ) ??
+    (externalVideoUrl ? getYouTubeThumbnailUrl(externalVideoUrl) : null) ??
+    imageUrl;
   const imageUrls = getHomepageSectionGalleryImages(section)
     .map((path) => getCmsAssetUrl(path))
     .filter((url): url is string => Boolean(url));
@@ -636,7 +647,11 @@ function AboutSection({
   const mediaBadge = getMetadataText(section.metadata, ["badge_text", "media_badge", "stat_text"]);
   const description = getTextPreview(section.content, 360);
   const hasVideo = Boolean(youtubeEmbedUrl || uploadedVideoUrl || externalVideoUrl);
-  const hasMedia = Boolean(hasVideo || mediaImages.length > 0);
+  const hasMediaImages = mediaImages.length > 0;
+  const featureVideoGridClassName =
+    featureItems.length > 0 && hasVideo
+      ? "mt-7 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(240px,320px)] lg:items-center xl:gap-6"
+      : "mt-7 grid gap-5";
 
   if (!section.title) {
     return null;
@@ -647,12 +662,12 @@ function AboutSection({
       <Container>
         <div
           className={`relative grid items-center gap-10 xl:gap-16 ${
-            hasMedia ? "lg:grid-cols-[1.02fr_0.98fr]" : ""
+            hasMediaImages ? "lg:grid-cols-[1.02fr_0.98fr]" : ""
           }`}
         >
           <div
             className={`order-1 rounded-[24px] bg-[#fffaf0] p-6 shadow-[0_18px_50px_rgba(2,6,23,0.07)] sm:p-9 lg:order-2 ${
-              hasMedia ? "lg:bg-transparent lg:p-0 lg:shadow-none" : "max-w-4xl"
+              hasMediaImages ? "lg:bg-transparent lg:p-0 lg:shadow-none" : "max-w-4xl"
             }`}
           >
             {section.subtitle ? (
@@ -668,30 +683,42 @@ function AboutSection({
                 {description}
               </p>
             ) : null}
-            {featureItems.length > 0 ? (
-              <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-                {featureItems.map((item, index) => (
-                  <div
-                    key={`${item.title}-${index}`}
-                    className="flex gap-3 rounded-2xl border border-blue-100/80 bg-white/70 p-4 shadow-sm"
-                  >
-                    <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-yellow-400 text-[#061f3f]" aria-hidden="true">
-                      <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5">
-                        <path d="M3 8.2 6.4 11.5 13 4.5" />
-                      </svg>
-                    </span>
-                    <span className="min-w-0">
-                      <span className="block text-sm font-black leading-6 text-[#061f3f]">
-                        {item.title}
-                      </span>
-                      {item.description ? (
-                        <span className="mt-1 block text-sm leading-6 text-slate-600">
-                          {item.description}
+            {featureItems.length > 0 || hasVideo ? (
+              <div className={featureVideoGridClassName}>
+                {featureItems.length > 0 ? (
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                    {featureItems.map((item, index) => (
+                      <div
+                        key={`${item.title}-${index}`}
+                        className="flex gap-3 rounded-2xl border border-blue-100/80 bg-white/70 p-4 shadow-sm"
+                      >
+                        <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-yellow-400 text-[#061f3f]" aria-hidden="true">
+                          <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5">
+                            <path d="M3 8.2 6.4 11.5 13 4.5" />
+                          </svg>
                         </span>
-                      ) : null}
-                    </span>
+                        <span className="min-w-0">
+                          <span className="block text-sm font-black leading-6 text-[#061f3f]">
+                            {item.title}
+                          </span>
+                          {item.description ? (
+                            <span className="mt-1 block text-sm leading-6 text-slate-600">
+                              {item.description}
+                            </span>
+                          ) : null}
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                ) : null}
+                {hasVideo ? (
+                  <AboutVideoCard
+                    externalVideoUrl={externalVideoUrl}
+                    thumbnailUrl={videoThumbnailUrl}
+                    uploadedVideoUrl={uploadedVideoUrl}
+                    youtubeEmbedUrl={youtubeEmbedUrl}
+                  />
+                ) : null}
               </div>
             ) : null}
             {section.button_text && section.button_url ? (
@@ -702,13 +729,10 @@ function AboutSection({
               </div>
             ) : null}
           </div>
-          {hasMedia ? (
+          {hasMediaImages ? (
             <AboutMediaCollage
               badge={mediaBadge}
               imageUrls={mediaImages}
-              uploadedVideoUrl={uploadedVideoUrl}
-              externalVideoUrl={externalVideoUrl}
-              youtubeEmbedUrl={youtubeEmbedUrl}
             />
           ) : null}
         </div>
@@ -719,16 +743,10 @@ function AboutSection({
 
 function AboutMediaCollage({
   badge,
-  externalVideoUrl,
   imageUrls,
-  uploadedVideoUrl,
-  youtubeEmbedUrl,
 }: Readonly<{
   badge?: string;
-  externalVideoUrl: string | null;
   imageUrls: string[];
-  uploadedVideoUrl: string | null;
-  youtubeEmbedUrl: string | null;
 }>) {
   return (
     <div className="order-2 space-y-5 lg:order-1">
@@ -758,13 +776,6 @@ function AboutMediaCollage({
           ) : null}
         </div>
       ) : null}
-      {youtubeEmbedUrl || uploadedVideoUrl || externalVideoUrl ? (
-        <AboutVideoCard
-          externalVideoUrl={externalVideoUrl}
-          uploadedVideoUrl={uploadedVideoUrl}
-          youtubeEmbedUrl={youtubeEmbedUrl}
-        />
-      ) : null}
     </div>
   );
 }
@@ -791,34 +802,37 @@ function AboutImageTile({
 
 function AboutVideoCard({
   externalVideoUrl,
+  thumbnailUrl,
   uploadedVideoUrl,
   youtubeEmbedUrl,
 }: Readonly<{
   externalVideoUrl: string | null;
+  thumbnailUrl: string | null;
   uploadedVideoUrl: string | null;
   youtubeEmbedUrl: string | null;
 }>) {
+  const videoHref = externalVideoUrl ?? youtubeEmbedUrl ?? uploadedVideoUrl;
+
   return (
-    <div className="overflow-hidden rounded-[24px] border border-white/70 bg-white shadow-[0_18px_48px_rgba(2,6,23,0.08)]">
-      {youtubeEmbedUrl ? (
-        <iframe
-          className="aspect-video w-full"
-          src={youtubeEmbedUrl}
-          title="Section video"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-        />
-      ) : uploadedVideoUrl ? (
-        <video className="aspect-video w-full bg-[#061f3f] object-cover" src={uploadedVideoUrl} controls />
-      ) : externalVideoUrl ? (
+    <div className="w-full max-w-[320px] justify-self-start overflow-hidden rounded-[14px] border-[5px] border-white bg-white shadow-[0_16px_38px_rgba(2,6,23,0.13)] sm:max-w-[340px] lg:justify-self-end">
+      {videoHref ? (
         <a
-          className="group flex aspect-video items-center justify-center bg-[#061f3f] text-white transition hover:bg-[#082f57]"
-          href={externalVideoUrl}
+          className="group relative flex aspect-video max-h-[170px] min-h-[128px] items-center justify-center overflow-hidden rounded-[9px] bg-[#061f3f] text-white transition-colors duration-300 hover:bg-yellow-400 hover:text-[#061f3f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400"
+          href={videoHref}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Play section video"
         >
-          <span className="flex h-16 w-16 items-center justify-center rounded-full bg-yellow-400 text-[#061f3f] transition duration-300 group-hover:scale-105 group-hover:bg-white" aria-hidden="true">
-            <svg className="ml-1 h-6 w-6" viewBox="0 0 16 16" fill="currentColor">
+          {thumbnailUrl ? (
+            <span
+              className="absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-105"
+              style={{ backgroundImage: `url(${thumbnailUrl})` }}
+              aria-hidden="true"
+            />
+          ) : null}
+          <span className="absolute inset-0 bg-slate-950/18 transition-colors duration-300 group-hover:bg-yellow-400/12" aria-hidden="true" />
+          <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#061f3f] shadow-[0_12px_24px_rgba(2,6,23,0.22)] transition-colors duration-300 group-hover:bg-yellow-400 group-hover:text-[#061f3f] sm:h-14 sm:w-14" aria-hidden="true">
+            <svg className="ml-1 h-5 w-5 sm:h-6 sm:w-6" viewBox="0 0 16 16" fill="currentColor">
               <path d="M4.5 2.8v10.4L12.5 8 4.5 2.8Z" />
             </svg>
           </span>
@@ -2005,6 +2019,18 @@ function getAboutFeatureItems(section: HomepageSection): AboutFeatureItem[] {
 }
 
 function getYouTubeEmbedUrl(url: string): string | null {
+  const videoId = getYouTubeVideoId(url);
+
+  return videoId ? `https://www.youtube.com/embed/${encodeURIComponent(videoId)}` : null;
+}
+
+function getYouTubeThumbnailUrl(url: string): string | null {
+  const videoId = getYouTubeVideoId(url);
+
+  return videoId ? `https://img.youtube.com/vi/${encodeURIComponent(videoId)}/hqdefault.jpg` : null;
+}
+
+function getYouTubeVideoId(url: string): string | null {
   try {
     const parsedUrl = new URL(url);
     const hostname = parsedUrl.hostname.replace(/^www\./, "");
@@ -2026,7 +2052,7 @@ function getYouTubeEmbedUrl(url: string): string | null {
       }
     }
 
-    return videoId ? `https://www.youtube.com/embed/${encodeURIComponent(videoId)}` : null;
+    return videoId;
   } catch {
     return null;
   }
