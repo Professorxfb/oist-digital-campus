@@ -19,7 +19,6 @@ import {
   getGalleryAlbums,
   getHeroFeatureCards,
   getHomepageSections,
-  getInstitutionalPageByType,
   getLeadershipProfiles,
   getMenuByLocation,
   getNewsPosts,
@@ -35,7 +34,6 @@ import type {
   GalleryAlbum,
   HeroFeatureCard,
   HomepageSection,
-  InstitutionalPage,
   LeadershipProfile,
   NewsPost,
   Notice,
@@ -119,7 +117,6 @@ export default async function Home() {
     scholarships,
     leadershipProfiles,
     videos,
-    aboutPage,
   ] = await Promise.all([
     getSiteSettings(),
     getHeroFeatureCards(),
@@ -137,7 +134,6 @@ export default async function Home() {
     getScholarships(),
     getLeadershipProfiles(),
     getVideos(),
-    getInstitutionalPageByType("about"),
   ]);
 
   const settings = siteSettings.data;
@@ -213,10 +209,10 @@ export default async function Home() {
     ? getCommunityVoices(communityVoicesSection)
     : [];
   const nullableSectionBlocks: Array<SectionBlock | null> = [
-    aboutSection && aboutPage.data
+    aboutSection
       ? {
           section: aboutSection,
-          node: <AboutSection page={aboutPage.data} section={aboutSection} />,
+          node: <AboutSection section={aboutSection} />,
         }
       : null,
     chairmanSection && chairmanProfile
@@ -612,14 +608,14 @@ function renderHeroFeatureIconPath(iconKey: string): React.ReactNode {
 }
 
 function AboutSection({
-  page,
   section,
 }: Readonly<{
-  page: InstitutionalPage;
   section: HomepageSection;
 }>) {
-  const imageUrl = getCmsAssetUrl(section.image_path ?? page.featured_image_path ?? null);
-  const description = getTextPreview(section.content, 280) ?? page.excerpt ?? getTextPreview(page.body, 260);
+  const imageUrl = getCmsAssetUrl(section.image_path);
+  const videoUrl = getCmsAssetUrl(section.video_path);
+  const description = getTextPreview(section.content, 360);
+  const hasMedia = Boolean(videoUrl || imageUrl);
 
   if (!section.title) {
     return null;
@@ -632,27 +628,42 @@ function AboutSection({
         aria-hidden="true"
       />
       <Container>
-        <div className="relative grid items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] xl:gap-16">
-          <div className="relative min-h-[360px] overflow-hidden rounded-[28px] bg-[#071733] shadow-[0_28px_70px_rgba(2,6,23,0.18)] sm:min-h-[460px]">
-            {imageUrl ? (
+        <div
+          className={`relative grid items-center gap-10 xl:gap-16 ${
+            hasMedia ? "lg:grid-cols-[0.95fr_1.05fr]" : ""
+          }`}
+        >
+          {hasMedia ? (
+            <div className="relative min-h-[360px] overflow-hidden rounded-[28px] bg-[#071733] shadow-[0_28px_70px_rgba(2,6,23,0.18)] sm:min-h-[460px]">
+              {videoUrl ? (
+                <video
+                  className="absolute inset-0 h-full w-full object-cover"
+                  src={videoUrl}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  aria-hidden="true"
+                />
+              ) : imageUrl ? (
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition duration-500 hover:scale-105"
+                  style={{ backgroundImage: `url(${imageUrl})` }}
+                  aria-hidden="true"
+                />
+              ) : null}
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent,rgba(2,6,23,0.28))]" aria-hidden="true" />
               <div
-                className="absolute inset-0 bg-cover bg-center transition duration-500 hover:scale-105"
-                style={{ backgroundImage: `url(${imageUrl})` }}
+                className="absolute bottom-6 right-6 h-24 w-24 rounded-full border-[10px] border-yellow-300/90 bg-[#061f3f]/90 shadow-2xl shadow-slate-950/20 sm:h-32 sm:w-32"
                 aria-hidden="true"
               />
-            ) : (
-              <div
-                className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(250,204,21,0.24),transparent_28%),linear-gradient(135deg,#071733,#1d4ed8_62%,#082f49)]"
-                aria-hidden="true"
-              />
-            )}
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent,rgba(2,6,23,0.28))]" aria-hidden="true" />
-            <div
-              className="absolute bottom-6 right-6 h-24 w-24 rounded-full border-[10px] border-yellow-300/90 bg-[#061f3f]/90 shadow-2xl shadow-slate-950/20 sm:h-32 sm:w-32"
-              aria-hidden="true"
-            />
-          </div>
-          <div className="rounded-[28px] bg-white p-7 shadow-[0_18px_55px_rgba(2,6,23,0.08)] sm:p-10 lg:bg-transparent lg:p-0 lg:shadow-none">
+            </div>
+          ) : null}
+          <div
+            className={`rounded-[28px] bg-white p-7 shadow-[0_18px_55px_rgba(2,6,23,0.08)] sm:p-10 ${
+              hasMedia ? "lg:bg-transparent lg:p-0 lg:shadow-none" : "max-w-4xl"
+            }`}
+          >
             {section.subtitle ? (
               <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-800">
                 {section.subtitle}

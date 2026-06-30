@@ -2557,3 +2557,43 @@ Polished the CMS-driven homepage body sections after the hero while preserving t
 - Browser checks confirmed no horizontal overflow at 390px, 430px, 768px, 1366px, and 1920px widths.
 - Browser checks confirmed the current local CMS data hides missing homepage body sections cleanly instead of showing fake public content.
 - Browser checks confirmed the footer remains visible and responsive when optional homepage body sections are missing.
+
+---
+
+Date: 2026-06-30
+
+## Homepage About Section Render Fix
+
+### Root Cause
+
+The homepage render map found the enabled `about` Homepage Section correctly, but it also required a separate `InstitutionalPage` record with `page_type=about`. When that separate page response was missing, the frontend filtered out the About section even though `/api/v1/homepage-sections` already returned a valid enabled `about` record.
+
+### Changes Made
+
+- Removed the extra `InstitutionalPage` dependency from the homepage About section render gate.
+- Rendered the `about` section directly from the `HomepageSection` record.
+- The About section now uses only CMS section fields: `title`, `subtitle`, `content`, `image_path`, `video_path`, `button_text`, and `button_url`.
+- Added CMS video support for the About media panel when `video_path` exists.
+- Preserved text-only rendering when neither `image_path` nor `video_path` exists.
+- Preserved the existing header, search, hero, hero feature cards, and footer behavior.
+
+### Media URL Handling
+
+- Existing CMS asset URL handling already resolves relative paths such as `homepage-sections/images/example.png` to the Laravel public storage URL format: `http://127.0.0.1:8000/storage/homepage-sections/images/example.png`.
+- Browser verification confirmed the local About image rendered from `http://127.0.0.1:8000/storage/homepage-sections/images/...`.
+
+### Commands Run
+
+- `npm run lint`
+- `npm run build`
+- `npm run dev`
+
+### Verification Results
+
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully. The first build was run before the Laravel API server was started, so it logged expected CMS fetch fallback warnings but still completed successfully.
+- `npm run dev` started successfully on `http://localhost:3000`.
+- Browser check confirmed the live homepage renders: Hero -> Hero Feature Cards -> About -> Footer.
+- Browser check confirmed the About section appears immediately after the hero feature cards.
+- Browser check confirmed the About image resolves through Laravel storage and renders from `/storage/homepage-sections/...`.
+- Browser responsive checks confirmed About renders with no horizontal overflow at 390px, 430px, 768px, and 1366px.
