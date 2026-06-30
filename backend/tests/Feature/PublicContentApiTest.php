@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Department;
+use App\Models\AcademicProgram;
 use App\Models\Download;
 use App\Models\Event;
 use App\Models\FacultyProfile;
@@ -90,6 +91,18 @@ class PublicContentApiTest extends TestCase
             'is_published' => false,
         ]);
 
+        AcademicProgram::query()->create([
+            'title' => 'Published Program',
+            'slug' => 'published-program',
+            'bullet_points' => ['Lab practice', 'Industry projects'],
+            'is_published' => true,
+        ]);
+        AcademicProgram::query()->create([
+            'title' => 'Hidden Program',
+            'slug' => 'hidden-program',
+            'is_published' => false,
+        ]);
+
         FacultyProfile::query()->create([
             'name' => 'Published Faculty',
             'slug' => 'published-faculty',
@@ -106,6 +119,7 @@ class PublicContentApiTest extends TestCase
         $this->assertPublishedList('/api/v1/events', 'published-event', 'hidden-event');
         $this->assertPublishedList('/api/v1/gallery-albums', 'published-album', 'hidden-album');
         $this->assertPublishedList('/api/v1/downloads', 'published-download', 'hidden-download');
+        $this->assertPublishedList('/api/v1/academic-programs', 'published-program', 'hidden-program');
         $this->assertPublishedList('/api/v1/departments', 'published-department', 'hidden-department');
         $this->assertPublishedList('/api/v1/faculty-profiles', 'published-faculty', 'hidden-faculty');
     }

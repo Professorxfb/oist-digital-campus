@@ -219,6 +219,22 @@ export interface Department {
   faculty_profiles?: FacultyProfile[];
 }
 
+export interface AcademicProgram {
+  title: string;
+  slug: string;
+  category?: string | null;
+  short_description?: string | null;
+  description?: string | null;
+  featured_image_path?: string | null;
+  icon?: string | null;
+  bullet_points?: string[] | null;
+  button_text?: string | null;
+  button_url?: string | null;
+  sort_order?: number;
+  meta_title?: string | null;
+  meta_description?: string | null;
+}
+
 export type InstitutionalPageType =
   | "about"
   | "mission"

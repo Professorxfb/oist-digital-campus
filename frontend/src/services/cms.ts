@@ -1,6 +1,7 @@
 import { fetchCmsApi } from "@/lib/api-client";
 import type {
   ApiFetchResult,
+  AcademicProgram,
   Department,
   Download,
   Event,
@@ -121,6 +122,10 @@ export function getDownloads(): Promise<ApiFetchResult<Download[]>> {
 
 export function getDepartments(): Promise<ApiFetchResult<Department[]>> {
   return fetchCmsApi<Department[]>("departments", []);
+}
+
+export function getAcademicPrograms(): Promise<ApiFetchResult<AcademicProgram[]>> {
+  return fetchCmsApi<AcademicProgram[]>("academic-programs", []);
 }
 
 export function getDepartmentBySlug(

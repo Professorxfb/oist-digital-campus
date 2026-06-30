@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\AcademicProgram;
 use App\Models\Department;
 use App\Models\Download;
 use App\Models\Event;
@@ -251,6 +252,18 @@ class PublicCmsController extends Controller
         return $this->paginatedResponse($departments, 'Departments retrieved.');
     }
 
+    public function academicPrograms(): JsonResponse
+    {
+        $programs = AcademicProgram::query()
+            ->published()
+            ->orderBy('sort_order')
+            ->orderBy('title')
+            ->paginate($this->perPage())
+            ->through(fn (AcademicProgram $program): array => $this->formatAcademicProgram($program));
+
+        return $this->paginatedResponse($programs, 'Academic programs retrieved.');
+    }
+
     public function department(string $slug): JsonResponse
     {
         $department = Department::query()
@@ -471,6 +484,18 @@ class PublicCmsController extends Controller
             ->limit($limit)
             ->get()
             ->map(fn (Department $department): array => $this->searchResult('department', $department->name, $department->short_description ?? $department->description, "/departments/{$department->slug}", $department->updated_at)));
+
+        $results = $results->merge(AcademicProgram::query()
+            ->published()
+            ->where(fn ($builder) => $builder
+                ->where('title', 'like', $term)
+                ->orWhere('category', 'like', $term)
+                ->orWhere('short_description', 'like', $term)
+                ->orWhere('description', 'like', $term))
+            ->orderBy('sort_order')
+            ->limit($limit)
+            ->get()
+            ->map(fn (AcademicProgram $program): array => $this->searchResult('academic_program', $program->title, $program->short_description ?? $program->description, $program->button_url ?? '/', $program->updated_at)));
 
         $results = $results->merge(FacultyProfile::query()
             ->published()
@@ -711,6 +736,25 @@ class PublicCmsController extends Controller
                     ->values()
                     ->all()
                 : null,
+        ], fn (mixed $value): bool => $value !== null);
+    }
+
+    private function formatAcademicProgram(AcademicProgram $program): array
+    {
+        return array_filter([
+            'title' => $program->title,
+            'slug' => $program->slug,
+            'category' => $program->category,
+            'short_description' => $program->short_description,
+            'description' => $program->description,
+            'featured_image_path' => $program->featured_image_path,
+            'icon' => $program->icon,
+            'bullet_points' => $program->bullet_points ?? [],
+            'button_text' => $program->button_text,
+            'button_url' => $program->button_url,
+            'sort_order' => $program->sort_order,
+            'meta_title' => $program->meta_title,
+            'meta_description' => $program->meta_description,
         ], fn (mixed $value): bool => $value !== null);
     }
 

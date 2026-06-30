@@ -11,7 +11,7 @@ import { SiteHeader } from "@/components/public-site/SiteHeader";
 import { resolveCmsAssetUrl } from "@/lib/api-client";
 import { formatDate, getCmsAssetUrl, getTextPreview } from "@/lib/cms-display";
 import {
-  getDepartments,
+  getAcademicPrograms,
   getEvents,
   getFacilities,
   getFacultyProfiles,
@@ -27,7 +27,7 @@ import {
   getVideos,
 } from "@/services/cms";
 import type {
-  Department,
+  AcademicProgram,
   Event,
   Facility,
   FacultyProfile,
@@ -111,7 +111,7 @@ export default async function Home() {
     newsPosts,
     events,
     galleryAlbums,
-    departments,
+    academicPrograms,
     facilities,
     facultyProfiles,
     scholarships,
@@ -128,7 +128,7 @@ export default async function Home() {
     getNewsPosts(),
     getEvents(),
     getGalleryAlbums(),
-    getDepartments(),
+    getAcademicPrograms(),
     getFacilities(),
     getFacultyProfiles(),
     getScholarships(),
@@ -154,9 +154,11 @@ export default async function Home() {
     "chairman_message",
     "leadership_message",
   ]);
-  const departmentsSection = getHomepageSectionConfig(sections, [
-    "departments",
-    "department",
+  const academicsProgramsSection = getHomepageSectionConfig(sections, [
+    "academics_programs",
+    "academic_programs",
+    "programs",
+    "programs_study",
   ]);
   const noticesSection = getHomepageSectionConfig(sections, [
     "latest_notices",
@@ -208,14 +210,13 @@ export default async function Home() {
   const communityVoices = communityVoicesSection
     ? getCommunityVoices(communityVoicesSection)
     : [];
-  const effectiveDepartmentsSection = departmentsSection;
   const effectiveNoticesSection =
     noticesSection ??
     (notices.data.length > 0
       ? createFallbackHomepageSection(
           "latest_notices",
           "Latest Notices",
-          effectiveDepartmentsSection ?? aboutSection,
+          academicsProgramsSection ?? aboutSection,
           0.05,
         )
       : null);
@@ -226,13 +227,13 @@ export default async function Home() {
           node: <AboutSection section={aboutSection} />,
         }
       : null,
-    effectiveDepartmentsSection && departments.data.length > 0
+    academicsProgramsSection && academicPrograms.data.length > 0
       ? {
-          section: effectiveDepartmentsSection,
+          section: academicsProgramsSection,
           node: (
-            <DepartmentsSection
-              departments={limitItems(departments.data, effectiveDepartmentsSection)}
-              section={effectiveDepartmentsSection}
+            <AcademicsProgramsSection
+              programs={limitItems(academicPrograms.data, academicsProgramsSection)}
+              section={academicsProgramsSection}
             />
           ),
         }
@@ -827,72 +828,97 @@ function AboutVideoCard({
   );
 }
 
-function DepartmentsSection({
-  departments,
+function AcademicsProgramsSection({
+  programs,
   section,
 }: Readonly<{
-  departments: Department[];
+  programs: AcademicProgram[];
   section: HomepageSection;
 }>) {
-  if (!section.title || departments.length === 0) {
+  if (!section.title || programs.length === 0) {
     return null;
   }
 
   const description = getTextPreview(section.content, 260);
   const backgroundImageUrl = getCmsAssetUrl(section.image_path);
-  const visibleDots = departments.length > 1 ? departments : [];
+  const visibleDots = programs.length > 1 ? programs : [];
+  const statValue = getMetadataText(section.metadata, [
+    "stat_value",
+    "admission_count",
+    "admission_value",
+    "right_stat_value",
+  ]);
+  const statLabel = getMetadataText(section.metadata, [
+    "stat_label",
+    "admission_label",
+    "right_stat_label",
+  ]);
   const carouselClassName =
-    departments.length === 1
-      ? "hide-scrollbar flex snap-x snap-mandatory justify-center overflow-x-auto scroll-smooth pb-5"
-      : "hide-scrollbar flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pb-5 sm:gap-7 lg:gap-8";
+    programs.length === 1
+      ? "hide-scrollbar flex snap-x snap-mandatory justify-center overflow-x-auto scroll-smooth"
+      : "hide-scrollbar flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth sm:gap-7 lg:gap-8";
   const cardFrameClassName =
-    departments.length === 1
-      ? "w-full max-w-xl snap-center scroll-mt-28"
-      : "min-w-[82%] snap-start scroll-mt-28 sm:min-w-[47%] lg:min-w-[31.8%]";
+    programs.length === 1
+      ? "w-full max-w-[430px] snap-center scroll-mt-28"
+      : "min-w-[86%] snap-start scroll-mt-28 sm:min-w-[47%] lg:min-w-[31.8%]";
 
   return (
-    <section className="relative isolate overflow-hidden bg-[#061f3f] py-20 text-white sm:py-24 lg:py-28">
+    <section className="relative isolate overflow-hidden bg-[#f7f3ea] pb-9 sm:pb-11 lg:pb-12">
+      <div className="absolute inset-x-0 top-0 h-[56%] bg-[#072f57]" aria-hidden="true" />
       {backgroundImageUrl ? (
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-35"
+          className="absolute inset-x-0 top-0 h-[56%] bg-cover bg-center opacity-20"
           style={{ backgroundImage: `url(${backgroundImageUrl})` }}
           aria-hidden="true"
         />
-      ) : (
-        <div
-          className="absolute inset-0 bg-[radial-gradient(circle_at_18%_16%,rgba(250,204,21,0.12),transparent_24%),radial-gradient(circle_at_82%_28%,rgba(37,99,235,0.22),transparent_30%),linear-gradient(135deg,#031632_0%,#073763_52%,#031632_100%)]"
-          aria-hidden="true"
-        />
-      )}
-      <div className="absolute inset-0 bg-[#05294f]/88" aria-hidden="true" />
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.24),rgba(2,6,23,0.08)_42%,rgba(2,6,23,0.34))]" aria-hidden="true" />
-      <div className="absolute inset-0 opacity-[0.08] [background-image:linear-gradient(90deg,rgba(255,255,255,0.38)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.38)_1px,transparent_1px)] [background-size:72px_72px]" aria-hidden="true" />
+      ) : null}
+      <div className="absolute inset-x-0 top-0 h-[56%] bg-[linear-gradient(180deg,rgba(3,22,50,0.18),rgba(3,22,50,0.02))]" aria-hidden="true" />
+      <div
+        className="absolute right-[-118px] top-[180px] hidden h-[310px] w-[430px] rounded-[50%] border border-blue-100/10 opacity-70 lg:block"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute right-[-78px] top-[226px] hidden h-[190px] w-[350px] rounded-[50%] border border-blue-100/10 opacity-70 lg:block"
+        aria-hidden="true"
+      />
 
-      <Container className="relative">
-        <div className="mb-10 grid gap-8 lg:mb-12 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+      <Container className="relative pt-14 sm:pt-16 lg:pt-18">
+        <div className="grid gap-7 pb-9 text-white lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start lg:pb-10">
           <div className="max-w-3xl">
             {section.subtitle ? (
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-yellow-300">
-                {section.subtitle}
-              </p>
+              <div className="flex items-center gap-3 text-xs font-black uppercase tracking-normal text-white">
+                <AcademicProgramIcon icon="cap" className="h-5 w-5 text-white" />
+                <span>{section.subtitle}</span>
+              </div>
             ) : null}
-            <h2 className="mt-4 font-serif text-[clamp(2.55rem,7vw,4rem)] font-bold leading-[1.04] tracking-normal text-white">
+            <h2 className="mt-4 font-serif text-[clamp(2.45rem,6vw,3.8rem)] font-bold leading-[1.04] tracking-normal text-white">
               {section.title}
             </h2>
             {description ? (
-              <p className="mt-6 max-w-2xl text-base leading-8 text-blue-50/90">
+              <p className="mt-5 max-w-2xl text-base leading-8 text-blue-50/86">
                 {description}
               </p>
             ) : null}
           </div>
-          {section.button_text && section.button_url ? (
-            <CTAButton
-              href={section.button_url}
-              variant="primary"
-              className="self-start px-7 py-3 lg:self-center"
-            >
-              {section.button_text}
-            </CTAButton>
+
+          {statValue || statLabel ? (
+            <div className="flex items-center gap-5 justify-self-start lg:justify-self-end lg:pt-2">
+              <div className="hidden h-14 w-14 items-center justify-center rounded-full border border-white/18 text-white sm:flex">
+                <AcademicProgramIcon icon="cap" className="h-8 w-8" />
+              </div>
+              <div>
+                {statValue ? (
+                  <p className="text-lg font-black leading-none text-white">
+                    {statValue}
+                  </p>
+                ) : null}
+                {statLabel ? (
+                  <p className="mt-2 text-sm font-bold text-blue-50">
+                    {statLabel}
+                  </p>
+                ) : null}
+              </div>
+            </div>
           ) : null}
         </div>
 
@@ -900,30 +926,30 @@ function DepartmentsSection({
           className={carouselClassName}
           aria-label={`${section.title} carousel`}
         >
-          {departments.map((department, index) => (
+          {programs.map((program, index) => (
             <ScrollReveal
-              key={department.slug}
+              key={program.slug}
               className={cardFrameClassName}
               delay={index * 80}
             >
-              <HomepageDepartmentCard
-                department={department}
-                index={index}
+              <AcademicProgramCard
+                program={program}
+                section={section}
               />
             </ScrollReveal>
           ))}
         </div>
 
         {visibleDots.length > 0 ? (
-          <div className="mt-7 flex items-center justify-center gap-3" aria-label="Department carousel pagination">
-            {visibleDots.map((department, index) => (
+          <div className="mt-8 flex items-center justify-center gap-3" aria-label="Academics and programs carousel pagination">
+            {visibleDots.map((program, index) => (
               <a
-                key={`${department.slug}-dot`}
-                href={`#homepage-department-${department.slug}`}
-                className={`h-3 w-3 rounded-full transition duration-300 hover:scale-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-300 ${
-                  index === 0 ? "bg-yellow-300" : "bg-white"
+                key={`${program.slug}-dot`}
+                href={`#homepage-program-${program.slug}`}
+                className={`h-3 w-3 rounded-full transition duration-300 hover:scale-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-900 ${
+                  index === 0 ? "bg-[#063763]" : "bg-yellow-400"
                 }`}
-                aria-label={`Show ${department.name}`}
+                aria-label={`Show ${program.title}`}
               />
             ))}
           </div>
@@ -933,27 +959,25 @@ function DepartmentsSection({
   );
 }
 
-function HomepageDepartmentCard({
-  department,
-  index,
+function AcademicProgramCard({
+  program,
+  section,
 }: Readonly<{
-  department: Department;
-  index: number;
+  program: AcademicProgram;
+  section: HomepageSection;
 }>) {
-  const imageUrl = getCmsAssetUrl(department.featured_image_path ?? null);
-  const description = department.short_description ?? getTextPreview(department.description, 88);
-  const iconText = getDepartmentIconText(department);
+  const imageUrl = getCmsAssetUrl(program.featured_image_path ?? null);
+  const description = program.short_description ?? getTextPreview(program.description, 120);
+  const bullets = getAcademicProgramBullets(program).slice(0, 3);
+  const buttonUrl = program.button_url ?? section.button_url;
+  const buttonText = program.button_text ?? section.button_text ?? "Learn More";
 
   return (
     <article
-      id={`homepage-department-${department.slug}`}
-      className="group h-full overflow-hidden rounded-[8px] bg-slate-900 shadow-[0_22px_58px_rgba(2,6,23,0.28)] ring-1 ring-white/10 transition duration-300 hover:-translate-y-1 hover:shadow-[0_30px_76px_rgba(2,6,23,0.4)]"
+      id={`homepage-program-${program.slug}`}
+      className="group flex h-full min-h-[520px] flex-col overflow-hidden rounded-[8px] bg-white p-2 shadow-[0_20px_50px_rgba(2,6,23,0.10)] ring-1 ring-slate-950/5 transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_72px_rgba(2,6,23,0.16)]"
     >
-      <a
-        href={`/departments/${department.slug}`}
-        className="relative block aspect-[1.28/1] min-h-[300px] overflow-hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-300 sm:min-h-[320px] lg:min-h-[300px]"
-        aria-label={`Open ${department.name}`}
-      >
+      <div className="relative aspect-[1.54/1] overflow-hidden rounded-[8px] bg-slate-100">
         {imageUrl ? (
           <div
             className="absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-105"
@@ -962,42 +986,165 @@ function HomepageDepartmentCard({
           />
         ) : (
           <div
-            className="absolute inset-0 flex items-center justify-center bg-[radial-gradient(circle_at_78%_16%,rgba(250,204,21,0.28),transparent_28%),linear-gradient(135deg,#082f49,#0f4c81_58%,#031632)]"
+            className="absolute inset-0 flex items-center justify-center bg-[radial-gradient(circle_at_76%_16%,rgba(250,204,21,0.24),transparent_26%),linear-gradient(135deg,#e2e8f0,#bfdbfe_54%,#f8fafc)]"
             aria-hidden="true"
           >
-            <span className="flex h-24 w-24 items-center justify-center rounded-full border border-yellow-300/40 bg-white/10 font-serif text-5xl font-bold text-yellow-300 shadow-2xl shadow-slate-950/20">
-              {iconText}
+            <span className="flex h-20 w-20 items-center justify-center rounded-full border border-[#063763]/10 bg-white text-[#063763] shadow-xl shadow-slate-950/10">
+              <AcademicProgramIcon icon={program.icon} className="h-10 w-10" />
             </span>
           </div>
         )}
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.04)_10%,rgba(2,6,23,0.18)_44%,rgba(2,6,23,0.84)_100%)]" aria-hidden="true" />
-        <div className="absolute inset-x-0 bottom-0 p-7 text-white sm:p-8">
-          <p className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-yellow-300/90">
-            {String(index + 1).padStart(2, "0")}
-          </p>
-          <h3 className="font-serif text-[clamp(1.55rem,4vw,2rem)] font-bold leading-tight tracking-normal drop-shadow-sm">
-            {department.name}
+      </div>
+
+      <div className="flex flex-1 flex-col px-6 pb-6 pt-6 sm:px-7">
+        <div className="flex items-start gap-5">
+          <div className="mt-1 flex h-12 w-12 shrink-0 items-center justify-center text-[#061f3f]" aria-hidden="true">
+            <AcademicProgramIcon icon={program.icon} className="h-10 w-10" />
+          </div>
+          <h3 className="font-serif text-[clamp(1.45rem,4vw,1.75rem)] font-bold leading-tight tracking-normal text-[#082447]">
+            {program.title}
           </h3>
-          {description ? (
-            <p className="mt-3 line-clamp-2 max-w-sm text-sm leading-6 text-blue-50/85">
-              {description}
-            </p>
-          ) : null}
         </div>
-        {department.icon ? (
-          <span className="absolute left-5 top-5 rounded-full bg-yellow-400 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.12em] text-[#061f3f] shadow-lg shadow-slate-950/20">
-            {department.icon}
-          </span>
+
+        {description ? (
+          <p className="mt-4 max-w-[27rem] text-base leading-7 text-slate-600">
+            {description}
+          </p>
         ) : null}
-      </a>
+
+        {bullets.length > 0 ? (
+          <ul className="mt-5 space-y-2">
+            {bullets.map((bullet) => (
+              <li key={`${program.slug}-${bullet}`} className="flex gap-3 text-[15px] font-bold leading-6 text-[#082447]">
+                <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center text-yellow-500" aria-hidden="true">
+                  <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 8.2 6.5 12 13 4" />
+                  </svg>
+                </span>
+                <span>{bullet}</span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+
+        {buttonUrl ? (
+          <a
+            href={buttonUrl}
+            className="mt-auto inline-flex min-h-11 w-fit items-center justify-center rounded-full bg-[#06436e] px-6 py-3 text-sm font-black text-white transition duration-300 hover:-translate-y-0.5 hover:bg-[#082f57] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400"
+          >
+            <span>{buttonText}</span>
+            <span className="ml-3 grid h-4 w-4 grid-cols-2 gap-1" aria-hidden="true">
+              <span className="h-1 w-1 rounded-full bg-white" />
+              <span className="h-1 w-1 rounded-full bg-white" />
+              <span className="h-1 w-1 rounded-full bg-white" />
+              <span className="h-1 w-1 rounded-full bg-white" />
+            </span>
+          </a>
+        ) : null}
+      </div>
     </article>
   );
 }
 
-function getDepartmentIconText(department: Department): string {
-  const source = department.icon?.trim() || department.name.trim();
+function AcademicProgramIcon({
+  icon,
+  className = "h-8 w-8",
+}: Readonly<{
+  icon?: string | null;
+  className?: string;
+}>) {
+  const iconKey = icon?.trim().toLowerCase();
 
-  return source.slice(0, 1).toUpperCase();
+  if (iconKey === "law") {
+    return (
+      <svg className={className} viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M24 8v31" />
+        <path d="M12 39h24" />
+        <path d="M17 13h14" />
+        <path d="M8 18h14" />
+        <path d="M26 18h14" />
+        <path d="M15 18 8 31h14L15 18Z" />
+        <path d="m33 18-7 13h14l-7-13Z" />
+      </svg>
+    );
+  }
+
+  if (iconKey === "code" || iconKey === "computer") {
+    return (
+      <svg className={className} viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M8 12h32v22H8z" />
+        <path d="M18 40h12" />
+        <path d="M24 34v6" />
+        <path d="m19 20-4 4 4 4" />
+        <path d="m29 20 4 4-4 4" />
+      </svg>
+    );
+  }
+
+  if (iconKey === "science") {
+    return (
+      <svg className={className} viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M18 8h12" />
+        <path d="M21 8v10L12 36a6 6 0 0 0 5.4 4h13.2A6 6 0 0 0 36 36l-9-18V8" />
+        <path d="M17 31h14" />
+      </svg>
+    );
+  }
+
+  if (iconKey === "engineering") {
+    return (
+      <svg className={className} viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M24 8v7" />
+        <path d="M24 33v7" />
+        <path d="M8 24h7" />
+        <path d="M33 24h7" />
+        <path d="m13 13 5 5" />
+        <path d="m30 30 5 5" />
+        <path d="m35 13-5 5" />
+        <path d="m18 30-5 5" />
+        <circle cx="24" cy="24" r="8" />
+      </svg>
+    );
+  }
+
+  if (iconKey === "business") {
+    return (
+      <svg className={className} viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M10 18h28v22H10z" />
+        <path d="M18 18v-5h12v5" />
+        <path d="M10 26h28" />
+        <path d="M21 26v4h6v-4" />
+      </svg>
+    );
+  }
+
+  if (iconKey === "book") {
+    return (
+      <svg className={className} viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M10 10h13a7 7 0 0 1 7 7v21H17a7 7 0 0 0-7 7V10Z" />
+        <path d="M38 10H25a7 7 0 0 0-7 7v21h13a7 7 0 0 1 7 7V10Z" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg className={className} viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="m6 18 18-8 18 8-18 8-18-8Z" />
+      <path d="M14 22v9c0 3 5 6 10 6s10-3 10-6v-9" />
+      <path d="M40 20v12" />
+      <path d="M38 36h4" />
+    </svg>
+  );
+}
+
+function getAcademicProgramBullets(program: AcademicProgram): string[] {
+  if (!Array.isArray(program.bullet_points)) {
+    return [];
+  }
+
+  return program.bullet_points
+    .map((bullet) => (typeof bullet === "string" ? bullet.trim() : ""))
+    .filter(Boolean);
 }
 
 function LatestNoticesSection({

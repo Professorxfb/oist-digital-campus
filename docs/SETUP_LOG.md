@@ -2878,3 +2878,91 @@ Built and polished the CMS-driven Departments homepage section for the current U
 - Create a `HomepageSection` record with key `departments` to control the section title, eyebrow/subtitle, description, button text/link, enabled status, and sort order from Filament.
 - Publish approved Department records in Filament with real names, slugs, descriptions, images/icons, sort order, and published status.
 - The homepage will display the Departments section after About once published department records exist.
+
+---
+
+Date: 2026-06-30
+
+## Homepage Academics & Programs Section
+
+### Scope
+
+Replaced the previous homepage Departments carousel area with a CMS-driven `Academics & Programs` section inspired by the provided Univet Blue Two reference screenshot. Header, hero, hero feature cards, search/offcanvas, sticky header, and About were not redesigned.
+
+### Files Changed
+
+- `backend/database/migrations/2026_06_30_000001_create_academic_programs_table.php`
+- `backend/app/Models/AcademicProgram.php`
+- `backend/app/Policies/AcademicProgramPolicy.php`
+- `backend/app/Filament/Resources/AcademicPrograms/AcademicProgramResource.php`
+- `backend/app/Filament/Resources/AcademicPrograms/Pages/ManageAcademicPrograms.php`
+- `backend/app/Http/Controllers/Api/V1/PublicCmsController.php`
+- `backend/routes/api.php`
+- `backend/tests/Feature/PublicContentApiTest.php`
+- `backend/tests/Feature/PublicContentPolicyTest.php`
+- `frontend/src/types/cms.ts`
+- `frontend/src/services/cms.ts`
+- `frontend/src/app/page.tsx`
+- `frontend/src/app/globals.css`
+- `docs/SETUP_LOG.md`
+
+### CMS/Admin Control Behavior
+
+- Section-level content uses `HomepageSection` key `academics_programs`.
+- Section fields used: key, title, subtitle/eyebrow, content/description, image/background, button text, button URL, sort order, enabled status, and metadata.
+- Optional section metadata supported by the frontend: `stat_value`, `admission_count`, `admission_value`, `right_stat_value`, `stat_label`, `admission_label`, and `right_stat_label`.
+- Program cards are managed through the new Filament `Public CMS > Academic Programs` resource.
+- Academic Program fields: title, slug, category, short description, full description, featured image, icon, bullet points, button text, button URL, sort order, published status, meta title, and meta description.
+- Existing Department records and Department API behavior were preserved. The homepage no longer uses the old Departments section for this post-About area.
+
+### API Behavior
+
+- Added `GET /api/v1/academic-programs`.
+- The endpoint returns only published academic programs.
+- Ordering is `sort_order` first, then title.
+- Response fields include title, slug, category, short description, description, featured image path, icon, bullet points, button text, button URL, sort order, and SEO metadata.
+- Public search now includes published academic programs.
+
+### Frontend Implementation Notes
+
+- The homepage now looks for an enabled `academics_programs` Homepage Section and published Academic Program records before rendering the section.
+- The new section renders immediately after About when CMS data exists.
+- The layout uses a navy top area, warm cream lower area, overlapping white cards, image-top cards, icon/title rows, CMS bullet points, CMS card buttons, and pagination dots.
+- The previous dark Departments carousel and grid-line visual treatment are no longer used on the homepage.
+- The section hides gracefully when no enabled `academics_programs` section or no published programs exist.
+- A native horizontal scroll/snap carousel is used; no package was installed.
+
+### Commands Run
+
+- `php artisan optimize:clear`
+- `php artisan route:list --path=api/v1`
+- `php artisan test --filter=PublicContent`
+- `php artisan test`
+- `php artisan migrate --force`
+- `npm run lint`
+- `npm run build`
+- `npm run dev -- --hostname 127.0.0.1 --port 3000`
+- `Invoke-RestMethod http://127.0.0.1:8000/api/v1/academic-programs`
+
+### Verification Results
+
+- `php artisan optimize:clear` completed successfully.
+- `php artisan route:list --path=api/v1` completed successfully and confirmed `GET /api/v1/academic-programs`.
+- `php artisan test --filter=PublicContent` passed after updating the Academic Program policy expectation.
+- `php artisan test` completed successfully: 38 tests, 247 assertions.
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully.
+- Local API check confirmed `/api/v1/academic-programs` returns only published records in the standard response envelope.
+- Browser MCP opened the Univet Blue Two reference page and confirmed the `Academics & Programs` reference section exists.
+- Browser MCP verified the local homepage order as About before Academics & Programs and Academics & Programs before Latest Notices.
+- Browser MCP verified desktop 1366px layout with three visible program cards, pagination dots, and no horizontal overflow.
+- Browser MCP verified mobile 390px and 430px layouts with no horizontal overflow.
+- Temporary local preview CMS records were created only for browser layout verification and then removed.
+
+### Manual Admin Setup Needed
+
+- Create and enable a `HomepageSection` record with key `academics_programs`.
+- Use title `Academics & Programs` and subtitle/eyebrow `PROGRAMS & STUDY`, or approved CMS-managed institutional wording.
+- Optionally configure section metadata for the right-side stat/admission mini block.
+- Publish real Academic Program records with approved titles, slugs, images, icons, short descriptions, bullet points, button labels/URLs, sort order, and published status.
+- The homepage will keep the section hidden until both the enabled section record and published Academic Program records exist.

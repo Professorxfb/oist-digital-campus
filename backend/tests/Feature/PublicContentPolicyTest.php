@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Department;
+use App\Models\AcademicProgram;
 use App\Models\Download;
 use App\Models\Event;
 use App\Models\FacultyProfile;
@@ -34,12 +35,13 @@ class PublicContentPolicyTest extends TestCase
             $this->assertTrue(Gate::forUser($user)->allows('viewAny', GalleryAlbum::class));
             $this->assertTrue(Gate::forUser($user)->allows('viewAny', GalleryItem::class));
             $this->assertTrue(Gate::forUser($user)->allows('viewAny', Download::class));
+            $this->assertTrue(Gate::forUser($user)->allows('viewAny', AcademicProgram::class));
             $this->assertTrue(Gate::forUser($user)->allows('viewAny', Department::class));
             $this->assertTrue(Gate::forUser($user)->allows('viewAny', FacultyProfile::class));
         }
     }
 
-    public function test_academic_officer_can_manage_departments_and_faculty_only(): void
+    public function test_academic_officer_can_manage_academic_public_content_only(): void
     {
         $this->seed(RolePermissionSeeder::class);
 
@@ -47,6 +49,7 @@ class PublicContentPolicyTest extends TestCase
         $user->assignRole('academic_officer');
 
         $this->assertTrue(Gate::forUser($user)->allows('viewAny', Department::class));
+        $this->assertTrue(Gate::forUser($user)->allows('viewAny', AcademicProgram::class));
         $this->assertTrue(Gate::forUser($user)->allows('viewAny', FacultyProfile::class));
         $this->assertFalse(Gate::forUser($user)->allows('viewAny', Notice::class));
         $this->assertFalse(Gate::forUser($user)->allows('viewAny', NewsPost::class));
@@ -69,6 +72,7 @@ class PublicContentPolicyTest extends TestCase
         $this->assertFalse(Gate::forUser($user)->allows('viewAny', GalleryAlbum::class));
         $this->assertFalse(Gate::forUser($user)->allows('viewAny', GalleryItem::class));
         $this->assertFalse(Gate::forUser($user)->allows('viewAny', Download::class));
+        $this->assertFalse(Gate::forUser($user)->allows('viewAny', AcademicProgram::class));
         $this->assertFalse(Gate::forUser($user)->allows('viewAny', Department::class));
         $this->assertFalse(Gate::forUser($user)->allows('viewAny', FacultyProfile::class));
     }

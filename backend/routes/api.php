@@ -18,6 +18,7 @@ Route::prefix('v1')->group(function (): void {
     Route::get('gallery-albums', [PublicCmsController::class, 'galleryAlbums']);
     Route::get('gallery-albums/{slug}', [PublicCmsController::class, 'galleryAlbum']);
     Route::get('downloads', [PublicCmsController::class, 'downloads']);
+    Route::get('academic-programs', [PublicCmsController::class, 'academicPrograms']);
     Route::get('departments', [PublicCmsController::class, 'departments']);
     Route::get('departments/{slug}', [PublicCmsController::class, 'department']);
     Route::get('faculty-profiles', [PublicCmsController::class, 'facultyProfiles']);
