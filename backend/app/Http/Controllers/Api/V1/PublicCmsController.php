@@ -25,6 +25,7 @@ use App\Models\SiteSetting;
 use App\Models\Video;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class PublicCmsController extends Controller
@@ -622,10 +623,13 @@ class PublicCmsController extends Controller
             'slug' => $notice->slug,
             'excerpt' => $this->plainText($notice->body),
             'body' => $includeBody ? $notice->body : null,
+            'content_blocks' => $this->formatNoticeContentBlocks($notice->content_blocks),
             'featured_image_path' => $notice->featured_image_path,
+            'featured_image_url' => $this->assetUrl($notice->featured_image_path),
             'category' => $notice->category,
             'audience' => $notice->audience,
             'attachment_path' => $notice->attachment_path,
+            'attachment_url' => $this->assetUrl($notice->attachment_path),
             'external_link' => $notice->external_link,
             'video_url' => $notice->video_url,
             'is_pinned' => $notice->is_pinned,
@@ -636,6 +640,39 @@ class PublicCmsController extends Controller
             'meta_title' => $notice->meta_title,
             'meta_description' => $notice->meta_description,
         ], fn (mixed $value): bool => $value !== null);
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>|null  $blocks
+     * @return array<int, array<string, mixed>>|null
+     */
+    private function formatNoticeContentBlocks(?array $blocks): ?array
+    {
+        if (! $blocks) {
+            return null;
+        }
+
+        return collect($blocks)
+            ->filter(fn (mixed $block): bool => is_array($block) && filled($block['type'] ?? null))
+            ->values()
+            ->map(function (array $block): array {
+                $imagePath = $block['image_path'] ?? null;
+                $attachmentPath = $block['attachment_path'] ?? null;
+
+                return array_filter([
+                    'type' => $block['type'] ?? null,
+                    'title' => $block['title'] ?? null,
+                    'body' => $block['body'] ?? null,
+                    'image_path' => $imagePath,
+                    'image_url' => is_string($imagePath) ? $this->assetUrl($imagePath) : null,
+                    'video_url' => $block['video_url'] ?? null,
+                    'attachment_path' => $attachmentPath,
+                    'attachment_url' => is_string($attachmentPath) ? $this->assetUrl($attachmentPath) : null,
+                    'button_text' => $block['button_text'] ?? null,
+                    'button_url' => $block['button_url'] ?? null,
+                ], fn (mixed $value): bool => $value !== null && $value !== '');
+            })
+            ->all();
     }
 
     private function formatNewsPost(NewsPost $post, bool $includeBody = false): array
@@ -895,6 +932,19 @@ class PublicCmsController extends Controller
         }
 
         return Str::limit(trim(preg_replace('/\s+/', ' ', strip_tags($value))), 160);
+    }
+
+    private function assetUrl(?string $path): ?string
+    {
+        if (! $path) {
+            return null;
+        }
+
+        if (Str::startsWith($path, ['http://', 'https://'])) {
+            return $path;
+        }
+
+        return Storage::disk('public')->url($path);
     }
 
     private function paginatedResponse(LengthAwarePaginator $paginator, string $message): JsonResponse

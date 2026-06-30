@@ -23,6 +23,13 @@ class PublicContentApiTest extends TestCase
         Notice::query()->create([
             'title' => 'Published Notice',
             'slug' => 'published-notice',
+            'content_blocks' => [
+                [
+                    'type' => 'image',
+                    'title' => 'Notice image',
+                    'image_path' => 'cms/notices/content/images/published.webp',
+                ],
+            ],
             'featured_image_path' => 'cms/notices/images/published.webp',
             'attachment_path' => 'cms/notices/attachments/published.pdf',
             'external_link' => 'https://example.com/published-notice',
@@ -122,7 +129,11 @@ class PublicContentApiTest extends TestCase
         $this->getJson('/api/v1/notices')
             ->assertOk()
             ->assertJsonPath('data.0.featured_image_path', 'cms/notices/images/published.webp')
+            ->assertJsonPath('data.0.featured_image_url', 'http://localhost/storage/cms/notices/images/published.webp')
             ->assertJsonPath('data.0.attachment_path', 'cms/notices/attachments/published.pdf')
+            ->assertJsonPath('data.0.attachment_url', 'http://localhost/storage/cms/notices/attachments/published.pdf')
+            ->assertJsonPath('data.0.content_blocks.0.type', 'image')
+            ->assertJsonPath('data.0.content_blocks.0.image_url', 'http://localhost/storage/cms/notices/content/images/published.webp')
             ->assertJsonPath('data.0.external_link', 'https://example.com/published-notice')
             ->assertJsonPath('data.0.video_url', 'https://www.youtube.com/watch?v=example')
             ->assertJsonPath('data.0.is_published', true);
@@ -141,6 +152,18 @@ class PublicContentApiTest extends TestCase
             'title' => 'Notice Detail',
             'slug' => 'notice-detail',
             'body' => 'Notice body',
+            'content_blocks' => [
+                [
+                    'type' => 'attachment',
+                    'title' => 'Routine',
+                    'attachment_path' => 'cms/notices/content/attachments/routine.pdf',
+                ],
+                [
+                    'type' => 'video',
+                    'title' => 'Briefing',
+                    'video_url' => 'https://youtu.be/detail',
+                ],
+            ],
             'featured_image_path' => 'cms/notices/images/detail.webp',
             'attachment_path' => 'cms/notices/attachments/detail.docx',
             'external_link' => 'https://example.com/detail',
@@ -177,7 +200,11 @@ class PublicContentApiTest extends TestCase
             ->assertJsonPath('data.slug', 'notice-detail')
             ->assertJsonPath('data.body', 'Notice body')
             ->assertJsonPath('data.featured_image_path', 'cms/notices/images/detail.webp')
+            ->assertJsonPath('data.featured_image_url', 'http://localhost/storage/cms/notices/images/detail.webp')
             ->assertJsonPath('data.attachment_path', 'cms/notices/attachments/detail.docx')
+            ->assertJsonPath('data.attachment_url', 'http://localhost/storage/cms/notices/attachments/detail.docx')
+            ->assertJsonPath('data.content_blocks.0.attachment_url', 'http://localhost/storage/cms/notices/content/attachments/routine.pdf')
+            ->assertJsonPath('data.content_blocks.1.video_url', 'https://youtu.be/detail')
             ->assertJsonPath('data.external_link', 'https://example.com/detail')
             ->assertJsonPath('data.video_url', 'https://www.youtube.com/watch?v=detail');
 

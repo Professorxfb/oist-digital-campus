@@ -4,7 +4,9 @@ namespace App\Filament\Resources\HomepageSections;
 
 use App\Filament\Resources\HomepageSections\Pages\ManageHomepageSections;
 use App\Models\HomepageSection;
+use App\Support\CmsRecordDuplicator;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -131,6 +133,14 @@ class HomepageSectionResource extends Resource
             ])
             ->defaultSort('sort_order')
             ->recordActions([
+                Action::make('duplicate')
+                    ->label('Duplicate')
+                    ->icon(Heroicon::Square2Stack)
+                    ->color('gray')
+                    ->requiresConfirmation()
+                    ->modalDescription('Duplicate this record? The copy will be created as unpublished/disabled.')
+                    ->successNotificationTitle('Homepage section duplicated as a disabled copy.')
+                    ->action(fn (HomepageSection $record): HomepageSection => CmsRecordDuplicator::duplicate($record)),
                 EditAction::make(),
                 DeleteAction::make(),
             ])

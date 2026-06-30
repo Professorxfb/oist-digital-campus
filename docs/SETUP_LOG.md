@@ -1290,6 +1290,152 @@ Sections render backend-provided data when available. Empty states are generic a
 
 - `npm run lint` completed successfully.
 - `npm run build` completed successfully.
+
+---
+
+Date: 2026-07-01
+
+## Notice CMS Rich Media, Notice Detail Redesign, Duplicate Actions, And About Video Modal
+
+### Scope
+
+Upgraded the existing Notice CMS/editor and notice detail rendering, added safe CMS duplicate actions for selected Filament resources, and changed the About section video thumbnail to open an in-site modal. Header, footer, homepage section designs, About layout, Academics & Programs, and Latest Notices listing design were not redesigned.
+
+### Files Changed
+
+- `backend/database/migrations/2026_07_01_000001_add_content_blocks_to_notices_table.php`
+- `backend/app/Models/Notice.php`
+- `backend/app/Support/CmsRecordDuplicator.php`
+- `backend/app/Filament/Resources/Notices/NoticeResource.php`
+- `backend/app/Filament/Resources/AcademicPrograms/AcademicProgramResource.php`
+- `backend/app/Filament/Resources/Departments/DepartmentResource.php`
+- `backend/app/Filament/Resources/HeroFeatureCards/HeroFeatureCardResource.php`
+- `backend/app/Filament/Resources/HomepageSections/HomepageSectionResource.php`
+- `backend/app/Http/Controllers/Api/V1/PublicCmsController.php`
+- `backend/tests/Feature/PublicContentApiTest.php`
+- `backend/tests/Feature/CmsRecordDuplicatorTest.php`
+- `frontend/src/app/notices/[slug]/page.tsx`
+- `frontend/src/app/page.tsx`
+- `frontend/src/app/globals.css`
+- `frontend/src/components/public-site/VideoEmbed.tsx`
+- `frontend/src/components/public-site/VideoLightbox.tsx`
+- `frontend/src/lib/cms-html.ts`
+- `frontend/src/lib/video-embed.ts`
+- `frontend/src/types/cms.ts`
+- `docs/SETUP_LOG.md`
+
+### Database Fields Added
+
+- Added nullable JSON column `notices.content_blocks`.
+- Existing notice fields were preserved, including title, slug, body, category, audience, featured image, attachment, external link, video URL, pinned/published state, publish/expiry dates, sort order, and SEO fields.
+
+### Notice Admin Behavior
+
+- Notice body remains a Filament `RichEditor`.
+- Rich editor inline image attachments are enabled on the public disk in `cms/notices/content/body`.
+- Added optional repeatable `content_blocks` for rich text, image, video URL, file attachment, and link/button blocks.
+- Content block images upload to `cms/notices/content/images`.
+- Content block attachments upload to `cms/notices/content/attachments`.
+- Featured image uploads remain in `cms/notices/images`.
+- Primary PDF/Word attachment uploads remain in `cms/notices/attachments`.
+- Image upload MIME types are restricted to JPEG, PNG, and WebP.
+- Document upload MIME types are restricted to PDF, DOC, and DOCX.
+- Video is URL-first through CMS-managed YouTube/Vimeo/public URL fields.
+
+### API Behavior
+
+- `GET /api/v1/notices` and `GET /api/v1/notices/{slug}` now include `content_blocks` when present.
+- Notice responses now include `featured_image_url` and `attachment_url` alongside existing path fields.
+- Content block image and attachment paths are returned with resolved public URLs.
+- Public notice endpoints remain published-only and non-expired.
+
+### Notice Detail Frontend
+
+- Replaced the generic detail article layout with a premium notice/article template.
+- Added compact dark navy hero with breadcrumb, metadata chips, title, and summary.
+- Added cream/off-white page background, white article card, and right sidebar on desktop.
+- Mobile/tablet layout stacks cleanly.
+- The detail page renders notice featured image only, not unrelated About/gallery collages.
+- Rich body HTML is rendered through a local allowlist-style sanitizer that strips scripts, iframes, event handlers, inline styles, and unsafe `href`/`src` values.
+- Added article typography styles through `.cms-rich-content`.
+- Video URLs render as safe YouTube/Vimeo embeds when supported, with fallback external video button.
+- Attachments render as professional download cards with file type badge.
+- Content blocks render in saved CMS order.
+
+### Duplicate / Clone Behavior
+
+- Added row-level `Duplicate` action to:
+  - Academic Programs
+  - Departments
+  - Notices
+  - Hero Feature Cards
+  - Homepage Sections
+- Duplicate uses `App\Support\CmsRecordDuplicator`.
+- Copies preserve CMS content and existing image/file path references.
+- Copies append `Copy` to `title`, `name`, and `meta_title` when present.
+- Slugs become unique with `-copy`, `-copy-2`, etc.
+- Homepage section keys become unique with `_copy`, `_copy_2`, etc.
+- `sort_order` is set to the next max sort order.
+- Duplicates are unpublished/disabled by default when `is_published`, `is_enabled`, or `is_active` exists.
+- Notice duplicates clear `published_at` and `expires_at` to avoid accidental public/expired copies.
+- Actions require confirmation and show success notifications.
+- No physical media files are duplicated.
+
+### About Video Modal Behavior
+
+- About video thumbnail now uses `VideoLightbox` instead of an outbound YouTube link.
+- Clicking the thumbnail opens a large centered in-site modal.
+- Supported YouTube/Vimeo URLs are converted to safe embeds.
+- Uploaded public video files can play in the modal.
+- Unsupported URLs fall back to an `Open Video` link inside the modal.
+- Close X, Escape, and the explicit backdrop close target are supported.
+- Body scroll is disabled while the modal is open.
+- Closing the modal removes the iframe/video from the DOM, stopping playback.
+
+### Plugin / Package Status
+
+- No new package or plugin was added.
+- Filament built-in `RichEditor`, `FileUpload`, `Repeater`, and table actions were used.
+
+### Commands Run
+
+- `php artisan optimize:clear`
+- `php artisan route:list --path=api/v1`
+- `php artisan migrate:fresh --env=testing`
+- `php artisan test --filter=PublicContentApiTest`
+- `php artisan test --filter=CmsRecordDuplicatorTest`
+- `php artisan migrate`
+- `php artisan migrate:status`
+- `php artisan test`
+- `npm run lint`
+- `npm run build`
+- `npm run dev -- --hostname 127.0.0.1 --port 3001`
+
+### Verification Results
+
+- `php artisan optimize:clear` completed successfully.
+- `php artisan route:list --path=api/v1` completed successfully and confirmed notice routes remain registered.
+- `php artisan migrate` reported nothing pending; `migrate:status` shows `2026_07_01_000001_add_content_blocks_to_notices_table` as `Ran`.
+- `php artisan test --filter=PublicContentApiTest` passed: 5 tests, 82 assertions.
+- `php artisan test --filter=CmsRecordDuplicatorTest` passed: 3 tests, 21 assertions.
+- `php artisan test` passed: 41 tests, 286 assertions.
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully after stopping the dev server and rerunning a clean build.
+- Browser verification used temporary local CMS records for the requested notice slug and About video, then removed them.
+- Browser verified notice detail at 390px, 430px, 768px, 1366px, and 1920px: no horizontal overflow, mobile/tablet stacked layout, desktop two-column layout, dark hero, rich body, featured image, video embeds, downloads, external link buttons, and Back to Notices button.
+- Browser verified About video modal opened in-site with an iframe embed, no outbound YouTube anchor, no horizontal overflow, and close X/Escape behavior.
+- After the final lightbox backdrop patch, browser fresh navigation to localhost was blocked by the browser extension with `ERR_BLOCKED_BY_CLIENT`; the backdrop close target was verified by code review and final `npm run build`.
+- Temporary verification records were deleted afterward; local API checks returned no published notices and no enabled homepage sections.
+
+### Manual Admin Instructions
+
+- In Filament, create/edit a Notice and use the rich body for the main article text.
+- Use Featured Image for card/detail image.
+- Use Primary Attachment for the main PDF/DOC/DOCX download.
+- Use Video URL for YouTube/Vimeo/public video embed.
+- Use Content / Media Blocks for additional rich text, images, videos, file downloads, or button links in exact display order.
+- Run `php artisan storage:link` on environments where public storage URLs are not yet linked.
+- Use Duplicate on supported CMS resources to create an unpublished/disabled copy, then edit and publish/enable only after review.
 - `npm run dev` started successfully at `http://localhost:3000`.
 - `Invoke-WebRequest` returned HTTP 200 for `http://localhost:3000`.
 - Desktop browser check confirmed header, footer, hero, and public shell sections render.

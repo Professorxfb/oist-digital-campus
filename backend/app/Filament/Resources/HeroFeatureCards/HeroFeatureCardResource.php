@@ -4,7 +4,9 @@ namespace App\Filament\Resources\HeroFeatureCards;
 
 use App\Filament\Resources\HeroFeatureCards\Pages\ManageHeroFeatureCards;
 use App\Models\HeroFeatureCard;
+use App\Support\CmsRecordDuplicator;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -96,6 +98,14 @@ class HeroFeatureCardResource extends Resource
             ])
             ->defaultSort('sort_order')
             ->recordActions([
+                Action::make('duplicate')
+                    ->label('Duplicate')
+                    ->icon(Heroicon::Square2Stack)
+                    ->color('gray')
+                    ->requiresConfirmation()
+                    ->modalDescription('Duplicate this record? The copy will be created as unpublished/disabled.')
+                    ->successNotificationTitle('Hero feature card duplicated as a disabled copy.')
+                    ->action(fn (HeroFeatureCard $record): HeroFeatureCard => CmsRecordDuplicator::duplicate($record)),
                 EditAction::make(),
                 DeleteAction::make(),
             ])

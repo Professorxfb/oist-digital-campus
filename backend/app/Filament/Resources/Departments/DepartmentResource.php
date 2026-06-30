@@ -4,7 +4,9 @@ namespace App\Filament\Resources\Departments;
 
 use App\Filament\Resources\Departments\Pages\ManageDepartments;
 use App\Models\Department;
+use App\Support\CmsRecordDuplicator;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -80,6 +82,14 @@ class DepartmentResource extends Resource
             ])
             ->defaultSort('sort_order')
             ->recordActions([
+                Action::make('duplicate')
+                    ->label('Duplicate')
+                    ->icon(Heroicon::Square2Stack)
+                    ->color('gray')
+                    ->requiresConfirmation()
+                    ->modalDescription('Duplicate this record? The copy will be created as unpublished/disabled.')
+                    ->successNotificationTitle('Department duplicated as an unpublished copy.')
+                    ->action(fn (Department $record): Department => CmsRecordDuplicator::duplicate($record)),
                 EditAction::make(),
                 DeleteAction::make(),
             ])

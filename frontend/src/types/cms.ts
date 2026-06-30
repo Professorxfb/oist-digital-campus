@@ -120,10 +120,13 @@ export interface Notice {
   slug: string;
   excerpt?: string | null;
   body?: string | null;
+  content_blocks?: NoticeContentBlock[] | null;
   featured_image_path?: string | null;
+  featured_image_url?: string | null;
   category?: string | null;
   audience?: string | null;
   attachment_path?: string | null;
+  attachment_url?: string | null;
   external_link?: string | null;
   video_url?: string | null;
   is_pinned?: boolean;
@@ -133,6 +136,27 @@ export interface Notice {
   sort_order?: number;
   meta_title?: string | null;
   meta_description?: string | null;
+}
+
+export type NoticeContentBlockType =
+  | "rich_text"
+  | "image"
+  | "video"
+  | "attachment"
+  | "link"
+  | string;
+
+export interface NoticeContentBlock {
+  type: NoticeContentBlockType;
+  title?: string | null;
+  body?: string | null;
+  image_path?: string | null;
+  image_url?: string | null;
+  video_url?: string | null;
+  attachment_path?: string | null;
+  attachment_url?: string | null;
+  button_text?: string | null;
+  button_url?: string | null;
 }
 
 export interface NewsPost {
