@@ -11,7 +11,6 @@ class Notice extends Model
         'title',
         'slug',
         'body',
-        'content_blocks',
         'featured_image_path',
         'category',
         'audience',
@@ -32,7 +31,6 @@ class Notice extends Model
         return [
             'is_pinned' => 'boolean',
             'is_published' => 'boolean',
-            'content_blocks' => 'array',
             'published_at' => 'datetime',
             'expires_at' => 'datetime',
             'sort_order' => 'integer',

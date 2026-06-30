@@ -9,7 +9,6 @@ import { NoticeStrip } from "@/components/public-site/NoticeStrip";
 import { ScrollReveal } from "@/components/public-site/ScrollReveal";
 import { SiteFooter } from "@/components/public-site/SiteFooter";
 import { SiteHeader } from "@/components/public-site/SiteHeader";
-import { VideoLightbox } from "@/components/public-site/VideoLightbox";
 import { resolveCmsAssetUrl } from "@/lib/api-client";
 import { formatDate, getCmsAssetUrl, getTextPreview } from "@/lib/cms-display";
 import {
@@ -799,17 +798,34 @@ function AboutVideoCard({
   uploadedVideoUrl: string | null;
   youtubeEmbedUrl: string | null;
 }>) {
-  const videoUrl = externalVideoUrl ?? youtubeEmbedUrl;
+  const videoHref = externalVideoUrl ?? youtubeEmbedUrl ?? uploadedVideoUrl;
 
   return (
-    <VideoLightbox
-      className="aspect-video w-full max-w-[430px] justify-self-center overflow-hidden rounded-[16px] border-[3px] border-white bg-white shadow-[0_16px_38px_rgba(2,6,23,0.13)] max-sm:-mx-6 max-sm:w-[calc(100%+3rem)] sm:max-w-[430px] lg:max-w-[340px] lg:justify-self-end"
-      buttonClassName="group relative flex h-full w-full cursor-pointer items-center justify-center overflow-hidden rounded-[12px] bg-[#061f3f] text-white transition duration-300 hover:bg-yellow-400 hover:text-[#061f3f] hover:shadow-[0_20px_42px_rgba(2,6,23,0.18)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400"
-      label="Play section video"
-      thumbnailUrl={thumbnailUrl}
-      uploadedVideoUrl={uploadedVideoUrl}
-      videoUrl={videoUrl}
-    />
+    <div className="aspect-video w-full max-w-[430px] justify-self-center overflow-hidden rounded-[16px] border-[3px] border-white bg-white shadow-[0_16px_38px_rgba(2,6,23,0.13)] max-sm:-mx-6 max-sm:w-[calc(100%+3rem)] sm:max-w-[430px] lg:max-w-[340px] lg:justify-self-end">
+      {videoHref ? (
+        <a
+          className="group relative flex h-full w-full items-center justify-center overflow-hidden rounded-[12px] bg-[#061f3f] text-white transition duration-300 hover:bg-yellow-400 hover:text-[#061f3f] hover:shadow-[0_20px_42px_rgba(2,6,23,0.18)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400"
+          href={videoHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Play section video"
+        >
+          {thumbnailUrl ? (
+            <span
+              className="absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-105"
+              style={{ backgroundImage: `url(${thumbnailUrl})` }}
+              aria-hidden="true"
+            />
+          ) : null}
+          <span className="absolute inset-0 bg-slate-950/18 transition-colors duration-300 group-hover:bg-yellow-400/12" aria-hidden="true" />
+          <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#061f3f] shadow-[0_12px_24px_rgba(2,6,23,0.22)] transition duration-300 group-hover:scale-105 group-hover:bg-yellow-400 group-hover:text-[#061f3f] sm:h-14 sm:w-14" aria-hidden="true">
+            <svg className="ml-1 h-5 w-5 sm:h-6 sm:w-6" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M4.5 2.8v10.4L12.5 8 4.5 2.8Z" />
+            </svg>
+          </span>
+        </a>
+      ) : null}
+    </div>
   );
 }
 

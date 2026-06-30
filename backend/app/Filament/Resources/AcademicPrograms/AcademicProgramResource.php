@@ -4,9 +4,7 @@ namespace App\Filament\Resources\AcademicPrograms;
 
 use App\Filament\Resources\AcademicPrograms\Pages\ManageAcademicPrograms;
 use App\Models\AcademicProgram;
-use App\Support\CmsRecordDuplicator;
 use BackedEnum;
-use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -113,14 +111,6 @@ class AcademicProgramResource extends Resource
             ])
             ->defaultSort('sort_order')
             ->recordActions([
-                Action::make('duplicate')
-                    ->label('Duplicate')
-                    ->icon(Heroicon::Square2Stack)
-                    ->color('gray')
-                    ->requiresConfirmation()
-                    ->modalDescription('Duplicate this record? The copy will be created as unpublished/disabled.')
-                    ->successNotificationTitle('Academic program duplicated as an unpublished copy.')
-                    ->action(fn (AcademicProgram $record): AcademicProgram => CmsRecordDuplicator::duplicate($record)),
                 EditAction::make(),
                 DeleteAction::make(),
             ])
