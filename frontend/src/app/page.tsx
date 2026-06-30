@@ -3,7 +3,6 @@ import { CMSHero } from "@/components/public-site/CMSHero";
 import { Container } from "@/components/public-site/Container";
 import { ContentCard } from "@/components/public-site/ContentCard";
 import { CTAButton } from "@/components/public-site/CTAButton";
-import { DepartmentCard } from "@/components/public-site/DepartmentCard";
 import { EventCard } from "@/components/public-site/EventCard";
 import { NoticeStrip } from "@/components/public-site/NoticeStrip";
 import { ScrollReveal } from "@/components/public-site/ScrollReveal";
@@ -28,6 +27,7 @@ import {
   getVideos,
 } from "@/services/cms";
 import type {
+  Department,
   Event,
   Facility,
   FacultyProfile,
@@ -208,10 +208,20 @@ export default async function Home() {
   const communityVoices = communityVoicesSection
     ? getCommunityVoices(communityVoicesSection)
     : [];
+  const effectiveDepartmentsSection =
+    departmentsSection ??
+    (departments.data.length > 0
+      ? createFallbackHomepageSection("departments", "Departments", aboutSection, 0.05)
+      : null);
   const effectiveNoticesSection =
     noticesSection ??
     (notices.data.length > 0
-      ? createFallbackHomepageSection("latest_notices", "Latest Notices", aboutSection)
+      ? createFallbackHomepageSection(
+          "latest_notices",
+          "Latest Notices",
+          effectiveDepartmentsSection ?? aboutSection,
+          0.05,
+        )
       : null);
   const nullableSectionBlocks: Array<SectionBlock | null> = [
     aboutSection
@@ -226,13 +236,13 @@ export default async function Home() {
           node: <ChairmanMessageSection profile={chairmanProfile} section={chairmanSection} />,
         }
       : null,
-    departmentsSection && departments.data.length > 0
+    effectiveDepartmentsSection && departments.data.length > 0
       ? {
-          section: departmentsSection,
+          section: effectiveDepartmentsSection,
           node: (
             <DepartmentsSection
-              departments={limitItems(departments.data, departmentsSection)}
-              section={departmentsSection}
+              departments={limitItems(departments.data, effectiveDepartmentsSection)}
+              section={effectiveDepartmentsSection}
             />
           ),
         }
@@ -825,18 +835,97 @@ function DepartmentsSection({
   departments,
   section,
 }: Readonly<{
-  departments: Parameters<typeof DepartmentCard>[0]["department"][];
+  departments: Department[];
   section: HomepageSection;
 }>) {
+  const cardActionLabel =
+    getMetadataText(section.metadata, ["card_button_text", "card_action_label", "item_button_text"]) ??
+    "Explore Department";
+  const gridClassName =
+    departments.length === 1
+      ? "mx-auto max-w-2xl"
+      : "grid gap-5 sm:grid-cols-2 lg:gap-6 xl:grid-cols-3";
+
   return (
     <PremiumSection section={section} tone="cream">
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {departments.map((department) => (
-          <DepartmentCard key={department.slug} department={department} />
+      <div className={gridClassName}>
+        {departments.map((department, index) => (
+          <ScrollReveal key={department.slug} delay={index * 90}>
+            <HomepageDepartmentCard
+              actionLabel={cardActionLabel}
+              department={department}
+            />
+          </ScrollReveal>
         ))}
       </div>
     </PremiumSection>
   );
+}
+
+function HomepageDepartmentCard({
+  actionLabel,
+  department,
+}: Readonly<{
+  actionLabel: string;
+  department: Department;
+}>) {
+  const imageUrl = getCmsAssetUrl(department.featured_image_path ?? null);
+  const description = department.short_description ?? getTextPreview(department.description, 140);
+  const iconText = getDepartmentIconText(department);
+
+  return (
+    <article className="group flex h-full flex-col overflow-hidden rounded-[28px] border border-slate-200/80 bg-white shadow-[0_16px_44px_rgba(2,6,23,0.07)] transition duration-300 hover:-translate-y-2 hover:border-yellow-300/70 hover:shadow-[0_28px_70px_rgba(2,6,23,0.15)]">
+      <div className="relative overflow-hidden">
+        {imageUrl ? (
+          <div
+            className="aspect-[16/10] bg-slate-100 bg-cover bg-center transition duration-700 group-hover:scale-105"
+            style={{ backgroundImage: `url(${imageUrl})` }}
+            aria-hidden="true"
+          />
+        ) : (
+          <div
+            className="flex aspect-[16/10] items-center justify-center bg-[radial-gradient(circle_at_78%_16%,rgba(250,204,21,0.26),transparent_26%),linear-gradient(135deg,#061f3f,#0f4c81_60%,#082f49)]"
+            aria-hidden="true"
+          >
+            <span className="flex h-20 w-20 items-center justify-center rounded-full border border-yellow-300/40 bg-white/10 font-serif text-4xl font-bold text-yellow-300 shadow-2xl shadow-slate-950/20">
+              {iconText}
+            </span>
+          </div>
+        )}
+        <div className="absolute inset-x-0 bottom-0 h-20 bg-[linear-gradient(0deg,rgba(2,6,23,0.38),transparent)]" aria-hidden="true" />
+        {department.icon ? (
+          <span className="absolute left-5 top-5 rounded-full bg-yellow-400 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.12em] text-[#061f3f] shadow-lg shadow-slate-950/15">
+            {department.icon}
+          </span>
+        ) : null}
+      </div>
+      <div className="flex flex-1 flex-col p-6 sm:p-7">
+        <h3 className="font-serif text-[clamp(1.7rem,5vw,2.15rem)] font-bold leading-[1.08] tracking-normal text-slate-950 transition group-hover:text-blue-900">
+          <a href={`/departments/${department.slug}`} className="transition hover:text-blue-800">
+            {department.name}
+          </a>
+        </h3>
+        {description ? (
+          <p className="mt-4 line-clamp-3 text-[15px] leading-7 text-slate-600">
+            {description}
+          </p>
+        ) : null}
+        <a
+          href={`/departments/${department.slug}`}
+          className="mt-auto inline-flex w-fit items-center pt-6 text-sm font-black text-[#061f3f] transition duration-300 hover:-translate-y-0.5 hover:text-blue-800"
+        >
+          {actionLabel}
+          <span className="ml-2 h-px w-5 bg-current transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
+        </a>
+      </div>
+    </article>
+  );
+}
+
+function getDepartmentIconText(department: Department): string {
+  const source = department.icon?.trim() || department.name.trim();
+
+  return source.slice(0, 1).toUpperCase();
 }
 
 function LatestNoticesSection({
@@ -1794,6 +1883,7 @@ function createFallbackHomepageSection(
   key: string,
   title: string,
   previousSection: HomepageSection | null,
+  offset = 0.1,
 ): HomepageSection {
   return {
     key,
@@ -1804,7 +1894,7 @@ function createFallbackHomepageSection(
     video_path: null,
     button_text: null,
     button_url: null,
-    sort_order: previousSection ? previousSection.sort_order + 0.1 : 30,
+    sort_order: previousSection ? previousSection.sort_order + offset : 30,
     metadata: {},
   };
 }

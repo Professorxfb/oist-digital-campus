@@ -2812,3 +2812,69 @@ Built and polished the CMS-driven Latest Notices homepage section after the comp
 - Create a `HomepageSection` record with key `latest_notices` to control the section title, eyebrow/subtitle, description, button text/link, enabled status, and sort order from Filament.
 - Publish real approved Notice records in Filament. The homepage section will stay hidden if no published notices exist.
 - Remove any local-only demo content before production.
+
+---
+
+Date: 2026-06-30
+
+## Homepage Departments Section
+
+### Scope
+
+Built and polished the CMS-driven Departments homepage section for the current Univet-inspired public site flow. Header, hero, hero feature cards, search/offcanvas, sticky header, and About section were not redesigned.
+
+### Files Changed
+
+- `frontend/src/app/page.tsx`
+- `docs/SETUP_LOG.md`
+
+### CMS/Admin Control Behavior
+
+- Departments are managed through the existing Filament `Public CMS > Departments` resource.
+- Department fields already supported: name, slug, short description, full description, featured image, icon, sort order, published status, and SEO metadata.
+- Homepage section title, eyebrow/subtitle, description/body, button text/link, enabled status, and sort order are controlled by the existing `HomepageSection` CMS resource when a `departments` section record exists.
+- If published departments exist but the `departments` Homepage Section record has not been created yet, the frontend uses a minimal safe fallback title so the section can render during setup. Staff should create the CMS section record for full backend control.
+- The section renders only Departments, not "Faculties and Departments".
+- No static or fake department content was added.
+
+### API Behavior
+
+- `GET /api/v1/departments` already returns only published departments.
+- Department ordering remains sort order first, then name.
+- The existing department API fields are used by the homepage cards: name, slug, short description, full description preview fallback, featured image, icon, and sort order.
+- Existing department detail endpoint behavior is unchanged.
+
+### Frontend Implementation Notes
+
+- Added a premium homepage Departments section immediately after About when department CMS data exists.
+- Added a fallback `departments` Homepage Section config only for setup cases where published departments exist but the CMS section record is missing.
+- Added custom homepage department cards with image/icon area, serif title, short description, and structural Explore Department link.
+- Added staggered `ScrollReveal` animation for department cards.
+- Added hover lift, premium shadow, and yellow accent behavior consistent with the existing public design system.
+- The section stays hidden when no published department records exist.
+
+### Commands Run
+
+- `php artisan optimize:clear`
+- `php artisan route:list --path=api/v1`
+- `php artisan test`
+- `npm run lint`
+- `npm run build`
+- `Invoke-RestMethod http://127.0.0.1:8000/api/v1/departments`
+
+### Verification Results
+
+- Browser MCP opened and inspected the Univet reference page and confirmed the reference `Faculties and departments` area was present for visual guidance.
+- `php artisan optimize:clear` completed successfully.
+- `php artisan route:list --path=api/v1` completed successfully and confirmed `GET /api/v1/departments` remains registered.
+- `php artisan test` completed successfully: 38 tests, 237 assertions.
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully.
+- Direct API check confirmed the local departments API currently returns zero published departments, so the homepage section correctly remains hidden until real CMS department records are published.
+- Local browser verification of the actual Departments section still requires at least one published Department record.
+
+### Manual Admin Setup Needed
+
+- Create a `HomepageSection` record with key `departments` to control the section title, eyebrow/subtitle, description, button text/link, enabled status, and sort order from Filament.
+- Publish approved Department records in Filament with real names, slugs, descriptions, images/icons, sort order, and published status.
+- The homepage will display the Departments section after About once published department records exist.
