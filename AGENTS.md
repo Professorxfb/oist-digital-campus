@@ -86,6 +86,7 @@ This file is the permanent instruction rulebook for all future Codex work in thi
 - Keep public website pages SEO-friendly and portal pages protected from indexing.
 - Build mobile-first layouts.
 - Use accessible semantic markup.
+- Every public website button or CTA must have a visible hover color change; do not add static buttons without hover color feedback.
 - Avoid leaking internal IDs, hidden fields, or sensitive metadata unless required by the API contract.
 
 ## 7. Backend Coding Standards

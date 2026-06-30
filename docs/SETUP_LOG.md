@@ -2966,3 +2966,50 @@ Replaced the previous homepage Departments carousel area with a CMS-driven `Acad
 - Optionally configure section metadata for the right-side stat/admission mini block.
 - Publish real Academic Program records with approved titles, slugs, images, icons, short descriptions, bullet points, button labels/URLs, sort order, and published status.
 - The homepage will keep the section hidden until both the enabled section record and published Academic Program records exist.
+
+---
+
+Date: 2026-06-30
+
+## Academics & Programs Card Polish
+
+### Scope
+
+Polished the existing Academics & Programs card internals to better match the provided reference screenshot. No backend/CMS logic was changed, and no public content was hard-coded.
+
+### Files Changed
+
+- `AGENTS.md`
+- `frontend/src/app/page.tsx`
+- `docs/SETUP_LOG.md`
+
+### Style Changes
+
+- Center-aligned the program icon and title row vertically.
+- Increased the program title size and tightened the serif title line height.
+- Reduced awkward title/icon separation and made desktop/mobile title wrapping more balanced.
+- Constrained description width and tightened line height for cleaner card rhythm.
+- Tightened bullet list spacing while keeping yellow checkmarks and readable text weight.
+- Reduced the gap between the bullet list and the card CTA button.
+- Removed the `mt-auto` behavior from the card CTA so the button no longer floats too low.
+- Updated the card CTA hover state from static navy to a visible gold hover background with navy text.
+- Kept the decorative button dots visible by using current text color.
+- Added a permanent project rule that every public website button or CTA must have a visible hover color change.
+
+### Commands Run
+
+- `npm run lint`
+- `npm run build`
+- `npm run dev -- --hostname 127.0.0.1 --port 3000`
+
+### Browser Verification Results
+
+- Browser MCP opened the Univet Blue Two reference URL and confirmed the reference Programs & Study section was present.
+- Browser MCP verified the local Academics & Programs card layout at desktop 1366px.
+- Browser MCP verified local mobile layouts at 390px and 430px.
+- No horizontal overflow was detected at the checked desktop or mobile widths.
+- The rendered local cards showed vertically centered icon/title rows with a measured center delta of `0`.
+- The rendered card button gap after the bullet list measured about `24px`.
+- The rendered CTA button includes the required visible hover classes: navy default with white text, gold hover with navy text, and a smooth color transition.
+- Browser pointer movement in the automation layer did not toggle CSS `:hover`, so the hover behavior was verified through the rendered class/transition state rather than a live pseudo-state toggle.
+- Temporary local preview Academic Program records were used only for layout verification and then removed.

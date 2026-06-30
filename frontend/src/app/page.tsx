@@ -975,7 +975,7 @@ function AcademicProgramCard({
   return (
     <article
       id={`homepage-program-${program.slug}`}
-      className="group flex h-full min-h-[520px] flex-col overflow-hidden rounded-[8px] bg-white p-2 shadow-[0_20px_50px_rgba(2,6,23,0.10)] ring-1 ring-slate-950/5 transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_72px_rgba(2,6,23,0.16)]"
+      className="group flex h-full min-h-[500px] flex-col overflow-hidden rounded-[8px] bg-white p-2 shadow-[0_20px_50px_rgba(2,6,23,0.10)] ring-1 ring-slate-950/5 transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_72px_rgba(2,6,23,0.16)]"
     >
       <div className="relative aspect-[1.54/1] overflow-hidden rounded-[8px] bg-slate-100">
         {imageUrl ? (
@@ -996,28 +996,28 @@ function AcademicProgramCard({
         )}
       </div>
 
-      <div className="flex flex-1 flex-col px-6 pb-6 pt-6 sm:px-7">
-        <div className="flex items-start gap-5">
-          <div className="mt-1 flex h-12 w-12 shrink-0 items-center justify-center text-[#061f3f]" aria-hidden="true">
-            <AcademicProgramIcon icon={program.icon} className="h-10 w-10" />
+      <div className="flex flex-1 flex-col px-6 pb-6 pt-6 sm:px-7 sm:pb-7 sm:pt-7">
+        <div className="flex items-center gap-5">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center text-[#061f3f]" aria-hidden="true">
+            <AcademicProgramIcon icon={program.icon} className="h-11 w-11" />
           </div>
-          <h3 className="font-serif text-[clamp(1.45rem,4vw,1.75rem)] font-bold leading-tight tracking-normal text-[#082447]">
+          <h3 className="font-serif text-[clamp(1.55rem,4.2vw,1.92rem)] font-bold leading-[1.12] tracking-normal text-[#082447]">
             {program.title}
           </h3>
         </div>
 
         {description ? (
-          <p className="mt-4 max-w-[27rem] text-base leading-7 text-slate-600">
+          <p className="mt-4 max-w-[25.5rem] text-[15.5px] leading-7 text-slate-600">
             {description}
           </p>
         ) : null}
 
         {bullets.length > 0 ? (
-          <ul className="mt-5 space-y-2">
+          <ul className="mt-5 space-y-2.5">
             {bullets.map((bullet) => (
-              <li key={`${program.slug}-${bullet}`} className="flex gap-3 text-[15px] font-bold leading-6 text-[#082447]">
+              <li key={`${program.slug}-${bullet}`} className="flex items-start gap-3 text-[15px] font-bold leading-6 text-[#082447]">
                 <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center text-yellow-500" aria-hidden="true">
-                  <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.35" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M3 8.2 6.5 12 13 4" />
                   </svg>
                 </span>
@@ -1030,14 +1030,14 @@ function AcademicProgramCard({
         {buttonUrl ? (
           <a
             href={buttonUrl}
-            className="mt-auto inline-flex min-h-11 w-fit items-center justify-center rounded-full bg-[#06436e] px-6 py-3 text-sm font-black text-white transition duration-300 hover:-translate-y-0.5 hover:bg-[#082f57] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400"
+            className="group/program-button mt-6 inline-flex min-h-11 w-fit items-center justify-center rounded-full bg-[#06436e] px-6 py-3 text-sm font-black text-white transition-colors duration-300 hover:bg-yellow-400 hover:text-[#061f3f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400"
           >
             <span>{buttonText}</span>
             <span className="ml-3 grid h-4 w-4 grid-cols-2 gap-1" aria-hidden="true">
-              <span className="h-1 w-1 rounded-full bg-white" />
-              <span className="h-1 w-1 rounded-full bg-white" />
-              <span className="h-1 w-1 rounded-full bg-white" />
-              <span className="h-1 w-1 rounded-full bg-white" />
+              <span className="h-1 w-1 rounded-full bg-current transition-colors duration-300" />
+              <span className="h-1 w-1 rounded-full bg-current transition-colors duration-300" />
+              <span className="h-1 w-1 rounded-full bg-current transition-colors duration-300" />
+              <span className="h-1 w-1 rounded-full bg-current transition-colors duration-300" />
             </span>
           </a>
         ) : null}
