@@ -41,7 +41,7 @@ export function CMSHero({
         />
       ) : null}
       <div
-        className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,22,50,0.97)_0%,rgba(3,22,50,0.9)_34%,rgba(3,22,50,0.52)_61%,rgba(3,22,50,0.18)_100%),linear-gradient(180deg,rgba(2,6,23,0.22),rgba(2,6,23,0.1))]"
+        className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,22,50,0.82)_0%,rgba(3,22,50,0.75)_34%,rgba(3,22,50,0.42)_61%,rgba(3,22,50,0.12)_100%),linear-gradient(180deg,rgba(2,6,23,0.16),rgba(2,6,23,0.06))]"
         aria-hidden="true"
       />
       {!imageUrl && !videoUrl ? (

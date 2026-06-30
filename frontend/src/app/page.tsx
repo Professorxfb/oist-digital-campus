@@ -384,7 +384,7 @@ function PremiumSection({
   }
 
   const toneClassName = {
-    white: "bg-white",
+    white: "bg-[#f7f3ea]",
     cream: "bg-[#f7f3ea]",
     navy: "bg-[#061f3f] text-white",
   }[tone];
@@ -623,18 +623,14 @@ function AboutSection({
 
   return (
     <section className="relative overflow-hidden bg-[#f7f3ea] py-20 sm:py-24 lg:py-28">
-      <div
-        className="absolute inset-x-0 top-0 h-36 bg-white"
-        aria-hidden="true"
-      />
       <Container>
         <div
-          className={`relative grid items-center gap-10 xl:gap-16 ${
+          className={`relative grid items-center gap-10 xl:gap-14 ${
             hasMedia ? "lg:grid-cols-[0.95fr_1.05fr]" : ""
           }`}
         >
           {hasMedia ? (
-            <div className="relative min-h-[360px] overflow-hidden rounded-[28px] bg-[#071733] shadow-[0_28px_70px_rgba(2,6,23,0.18)] sm:min-h-[460px]">
+            <div className="relative min-h-[340px] overflow-hidden rounded-[24px] bg-[#061f3f] shadow-[0_26px_64px_rgba(2,6,23,0.16)] sm:min-h-[440px]">
               {videoUrl ? (
                 <video
                   className="absolute inset-0 h-full w-full object-cover"
@@ -652,15 +648,15 @@ function AboutSection({
                   aria-hidden="true"
                 />
               ) : null}
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent,rgba(2,6,23,0.28))]" aria-hidden="true" />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.02),rgba(2,6,23,0.12))]" aria-hidden="true" />
               <div
-                className="absolute bottom-6 right-6 h-24 w-24 rounded-full border-[10px] border-yellow-300/90 bg-[#061f3f]/90 shadow-2xl shadow-slate-950/20 sm:h-32 sm:w-32"
+                className="absolute bottom-5 right-5 h-20 w-20 rounded-full border-[9px] border-yellow-300/85 bg-[#061f3f]/80 shadow-2xl shadow-slate-950/20 sm:h-28 sm:w-28"
                 aria-hidden="true"
               />
             </div>
           ) : null}
           <div
-            className={`rounded-[28px] bg-white p-7 shadow-[0_18px_55px_rgba(2,6,23,0.08)] sm:p-10 ${
+            className={`rounded-[24px] bg-[#fffaf0] p-7 shadow-[0_18px_50px_rgba(2,6,23,0.07)] sm:p-9 ${
               hasMedia ? "lg:bg-transparent lg:p-0 lg:shadow-none" : "max-w-4xl"
             }`}
           >
@@ -669,17 +665,17 @@ function AboutSection({
                 {section.subtitle}
               </p>
             ) : null}
-            <h2 className="mt-3 font-serif text-[clamp(2.35rem,7vw,3.6rem)] font-bold leading-[1.04] tracking-normal text-[#061f3f]">
+            <h2 className="mt-3 max-w-3xl font-serif text-[clamp(2.15rem,6vw,3.2rem)] font-bold leading-[1.08] tracking-normal text-[#061f3f]">
               {section.title}
             </h2>
             {description ? (
-              <p className="mt-6 text-base leading-8 text-slate-600 sm:text-lg">
+              <p className="mt-5 max-w-3xl text-base leading-8 text-slate-600 sm:text-[17px]">
                 {description}
               </p>
             ) : null}
             {section.button_text && section.button_url ? (
               <div className="mt-8">
-                <CTAButton href={section.button_url} variant="subtle">
+                <CTAButton href={section.button_url}>
                   {section.button_text}
                 </CTAButton>
               </div>

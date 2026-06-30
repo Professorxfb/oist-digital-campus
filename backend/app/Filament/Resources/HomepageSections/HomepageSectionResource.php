@@ -52,14 +52,28 @@ class HomepageSectionResource extends Resource
                             ->label('Image')
                             ->disk('public')
                             ->directory('homepage-sections/images')
+                            ->visibility('public')
                             ->image()
-                            ->maxSize(4096),
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+                            ->maxSize(4096)
+                            ->imagePreviewHeight('180')
+                            ->previewable()
+                            ->openable()
+                            ->downloadable()
+                            ->deletable()
+                            ->nullable(),
                         FileUpload::make('video_path')
                             ->label('Video')
                             ->disk('public')
                             ->directory('homepage-sections/videos')
+                            ->visibility('public')
                             ->acceptedFileTypes(['video/mp4', 'video/webm'])
-                            ->maxSize(51200),
+                            ->maxSize(51200)
+                            ->previewable()
+                            ->openable()
+                            ->downloadable()
+                            ->deletable()
+                            ->nullable(),
                         TextInput::make('button_text')->maxLength(255),
                         TextInput::make('button_url')->maxLength(255),
                     ])->columns(2),

@@ -2597,3 +2597,55 @@ The homepage render map found the enabled `about` Homepage Section correctly, bu
 - Browser check confirmed the About section appears immediately after the hero feature cards.
 - Browser check confirmed the About image resolves through Laravel storage and renders from `/storage/homepage-sections/...`.
 - Browser responsive checks confirmed About renders with no horizontal overflow at 390px, 430px, 768px, and 1366px.
+
+---
+
+Date: 2026-06-30
+
+## Homepage Visual Polish and CMS Media Upload Fix
+
+### Root Cause
+
+- The Homepage Section image/video upload fields were missing explicit public visibility, preview/open/download/remove behavior, and nullable/deletable configuration. In Filament this could leave the upload component in an unclear loading state when staff tried to replace or clear media.
+- The homepage hero overlay used a very strong navy gradient, which made CMS hero media look darker than the approved Univet Blue Two inspired reference.
+- The public header was positioned over the hero but did not remain visible while scrolling.
+- The body sections used slightly mismatched white/off-white backgrounds after the hero cards.
+
+### Changes Made
+
+- Updated the Homepage Section image upload field to use the public disk with public visibility, safe image MIME types, preview, open, download, delete, and nullable behavior.
+- Applied the same basic public disk, preview/open/download/delete, and nullable behavior to the Homepage Section video upload field.
+- Lightened the hero media overlay by roughly 15-20% while keeping enough left-side contrast for CMS text.
+- Changed the public header to a fixed premium navy bar at the top with subtle border, shadow, and backdrop blur so it remains visible while scrolling without layout jump.
+- Reduced the extra visual gap above the header by tightening top spacing.
+- Unified homepage body backgrounds around the warm off-white palette used by the approved design direction.
+- Polished the About section media panel, image overlay, heading scale, spacing, and CTA treatment while keeping all content sourced from the `about` Homepage Section.
+
+### CMS/Admin Notes
+
+- Homepage Section media remains optional; staff can save a section without image or video.
+- Existing `image_path` and `video_path` values remain compatible.
+- Staff should verify upload, replacement, and removal in Filament with an authenticated admin account.
+- Exact reference-style hero visual quality still depends on uploading approved hero media through the CMS.
+
+### Commands Run
+
+- `php artisan optimize:clear`
+- `php artisan route:list --path=api/v1`
+- `php artisan test`
+- `npm run lint`
+- `npm run build`
+- `npm run dev`
+
+### Verification Results
+
+- `php artisan optimize:clear` completed successfully.
+- `php artisan route:list --path=api/v1` completed successfully.
+- `php artisan test` completed successfully: 38 tests, 237 assertions.
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully. The build logged expected CMS fetch fallback warnings when the Laravel API was not running, then completed successfully.
+- `npm run dev` started successfully on `http://localhost:3000`.
+- Browser checks confirmed the header has no unwanted top gap, remains visible while scrolling, and does not create horizontal overflow.
+- Browser checks confirmed the About section still appears after the hero feature cards and its CMS image resolves through Laravel storage.
+- Browser checks confirmed no horizontal overflow at 390px, 430px, 768px, 1366px, and 1920px.
+- Interactive Filament media removal/replacement was not performed because no authenticated admin session was used during this pass; the FileUpload configuration is now set up for nullable, deletable, replaceable media.
