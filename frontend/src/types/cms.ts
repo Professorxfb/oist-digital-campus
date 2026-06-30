@@ -120,10 +120,14 @@ export interface Notice {
   slug: string;
   excerpt?: string | null;
   body?: string | null;
+  featured_image_path?: string | null;
   category?: string | null;
   audience?: string | null;
   attachment_path?: string | null;
+  external_link?: string | null;
+  video_url?: string | null;
   is_pinned?: boolean;
+  is_published?: boolean;
   published_at?: string | null;
   expires_at?: string | null;
   sort_order?: number;

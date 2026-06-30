@@ -25,6 +25,7 @@ export default async function NoticeDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const { data: notice } = await getNoticeBySlug(slug);
   const attachmentUrl = getCmsAssetUrl(notice?.attachment_path);
+  const externalLink = notice?.external_link?.trim();
 
   return (
     <PublicSiteShell>
@@ -32,14 +33,21 @@ export default async function NoticeDetailPage({ params }: PageProps) {
         <DetailArticle
           title={notice.title}
           body={notice.body}
+          imagePath={notice.featured_image_path ?? undefined}
           meta={[
             notice.is_pinned ? "Pinned" : null,
             notice.category,
             notice.audience,
+            notice.video_url ? "Video" : null,
             formatDate(notice.published_at),
           ]}
           action={
-            attachmentUrl
+            externalLink
+              ? {
+                  href: externalLink,
+                  label: "Open Link",
+                }
+              : attachmentUrl
               ? {
                   href: attachmentUrl,
                   label: "Download",

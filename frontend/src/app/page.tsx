@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { CMSHero } from "@/components/public-site/CMSHero";
 import { Container } from "@/components/public-site/Container";
 import { ContentCard } from "@/components/public-site/ContentCard";
@@ -160,11 +161,7 @@ export default async function Home() {
     "programs",
     "programs_study",
   ]);
-  const noticesSection = getHomepageSectionConfig(sections, [
-    "latest_notices",
-    "notice_board",
-    "notices",
-  ]);
+  const noticesSection = getHomepageSectionConfig(sections, ["latest_notices"]);
   const campusLifeSection = getHomepageSectionConfig(sections, [
     "campus_life",
     "gallery_campus_life",
@@ -210,16 +207,6 @@ export default async function Home() {
   const communityVoices = communityVoicesSection
     ? getCommunityVoices(communityVoicesSection)
     : [];
-  const effectiveNoticesSection =
-    noticesSection ??
-    (notices.data.length > 0
-      ? createFallbackHomepageSection(
-          "latest_notices",
-          "Latest Notices",
-          academicsProgramsSection ?? aboutSection,
-          0.05,
-        )
-      : null);
   const nullableSectionBlocks: Array<SectionBlock | null> = [
     aboutSection
       ? {
@@ -244,13 +231,13 @@ export default async function Home() {
           node: <ChairmanMessageSection profile={chairmanProfile} section={chairmanSection} />,
         }
       : null,
-    effectiveNoticesSection && notices.data.length > 0
+    noticesSection && notices.data.length > 0
       ? {
-          section: effectiveNoticesSection,
+          section: noticesSection,
           node: (
             <LatestNoticesSection
-              notices={limitItems(notices.data, effectiveNoticesSection)}
-              section={effectiveNoticesSection}
+              notices={limitItems(notices.data, noticesSection)}
+              section={noticesSection}
             />
           ),
         }
@@ -1168,167 +1155,187 @@ function LatestNoticesSection({
   notices: Notice[];
   section: HomepageSection;
 }>) {
-  const featuredNotice = notices.find((notice) => notice.is_pinned) ?? notices[0] ?? null;
-  const recentNotices = notices.filter((notice) => notice.slug !== featuredNotice?.slug);
-  const hasRecentNotices = recentNotices.length > 0;
+  const description = getTextPreview(section.content, 180);
+  const filters = getNoticeFilterGroups(notices);
 
   return (
-    <PremiumSection section={section} tone="cream">
-      <div
-        className={`grid gap-6 xl:gap-8 ${
-          hasRecentNotices ? "lg:grid-cols-[0.92fr_1.08fr]" : "mx-auto max-w-3xl"
-        }`}
-      >
-        {featuredNotice ? (
-          <ScrollReveal delay={90}>
-            <FeaturedNoticeCard notice={featuredNotice} />
-          </ScrollReveal>
+    <section className="relative overflow-hidden bg-[#f7f3ea] py-16 sm:py-20 lg:py-24">
+      <Container>
+        <div className="mx-auto max-w-4xl text-center">
+          {section.subtitle ? (
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-600">
+              {section.subtitle}
+            </p>
+          ) : null}
+          <h2 className="mt-3 font-serif text-[clamp(2.35rem,7vw,3.55rem)] font-bold leading-[1.05] tracking-normal text-[#061f3f]">
+            {section.title}
+          </h2>
+          {description ? (
+            <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-slate-600">
+              {description}
+            </p>
+          ) : null}
+        </div>
+
+        {filters.length > 0 ? (
+          <div className="mt-8 flex gap-2 overflow-x-auto pb-2 lg:hidden">
+            {filters.flatMap((group) =>
+              group.values.map((value) => (
+                <Link
+                  key={`${group.key}-${value}`}
+                  href={`/notices?${group.key}=${encodeURIComponent(value)}`}
+                  className="shrink-0 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-[#061f3f] shadow-sm transition duration-300 hover:border-yellow-400 hover:bg-yellow-300 hover:text-[#061f3f]"
+                >
+                  {value}
+                </Link>
+              )),
+            )}
+          </div>
         ) : null}
-        {hasRecentNotices ? (
-          <div className="grid gap-4 sm:gap-5">
-            {recentNotices.map((notice, index) => (
-              <ScrollReveal key={notice.slug} delay={140 + index * 80}>
-                <NoticeListCard notice={notice} />
+
+        <div className="mt-10 grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)] lg:items-start xl:gap-10">
+          <NoticeFilterPanel filters={filters} noticesCount={notices.length} />
+          <div className="grid gap-5 sm:gap-6">
+            {notices.map((notice, index) => (
+              <ScrollReveal key={notice.slug} delay={90 + index * 70}>
+                <NoticeReferenceCard notice={notice} />
               </ScrollReveal>
             ))}
           </div>
+        </div>
+
+        {section.button_text && section.button_url ? (
+          <div className="mt-10 text-center">
+            <CTAButton href={section.button_url} variant="subtle">
+              {section.button_text}
+            </CTAButton>
+          </div>
         ) : null}
-      </div>
-    </PremiumSection>
+      </Container>
+    </section>
   );
 }
 
-function FeaturedNoticeCard({ notice }: Readonly<{ notice: Notice }>) {
-  const noticeSummary = getNoticeSummary(notice, 190);
+type NoticeFilterGroup = {
+  key: "category" | "audience";
+  label: string;
+  values: string[];
+};
+
+function NoticeFilterPanel({
+  filters,
+  noticesCount,
+}: Readonly<{
+  filters: NoticeFilterGroup[];
+  noticesCount: number;
+}>) {
+  return (
+    <aside className="hidden rounded-[12px] bg-white p-7 shadow-[0_18px_48px_rgba(2,6,23,0.07)] ring-1 ring-slate-200/60 lg:block">
+      <h3 className="font-serif text-[1.55rem] font-bold leading-tight tracking-normal text-[#061f3f]">
+        Filter By
+      </h3>
+      <div className="mt-6 h-px bg-slate-200" aria-hidden="true">
+        <span className="block h-px w-16 bg-[#061f3f]" />
+      </div>
+      <Link
+        href="/notices"
+        className="mt-7 flex items-center gap-3 text-[15px] font-semibold text-slate-700 transition duration-300 hover:text-[#061f3f]"
+      >
+        <span className="h-4 w-4 rounded-[3px] border border-slate-400 bg-yellow-300 shadow-inner" aria-hidden="true" />
+        All Notices
+        <span className="ml-auto text-xs font-black text-slate-400">{noticesCount}</span>
+      </Link>
+      {filters.map((group) => (
+        <div key={group.key} className="mt-8">
+          <h4 className="font-serif text-lg font-bold tracking-normal text-[#061f3f]">
+            {group.label}
+          </h4>
+          <div className="mt-4 grid gap-3">
+            {group.values.map((value) => (
+              <Link
+                key={value}
+                href={`/notices?${group.key}=${encodeURIComponent(value)}`}
+                className="group/filter flex items-start gap-3 text-[15px] font-medium leading-6 text-slate-700 transition duration-300 hover:text-[#061f3f]"
+              >
+                <span className="mt-1 h-4 w-4 shrink-0 rounded-[3px] border border-slate-400 transition duration-300 group-hover/filter:border-yellow-400 group-hover/filter:bg-yellow-300" aria-hidden="true" />
+                <span>{value}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      ))}
+    </aside>
+  );
+}
+
+function NoticeReferenceCard({ notice }: Readonly<{ notice: Notice }>) {
+  const noticeSummary = getNoticeSummary(notice, 155);
+  const href = getNoticeHref(notice);
+  const isExternal = isExternalNoticeHref(href);
 
   return (
-    <article className="group relative flex h-full min-h-[360px] flex-col overflow-hidden rounded-[28px] bg-[#061f3f] p-7 text-white shadow-[0_26px_78px_rgba(2,6,23,0.16)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_34px_90px_rgba(2,6,23,0.24)] sm:p-8 lg:p-10">
-      <div
-        className="absolute -right-12 -top-12 h-40 w-40 rounded-full border-[22px] border-yellow-300/20 transition duration-500 group-hover:scale-110"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute inset-x-0 bottom-0 h-32 bg-[linear-gradient(0deg,rgba(250,204,21,0.18),transparent)]"
-        aria-hidden="true"
-      />
-      <NoticeDateBadge notice={notice} />
-      <div className="relative mt-auto pt-20">
-        <NoticeMeta notice={notice} className="text-yellow-200" />
-        <h3 className="mt-5 max-w-xl font-serif text-[clamp(2rem,6vw,3.05rem)] font-bold leading-[1.05] tracking-normal">
-          <a href={`/notices/${notice.slug}`} className="transition hover:text-yellow-300">
+    <article className="group grid overflow-hidden rounded-[12px] bg-white shadow-[0_18px_48px_rgba(2,6,23,0.07)] ring-1 ring-slate-200/60 transition duration-300 hover:-translate-y-1 hover:shadow-[0_26px_68px_rgba(2,6,23,0.12)] lg:min-h-[210px] lg:grid-cols-[minmax(0,1fr)_300px] xl:grid-cols-[minmax(0,1fr)_330px]">
+      <NoticeCardImage notice={notice} />
+      <div className="flex min-w-0 flex-col p-6 sm:p-7 lg:order-1 lg:p-8">
+        <NoticeMeta notice={notice} />
+        <h3 className="mt-3 font-serif text-[1.55rem] font-bold leading-[1.16] tracking-normal text-[#061f3f] transition duration-300 group-hover:text-blue-900 sm:text-[1.75rem]">
+          <a
+            href={href}
+            target={isExternal ? "_blank" : undefined}
+            rel={isExternal ? "noopener noreferrer" : undefined}
+            className="transition duration-300 hover:text-blue-800"
+          >
             {notice.title}
           </a>
         </h3>
         {noticeSummary ? (
-          <p className="mt-5 max-w-lg text-[15px] leading-7 text-blue-50 sm:text-base">
+          <p className="mt-4 max-w-2xl text-[15px] leading-7 text-slate-600 sm:text-base">
             {noticeSummary}
           </p>
         ) : null}
-        <div className="mt-7">
-          <CTAButton href={`/notices/${notice.slug}`}>
-            Read More
-          </CTAButton>
-        </div>
-      </div>
-    </article>
-  );
-}
-
-function NoticeListCard({ notice }: Readonly<{ notice: Notice }>) {
-  const noticeSummary = getNoticeSummary(notice, 130);
-  const hasDate = Boolean(getNoticeDateParts(notice));
-
-  return (
-    <article className="group relative overflow-hidden rounded-[22px] border border-slate-200/80 bg-white p-5 shadow-[0_14px_42px_rgba(2,6,23,0.06)] transition duration-300 hover:-translate-y-1.5 hover:border-yellow-300/70 hover:shadow-[0_24px_58px_rgba(2,6,23,0.13)] sm:p-6">
-      <div
-        className="absolute inset-y-0 left-0 w-1 bg-yellow-400 transition duration-300 group-hover:w-1.5"
-        aria-hidden="true"
-      />
-      <div
-        className={`gap-4 pl-2 sm:items-start sm:gap-6 ${
-          hasDate ? "grid sm:grid-cols-[94px_1fr]" : ""
-        }`}
-      >
-        {hasDate ? <NoticeDateTile notice={notice} /> : null}
-        <div className="min-w-0">
-          <NoticeMeta notice={notice} className="text-blue-800" compact />
-          <h3 className="mt-2 font-serif text-[1.45rem] font-bold leading-[1.16] tracking-normal text-slate-950 transition group-hover:text-blue-900 sm:text-[1.62rem]">
-            <a href={`/notices/${notice.slug}`} className="transition hover:text-blue-800">
-              {notice.title}
-            </a>
-          </h3>
-          {noticeSummary ? (
-            <p className="mt-3 line-clamp-2 text-[15px] leading-7 text-slate-600">
-              {noticeSummary}
-            </p>
-          ) : null}
+        <div className="mt-5 flex flex-wrap items-center gap-3">
           <a
-            href={`/notices/${notice.slug}`}
-            className="mt-5 inline-flex items-center text-sm font-black text-[#061f3f] transition duration-300 hover:-translate-y-0.5 hover:text-blue-800"
+            href={href}
+            target={isExternal ? "_blank" : undefined}
+            rel={isExternal ? "noopener noreferrer" : undefined}
+            className="inline-flex items-center text-sm font-black text-[#061f3f] underline decoration-[#061f3f]/30 underline-offset-4 transition duration-300 hover:-translate-y-0.5 hover:text-blue-800 hover:decoration-yellow-400"
           >
             Read More
-            <span className="ml-2 h-px w-4 bg-current transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
+            <span className="ml-2 h-1 w-1 rounded-full bg-current transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
+            <span className="ml-1 h-1 w-1 rounded-full bg-current transition-transform duration-300 group-hover:translate-x-1.5" aria-hidden="true" />
           </a>
+          {notice.attachment_path ? <NoticeIndicator label="Attachment" /> : null}
+          {notice.video_url ? <NoticeIndicator label="Video" /> : null}
         </div>
       </div>
     </article>
   );
 }
 
-function NoticeDateBadge({ notice }: Readonly<{ notice: Notice }>) {
-  const dateParts = getNoticeDateParts(notice);
-
-  if (!dateParts) {
-    return null;
-  }
+function NoticeCardImage({ notice }: Readonly<{ notice: Notice }>) {
+  const imageUrl = getCmsAssetUrl(notice.featured_image_path);
 
   return (
-    <span className="relative inline-flex w-fit flex-col rounded-2xl bg-yellow-400 px-5 py-4 text-center text-[#061f3f] shadow-xl shadow-slate-950/20">
-      <span className="font-serif text-4xl font-bold leading-none">{dateParts.day}</span>
-      <span className="mt-1 text-[11px] font-black uppercase tracking-[0.16em]">
-        {dateParts.month}
-      </span>
+    <div className="order-first overflow-hidden p-3 pb-0 lg:order-2 lg:p-3 lg:pl-0">
+      <div
+        className="h-full min-h-[220px] rounded-[10px] bg-[#061f3f] bg-cover bg-center transition duration-700 group-hover:scale-[1.025] lg:min-h-0"
+        style={{
+          backgroundImage: imageUrl
+            ? `url(${imageUrl})`
+            : "radial-gradient(circle at 30% 18%, rgba(250,204,21,0.28), transparent 28%), linear-gradient(135deg,#061f3f,#1d4ed8 58%,#dbeafe)",
+        }}
+        aria-hidden="true"
+      />
+    </div>
+  );
+}
+
+function NoticeIndicator({ label }: Readonly<{ label: string }>) {
+  return (
+    <span className="inline-flex items-center rounded-full bg-yellow-300/30 px-3 py-1 text-[11px] font-black uppercase tracking-[0.1em] text-[#061f3f] ring-1 ring-yellow-300/60">
+      {label}
     </span>
   );
-}
-
-function NoticeDateTile({ notice }: Readonly<{ notice: Notice }>) {
-  const dateParts = getNoticeDateParts(notice);
-
-  if (!dateParts) {
-    return null;
-  }
-
-  return (
-    <time
-      dateTime={notice.published_at ?? undefined}
-      className="flex w-fit flex-row items-center gap-3 rounded-2xl bg-[#f7f3ea] px-4 py-3 text-[#061f3f] ring-1 ring-slate-200/80 sm:w-full sm:flex-col sm:gap-1 sm:px-3 sm:py-5 sm:text-center"
-    >
-      <span className="font-serif text-3xl font-bold leading-none sm:text-4xl">{dateParts.day}</span>
-      <span className="text-[11px] font-black uppercase tracking-[0.16em] text-blue-800">
-        {dateParts.month}
-      </span>
-      <span className="text-xs font-bold text-slate-500 sm:mt-1">{dateParts.year}</span>
-    </time>
-  );
-}
-
-function getNoticeDateParts(notice: Notice): { day: string; month: string; year: string } | null {
-  if (!notice.published_at) {
-    return null;
-  }
-
-  const date = new Date(notice.published_at);
-
-  if (Number.isNaN(date.getTime())) {
-    return null;
-  }
-
-  return {
-    day: new Intl.DateTimeFormat("en", { day: "2-digit" }).format(date),
-    month: new Intl.DateTimeFormat("en", { month: "short" }).format(date),
-    year: new Intl.DateTimeFormat("en", { year: "numeric" }).format(date),
-  };
 }
 
 function getNoticeSummary(notice: Notice, limit = 140): string | null {
@@ -1341,17 +1348,13 @@ function getNoticeSummary(notice: Notice, limit = 140): string | null {
 
 function NoticeMeta({
   notice,
-  className = "",
-  compact = false,
 }: Readonly<{
   notice: Notice;
-  className?: string;
-  compact?: boolean;
 }>) {
   const values = [
-    compact ? null : formatDate(notice.published_at),
     notice.category,
     notice.audience,
+    formatDate(notice.published_at),
   ].filter(Boolean);
 
   if (values.length === 0) {
@@ -1359,10 +1362,40 @@ function NoticeMeta({
   }
 
   return (
-    <p className={`text-xs font-black uppercase tracking-[0.14em] ${className}`}>
-      {values.join(" / ")}
-    </p>
+    <ul className="flex flex-wrap gap-2 text-sm font-semibold text-slate-600">
+      {uniqueValues(values as string[]).map((value) => (
+        <li key={value} className="rounded-[5px] border border-slate-200 bg-white px-3 py-1 leading-5">
+          {value}
+        </li>
+      ))}
+    </ul>
   );
+}
+
+function getNoticeFilterGroups(notices: Notice[]): NoticeFilterGroup[] {
+  const categories = getNoticeFilterValues(notices.map((notice) => notice.category));
+  const audiences = getNoticeFilterValues(notices.map((notice) => notice.audience));
+
+  return [
+    categories.length > 0 ? { key: "category" as const, label: "Categories", values: categories } : null,
+    audiences.length > 0 ? { key: "audience" as const, label: "Audiences", values: audiences } : null,
+  ].filter((group): group is NoticeFilterGroup => group !== null);
+}
+
+function getNoticeFilterValues(values: Array<string | null | undefined>): string[] {
+  return uniqueValues(
+    values
+      .map((value) => value?.trim())
+      .filter((value): value is string => Boolean(value)),
+  ).slice(0, 6);
+}
+
+function getNoticeHref(notice: Notice): string {
+  return notice.external_link?.trim() || `/notices/${notice.slug}`;
+}
+
+function isExternalNoticeHref(href: string): boolean {
+  return /^https?:\/\//i.test(href);
 }
 
 function ChairmanMessageSection({
@@ -2122,26 +2155,6 @@ function getHomepageSectionConfig(
       (section) => normalizedKeys.includes(normalizeSectionKey(section.key)) && Boolean(section.title),
     ) ?? null
   );
-}
-
-function createFallbackHomepageSection(
-  key: string,
-  title: string,
-  previousSection: HomepageSection | null,
-  offset = 0.1,
-): HomepageSection {
-  return {
-    key,
-    title,
-    subtitle: null,
-    content: null,
-    image_path: null,
-    video_path: null,
-    button_text: null,
-    button_url: null,
-    sort_order: previousSection ? previousSection.sort_order + offset : 30,
-    metadata: {},
-  };
 }
 
 function normalizeSectionKey(key: string): string {

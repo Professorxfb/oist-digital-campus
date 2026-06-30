@@ -48,13 +48,49 @@ class NoticeResource extends Resource
                         TextInput::make('audience')->maxLength(255),
                         RichEditor::make('body')->columnSpanFull(),
                     ])->columns(2),
-                Section::make('Publishing')
+                Section::make('Media and Links')
                     ->schema([
+                        FileUpload::make('featured_image_path')
+                            ->label('Featured Image')
+                            ->disk('public')
+                            ->directory('cms/notices/images')
+                            ->visibility('public')
+                            ->image()
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+                            ->maxSize(4096)
+                            ->imagePreviewHeight('180')
+                            ->previewable()
+                            ->openable()
+                            ->downloadable()
+                            ->deletable()
+                            ->nullable(),
                         FileUpload::make('attachment_path')
+                            ->label('Attachment')
                             ->disk('public')
                             ->directory('cms/notices/attachments')
-                            ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/webp'])
-                            ->maxSize(10240),
+                            ->visibility('public')
+                            ->acceptedFileTypes([
+                                'application/pdf',
+                                'application/msword',
+                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                            ])
+                            ->maxSize(10240)
+                            ->previewable()
+                            ->openable()
+                            ->downloadable()
+                            ->deletable()
+                            ->nullable(),
+                        TextInput::make('external_link')
+                            ->url()
+                            ->maxLength(2048),
+                        TextInput::make('video_url')
+                            ->label('Video URL')
+                            ->url()
+                            ->maxLength(2048)
+                            ->helperText('Use a public video URL such as YouTube when a notice needs a video reference.'),
+                    ])->columns(2),
+                Section::make('Publishing')
+                    ->schema([
                         Toggle::make('is_pinned')->inline(false),
                         Toggle::make('is_published')->inline(false),
                         DateTimePicker::make('published_at'),
@@ -76,6 +112,8 @@ class NoticeResource extends Resource
                 TextColumn::make('title')->searchable()->sortable(),
                 TextColumn::make('category')->placeholder('Not set')->searchable(),
                 TextColumn::make('audience')->placeholder('Not set')->searchable(),
+                TextColumn::make('external_link')->label('External Link')->placeholder('Not set')->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('video_url')->label('Video')->placeholder('Not set')->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('is_pinned')->boolean()->sortable(),
                 IconColumn::make('is_published')->boolean()->sortable(),
                 TextColumn::make('published_at')->dateTime()->sortable(),

@@ -3107,3 +3107,127 @@ Fixed only the About section compact video thumbnail/card sizing and responsive 
 - Browser MCP verified local tablet `768px`: card `430px x 241.9px`, 16:9 aspect, thumbnail fills link, play button centered, no horizontal overflow.
 - Browser MCP verified local mobile `430px`: card `383px x 215.4px`, full-width within safe content margin, 16:9 aspect, thumbnail fills link, play button centered, no horizontal overflow.
 - Browser MCP verified local mobile `390px`: card `343px x 192.9px`, full-width within safe content margin, 16:9 aspect, thumbnail fills link, play button centered, no horizontal overflow.
+
+---
+
+Date: 2026-06-30
+
+## Latest Notices Reference Layout And CMS Fields
+
+### Scope
+
+Updated the CMS-driven homepage Latest Notices section to match the provided Univet-inspired reference direction: centered heading, desktop filter sidebar, desktop image-right notice cards, and mobile image-top stacked cards. Header, hero, hero feature cards, About, and Academics & Programs were not redesigned.
+
+### Files Changed
+
+- `backend/database/migrations/2026_06_30_000002_extend_notices_for_media_links.php`
+- `backend/app/Models/Notice.php`
+- `backend/app/Filament/Resources/Notices/NoticeResource.php`
+- `backend/app/Http/Controllers/Api/V1/PublicCmsController.php`
+- `backend/tests/Feature/PublicContentApiTest.php`
+- `frontend/src/app/page.tsx`
+- `frontend/src/app/notices/page.tsx`
+- `frontend/src/app/notices/[slug]/page.tsx`
+- `frontend/src/types/cms.ts`
+- `docs/SETUP_LOG.md`
+
+### CMS/Admin Control Behavior
+
+- Homepage section-level content is controlled by the existing `HomepageSection` CMS resource using key `latest_notices`.
+- The homepage Latest Notices section renders only when an enabled `HomepageSection` record with key `latest_notices` exists and published notices are available.
+- No fallback public section title/content is created when the `latest_notices` Homepage Section record is missing or disabled.
+- Notices remain managed through Filament `Public CMS > Notices`.
+- Added Notice CMS fields: featured image, external link, and video URL.
+- Existing Notice fields preserved: title, slug, body/rich text, category, audience, attachment, pinned status, published status, published date, expiry date, sort order, meta title, and meta description.
+- Category and audience filter labels on the homepage are derived from published Notice records, not hard-coded notice content.
+
+### File Upload Behavior
+
+- Featured images upload to `cms/notices/images` on the public disk.
+- Attachments upload to `cms/notices/attachments` on the public disk.
+- Notice attachments now accept PDF, `.doc`, and `.docx` files.
+- Video is handled by CMS-managed `video_url`; no plugin or package was added.
+
+### API Behavior
+
+- `GET /api/v1/notices` remains registered and returns published, non-expired notices only.
+- Public notice list sorting is now `sort_order` first, then newest `published_at`, then newest ID.
+- Notice API responses now include `featured_image_path`, `external_link`, `video_url`, and `is_published` when present.
+- `GET /api/v1/notices/{slug}` still returns the full body only for published notices.
+
+### Frontend Layout Notes
+
+- Replaced the previous dark notice-board homepage presentation with a cream/off-white reference-style section.
+- Desktop layout uses a left white `Filter By` sidebar and right white notice list cards.
+- Mobile hides the sidebar and shows compact category/audience chips above full-width stacked cards.
+- Notice cards show title, category/audience/date tags, excerpt, Read More link, attachment/video indicators, and featured image/fallback visual.
+- Desktop cards place media on the right; mobile cards place media on top.
+- Read More uses visible underline/color/movement hover transitions.
+- External notice links are used when `external_link` is set; otherwise cards link to `/notices/{slug}`.
+
+### Commands Run
+
+- `php artisan optimize:clear`
+- `php artisan route:list --path=api/v1`
+- `php artisan migrate --force`
+- `php artisan test --filter=PublicContentApiTest`
+- `php artisan test`
+- `npm run lint`
+- `npm run build`
+- `npm run dev -- --hostname 127.0.0.1 --port 3001`
+
+### Verification Results
+
+- `php artisan optimize:clear` completed successfully.
+- `php artisan route:list --path=api/v1` completed successfully and confirmed `GET /api/v1/notices` and `GET /api/v1/notices/{slug}`.
+- `php artisan migrate --force` completed successfully and added the new nullable notice media/link columns.
+- `php artisan test --filter=PublicContentApiTest` passed: 5 tests, 74 assertions.
+- `php artisan test` passed: 38 tests, 257 assertions.
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully.
+- Browser MCP opened the Univet Blue Two reference page and confirmed the reference page contains an `Academics and programs` section matching the supplied screenshots' centered heading/filter/list-card direction.
+- `http://127.0.0.1:3000` is still occupied by an inaccessible stale Node listener returning `500 Internal Server Error`, so final local browser verification used `http://127.0.0.1:3001`.
+- Browser MCP verified local mobile `390px`, `430px`, and `480px`: sidebar hidden, mobile filter chips visible, cards full-width within safe margins, media above content, no horizontal overflow.
+- Browser MCP verified local tablet `768px`: sidebar hidden, mobile filter chips visible, card full-width, media above content, no horizontal overflow.
+- Browser MCP verified local desktop `1366px` and `1920px`: sidebar visible at `300px`, notice card beside it, card media on the right, centered heading, no horizontal overflow.
+- Browser MCP verified the Read More link includes visible hover transition classes for movement, color, and underline decoration.
+- Local verification data currently includes one published demo notice and no uploaded notice featured image, so the responsive media container/fallback and `bg-cover` crop behavior were verified structurally. Upload a real featured image in Filament to visually verify a production image crop.
+
+### Manual Admin Setup Needed
+
+- Create and enable a `HomepageSection` record with key `latest_notices` to control the section title, eyebrow/subtitle, description, button text/link, enabled status, and sort order.
+- Publish approved Notice records with real title, slug, category/audience, body, featured image, optional external link, optional video URL, optional PDF/Word attachment, published date, sort order, and SEO metadata.
+- Replace or remove local-only demo notices before production.
+
+---
+
+Date: 2026-06-30
+
+## Latest Notices Visibility Rule Fix
+
+### Scope
+
+Fixed the homepage visibility logic for the Latest Notices section only. The section design, Notice CMS fields, public Notice API, Header, Hero, About, Academics & Programs, and other homepage sections were not redesigned.
+
+### Files Changed
+
+- `frontend/src/app/page.tsx`
+- `docs/SETUP_LOG.md`
+
+### Behavior Change
+
+- Removed the frontend fallback `HomepageSection` creation for Latest Notices.
+- Narrowed the homepage Latest Notices section lookup to the single CMS key `latest_notices`.
+- The homepage now renders Latest Notices only when the backend returns an enabled `HomepageSection` record with key `latest_notices` and there are published notices.
+- Published notices alone no longer cause the section to render.
+- Missing or disabled `latest_notices` sections produce no public homepage Latest Notices section and no hard-coded fallback title/content.
+
+### Commands Run
+
+- `npm run lint`
+- `npm run build`
+
+### Verification Results
+
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully.

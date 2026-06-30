@@ -131,7 +131,6 @@ class PublicCmsController extends Controller
     {
         $notices = Notice::query()
             ->published()
-            ->orderByDesc('is_pinned')
             ->orderBy('sort_order')
             ->orderByDesc('published_at')
             ->orderByDesc('id')
@@ -623,10 +622,14 @@ class PublicCmsController extends Controller
             'slug' => $notice->slug,
             'excerpt' => $this->plainText($notice->body),
             'body' => $includeBody ? $notice->body : null,
+            'featured_image_path' => $notice->featured_image_path,
             'category' => $notice->category,
             'audience' => $notice->audience,
             'attachment_path' => $notice->attachment_path,
+            'external_link' => $notice->external_link,
+            'video_url' => $notice->video_url,
             'is_pinned' => $notice->is_pinned,
+            'is_published' => $notice->is_published,
             'published_at' => $notice->published_at?->toISOString(),
             'expires_at' => $notice->expires_at?->toISOString(),
             'sort_order' => $notice->sort_order,

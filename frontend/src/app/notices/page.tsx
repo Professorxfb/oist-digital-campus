@@ -34,14 +34,16 @@ export default async function NoticesPage() {
               <ContentCard
                 key={notice.slug}
                 title={notice.title}
-                description={getTextPreview(notice.body)}
+                description={notice.excerpt ?? getTextPreview(notice.body)}
                 meta={[
                   notice.is_pinned ? "Pinned" : null,
                   notice.category,
                   notice.audience,
                   formatDate(notice.published_at),
+                  notice.video_url ? "Video" : null,
                 ]}
-                href={`/notices/${notice.slug}`}
+                href={notice.external_link ?? `/notices/${notice.slug}`}
+                imagePath={notice.featured_image_path ?? null}
                 filePath={notice.attachment_path}
               />
             ))}

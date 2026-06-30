@@ -23,6 +23,10 @@ class PublicContentApiTest extends TestCase
         Notice::query()->create([
             'title' => 'Published Notice',
             'slug' => 'published-notice',
+            'featured_image_path' => 'cms/notices/images/published.webp',
+            'attachment_path' => 'cms/notices/attachments/published.pdf',
+            'external_link' => 'https://example.com/published-notice',
+            'video_url' => 'https://www.youtube.com/watch?v=example',
             'is_published' => true,
             'published_at' => now()->subDay(),
         ]);
@@ -115,6 +119,13 @@ class PublicContentApiTest extends TestCase
         ]);
 
         $this->assertPublishedList('/api/v1/notices', 'published-notice', 'hidden-notice');
+        $this->getJson('/api/v1/notices')
+            ->assertOk()
+            ->assertJsonPath('data.0.featured_image_path', 'cms/notices/images/published.webp')
+            ->assertJsonPath('data.0.attachment_path', 'cms/notices/attachments/published.pdf')
+            ->assertJsonPath('data.0.external_link', 'https://example.com/published-notice')
+            ->assertJsonPath('data.0.video_url', 'https://www.youtube.com/watch?v=example')
+            ->assertJsonPath('data.0.is_published', true);
         $this->assertPublishedList('/api/v1/news', 'published-news', 'hidden-news');
         $this->assertPublishedList('/api/v1/events', 'published-event', 'hidden-event');
         $this->assertPublishedList('/api/v1/gallery-albums', 'published-album', 'hidden-album');
@@ -130,6 +141,10 @@ class PublicContentApiTest extends TestCase
             'title' => 'Notice Detail',
             'slug' => 'notice-detail',
             'body' => 'Notice body',
+            'featured_image_path' => 'cms/notices/images/detail.webp',
+            'attachment_path' => 'cms/notices/attachments/detail.docx',
+            'external_link' => 'https://example.com/detail',
+            'video_url' => 'https://www.youtube.com/watch?v=detail',
             'is_published' => true,
             'published_at' => now()->subDay(),
         ]);
@@ -160,7 +175,11 @@ class PublicContentApiTest extends TestCase
         $this->getJson('/api/v1/notices/notice-detail')
             ->assertOk()
             ->assertJsonPath('data.slug', 'notice-detail')
-            ->assertJsonPath('data.body', 'Notice body');
+            ->assertJsonPath('data.body', 'Notice body')
+            ->assertJsonPath('data.featured_image_path', 'cms/notices/images/detail.webp')
+            ->assertJsonPath('data.attachment_path', 'cms/notices/attachments/detail.docx')
+            ->assertJsonPath('data.external_link', 'https://example.com/detail')
+            ->assertJsonPath('data.video_url', 'https://www.youtube.com/watch?v=detail');
 
         $this->getJson('/api/v1/news/news-detail')
             ->assertOk()
