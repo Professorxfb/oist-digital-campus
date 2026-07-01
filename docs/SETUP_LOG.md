@@ -3369,10 +3369,11 @@ Added a CMS-controlled `oist_lab` homepage section after Chairman Message using 
 ### Frontend Behavior
 
 - The homepage now looks for enabled `HomepageSection` key `oist_lab`.
-- The section renders only when CMS provides at least one image through `image_path` or `metadata.gallery_images`.
-- The main background image fills the full-width cinematic section with `bg-cover`.
-- A dark navy overlay keeps white text readable.
-- CMS title, subtitle, content, optional button text/link, main image, gallery images, and optional captions drive the full section.
+- The section renders only when CMS provides at least one usable image through `image_path` or `metadata.gallery_images`.
+- The main background image fills the full-width showcase section with `bg-cover`.
+- The visible section renders the CMS title only, with no visible subtitle, content paragraph, or CTA button.
+- `button_text` and `button_url` are ignored for this section even when CMS values exist.
+- A subtle `bg-black/20` readability layer replaced the previous heavy dark/navy overlay.
 - A small client component handles thumbnail clicks with React state.
 - Up to 5 images are shown in the thumbnail rail.
 - Active thumbnail uses a yellow/gold border; inactive thumbnails use a white border with hover lift/scale and border transition.
@@ -3404,8 +3405,61 @@ Added a CMS-controlled `oist_lab` homepage section after Chairman Message using 
 
 - Create and enable a `HomepageSection` record with key `oist_lab`.
 - Suggested title: `OIST Lab`.
-- Suggested subtitle/eyebrow: `OUR LAB FACILITIES`.
-- Add approved OIST lab content, main lab image, 4-5 gallery images, optional one-per-line captions, button text/link, sort order, and enabled status.
-- Suggested button text: `Explore Labs`.
-- Suggested button URL: `/facilities`.
+- Subtitle and content can be left blank because the clean showcase design does not display them.
+- Add an approved main lab/campus image and 4-5 approved gallery images.
+- Optional one-per-line captions can be added for thumbnail accessibility labels.
+- Leave button text and button URL blank; if values exist, the OIST Lab frontend still will not render a button.
 - Suggested sort order: `6`, assuming Chairman Message remains `5`.
+
+---
+
+Date: 2026-07-01
+
+## OIST Lab Clean Design Revision
+
+### Scope
+
+Simplified only the OIST Lab section to a clean image-focused showcase inspired by the campus-life reference. Header, Hero, About, Academics & Programs, Latest Notices, and Chairman Message were not redesigned.
+
+### Files Changed
+
+- `frontend/src/components/public-site/OistLabShowcase.tsx`
+- `frontend/src/app/page.tsx`
+- `docs/SETUP_LOG.md`
+
+### Design/CSS Changes
+
+- Removed visible subtitle, content paragraph, and CTA/button rendering from the OIST Lab showcase.
+- Ignored `button_text` and `button_url` for OIST Lab even when CMS values exist.
+- Removed the previous heavy dark/navy overlay styling.
+- Set the readability layer to a single subtle transparent overlay: `bg-black/20`.
+- Kept the full-width image-first layout with `bg-cover bg-center`.
+- Kept a large centered white serif CMS title.
+- Kept the thumbnail strip near the bottom center, with white inactive borders and yellow/gold active border.
+- Thumbnails render only when gallery images exist and there is more than one usable image.
+- Section heights now stay in the requested premium range: `420px` mobile, `500px` tablet, `560px` large desktop, and `600px` extra-large desktop.
+
+### CMS Visibility Rule
+
+- OIST Lab renders only when an enabled CMS `HomepageSection` with key `oist_lab` exists and provides at least one usable image through `image_path` or `metadata.gallery_images`.
+- If the section is missing, disabled, or has no usable image, the frontend returns `null`.
+- CMS fields used: `key`, `title`, `image_path`, `metadata.gallery_images`, `metadata.gallery_captions`, `sort_order`, and `is_enabled`.
+
+### Commands Run
+
+- `npm run lint`
+- `npm run build`
+- `npm run dev -- --hostname 127.0.0.1 --port 3002`
+
+### Verification Results
+
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully.
+- `http://localhost:3000` was occupied by an existing listener returning `500 Internal Server Error`, so browser verification used a fresh local preview at `http://127.0.0.1:3002`.
+- Verified that no `oist_lab` CMS record means the section does not render.
+- Temporary local CMS data was created only for browser verification and then deleted.
+- Verified that enabled `oist_lab` with an image renders a full-width image showcase after Chairman Message.
+- Verified no visible OIST Lab button, no visible content paragraph, and no visible subtitle despite temporary CMS values.
+- Verified the overlay computed as 20% black (`bg-black/20`) with no navy/blue overlay class.
+- Verified thumbnail click changes the main background image and moves the active yellow/gold border.
+- Browser MCP checked widths `390px`, `430px`, `768px`, `1366px`, and `1920px`; no horizontal overflow was detected.

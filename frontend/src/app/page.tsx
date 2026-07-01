@@ -1532,7 +1532,8 @@ function OistLabSection({
 }: Readonly<{
   section: HomepageSection;
 }>) {
-  const images = getOistLabImages(section);
+  const galleryImages = getHomepageSectionGalleryImages(section);
+  const images = getOistLabImages(section, galleryImages);
 
   if (images.length === 0) {
     return null;
@@ -1540,11 +1541,8 @@ function OistLabSection({
 
   return (
     <OistLabShowcase
-      buttonText={section.button_text}
-      buttonUrl={section.button_url}
-      description={getTextPreview(section.content, 180)}
       images={images}
-      subtitle={section.subtitle}
+      showThumbnails={galleryImages.length > 0 && images.length > 1}
       title={section.title}
     />
   );
@@ -2058,10 +2056,13 @@ type AboutFeatureItem = {
   description?: string;
 };
 
-function getOistLabImages(section: HomepageSection): OistLabImage[] {
+function getOistLabImages(
+  section: HomepageSection,
+  galleryImages: string[],
+): OistLabImage[] {
   const captions = getHomepageSectionGalleryCaptions(section);
   const imagePaths = uniqueValues(
-    [section.image_path, ...getHomepageSectionGalleryImages(section)]
+    [section.image_path, ...galleryImages]
       .map((value) => (typeof value === "string" ? value.trim() : ""))
       .filter(Boolean),
   );
