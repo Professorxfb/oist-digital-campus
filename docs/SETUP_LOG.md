@@ -1,5 +1,48 @@
 Date: 2026-07-01
 
+## About Video Placement and Lightbox Playback
+
+### Scope
+
+Frontend-only About section layout and behavior update. No backend, CMS models/resources, API routes/controllers, migrations, database schema, or public content/data source were changed.
+
+### Files Changed
+
+- `frontend/src/app/page.tsx`
+- `frontend/src/components/public-site/VideoLightbox.tsx`
+- `docs/SETUP_LOG.md`
+
+### About Video Placement
+
+- Moved the About video thumbnail into the same responsive band as the feature bullet list.
+- Desktop/tablet layout now places the feature bullets and button in the left column and the video thumbnail in a right column sized around the requested 300px-360px range.
+- The video is no longer pushed far below the button as a separate full-width block.
+- Feature bullets remain simple one-line rows and do not overlap or sit behind the video.
+- The About image collage, title, description, and More About Us button styling were not redesigned.
+
+### In-Site Video Lightbox
+
+- Replaced the video thumbnail external link with an in-site lightbox trigger.
+- Clicking the thumbnail opens a dark navy overlay with a centered 16:9 video player.
+- The modal supports close X, outside-click close, and Escape-key close.
+- Closing the modal unmounts the iframe/video element, stopping playback.
+- YouTube watch, youtu.be, and embed URLs are converted to safe `youtube-nocookie.com/embed` URLs.
+- Vimeo URLs are converted to safe `player.vimeo.com/video` URLs.
+- Uploaded video paths can play in an HTML video element.
+- Non-embeddable external URLs show a safe fallback button inside the modal instead of redirecting from the thumbnail.
+
+### Verification Results
+
+- `npm run lint` passed.
+- `npm run build` passed.
+- `http://localhost:3000` is currently occupied by another listener and returns `500 Internal Server Error`.
+- Browser/Playwright verification could not be completed because the in-app browser blocks access to `http://localhost:3000` by enterprise network policy. No alternate browser-control workaround was used.
+- Source-level verification confirms the About video thumbnail is in the bullet/video row, the thumbnail no longer uses an external anchor/new tab, and modal close/outside/Escape behavior is implemented in the client lightbox component.
+
+---
+
+Date: 2026-07-01
+
 ## Hero Feature Card Title Truncation Fix
 
 ### Scope

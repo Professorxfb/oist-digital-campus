@@ -10,6 +10,7 @@ import { OistLabShowcase, type OistLabImage } from "@/components/public-site/Ois
 import { ScrollReveal } from "@/components/public-site/ScrollReveal";
 import { SiteFooter } from "@/components/public-site/SiteFooter";
 import { SiteHeader } from "@/components/public-site/SiteHeader";
+import { VideoLightbox } from "@/components/public-site/VideoLightbox";
 import { resolveCmsAssetUrl } from "@/lib/api-client";
 import { formatDate, getCmsAssetUrl, getTextPreview } from "@/lib/cms-display";
 import {
@@ -648,6 +649,7 @@ function AboutSection({
   const featureItems = getAboutFeatureItems(content.feature_bullets ?? []);
   const description = getTextPreview(content.content, 360);
   const hasVideo = Boolean(youtubeEmbedUrl || uploadedVideoUrl || externalVideoUrl);
+  const hasAction = Boolean(content.button_text && content.button_url);
   const hasMediaImages = mediaImages.length > 0;
 
   return (
@@ -676,40 +678,51 @@ function AboutSection({
                 {description}
               </p>
             ) : null}
-            {featureItems.length > 0 ? (
-              <div className="mt-7 flex flex-col gap-3">
-                {featureItems.map((item, index) => (
-                  <div
-                    key={`${item.title}-${index}`}
-                    className="flex items-center gap-3"
-                  >
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-[#061f3f] text-[#061f3f]" aria-hidden="true">
-                      <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.6">
-                        <path d="M3 8.2 6.4 11.5 13 4.5" />
-                      </svg>
-                    </span>
-                    <span className="min-w-0 overflow-hidden text-ellipsis text-[15px] font-bold leading-6 text-[#061f3f] sm:whitespace-nowrap">
-                      {item.title}
-                    </span>
-                  </div>
-                ))}
+            {featureItems.length > 0 || hasVideo ? (
+              <div className="mt-7 grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(280px,340px)] md:items-start lg:gap-10 xl:gap-12">
+                <div className="min-w-0">
+                  {featureItems.length > 0 ? (
+                    <div className="flex flex-col gap-3">
+                      {featureItems.map((item, index) => (
+                        <div
+                          key={`${item.title}-${index}`}
+                          className="flex items-center gap-3"
+                        >
+                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-[#061f3f] text-[#061f3f]" aria-hidden="true">
+                            <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.6">
+                              <path d="M3 8.2 6.4 11.5 13 4.5" />
+                            </svg>
+                          </span>
+                          <span className="min-w-0 overflow-hidden text-ellipsis text-[15px] font-bold leading-6 text-[#061f3f] sm:whitespace-nowrap">
+                            {item.title}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+                  {hasAction ? (
+                    <div className={featureItems.length > 0 ? "mt-8" : ""}>
+                      <CTAButton href={content.button_url ?? ""}>
+                        {content.button_text}
+                      </CTAButton>
+                    </div>
+                  ) : null}
+                </div>
+                {hasVideo ? (
+                  <AboutVideoCard
+                    externalVideoUrl={externalVideoUrl}
+                    thumbnailUrl={videoThumbnailUrl}
+                    uploadedVideoUrl={uploadedVideoUrl}
+                    youtubeEmbedUrl={youtubeEmbedUrl}
+                  />
+                ) : null}
               </div>
             ) : null}
-            {content.button_text && content.button_url ? (
+            {!featureItems.length && !hasVideo && hasAction ? (
               <div className="mt-8">
-                <CTAButton href={content.button_url}>
+                <CTAButton href={content.button_url ?? ""}>
                   {content.button_text}
                 </CTAButton>
-              </div>
-            ) : null}
-            {hasVideo ? (
-              <div className="mt-7">
-                <AboutVideoCard
-                  externalVideoUrl={externalVideoUrl}
-                  thumbnailUrl={videoThumbnailUrl}
-                  uploadedVideoUrl={uploadedVideoUrl}
-                  youtubeEmbedUrl={youtubeEmbedUrl}
-                />
               </div>
             ) : null}
           </div>
@@ -794,32 +807,17 @@ function AboutVideoCard({
   uploadedVideoUrl: string | null;
   youtubeEmbedUrl: string | null;
 }>) {
-  const videoHref = externalVideoUrl ?? youtubeEmbedUrl ?? uploadedVideoUrl;
+  const hasVideo = Boolean(externalVideoUrl || youtubeEmbedUrl || uploadedVideoUrl);
 
   return (
-    <div className="aspect-video w-full max-w-[430px] justify-self-center overflow-hidden rounded-[16px] border-[3px] border-white bg-white shadow-[0_16px_38px_rgba(2,6,23,0.13)] max-sm:-mx-6 max-sm:w-[calc(100%+3rem)] sm:max-w-[430px] lg:max-w-[340px] lg:justify-self-end">
-      {videoHref ? (
-        <a
-          className="group relative flex h-full w-full items-center justify-center overflow-hidden rounded-[12px] bg-[#061f3f] text-white transition duration-300 hover:bg-yellow-400 hover:text-[#061f3f] hover:shadow-[0_20px_42px_rgba(2,6,23,0.18)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-400"
-          href={videoHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Play section video"
-        >
-          {thumbnailUrl ? (
-            <span
-              className="absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-105"
-              style={{ backgroundImage: `url(${thumbnailUrl})` }}
-              aria-hidden="true"
-            />
-          ) : null}
-          <span className="absolute inset-0 bg-slate-950/18 transition-colors duration-300 group-hover:bg-yellow-400/12" aria-hidden="true" />
-          <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#061f3f] shadow-[0_12px_24px_rgba(2,6,23,0.22)] transition duration-300 group-hover:scale-105 group-hover:bg-yellow-400 group-hover:text-[#061f3f] sm:h-14 sm:w-14" aria-hidden="true">
-            <svg className="ml-1 h-5 w-5 sm:h-6 sm:w-6" viewBox="0 0 16 16" fill="currentColor">
-              <path d="M4.5 2.8v10.4L12.5 8 4.5 2.8Z" />
-            </svg>
-          </span>
-        </a>
+    <div className="aspect-video w-full max-w-[430px] justify-self-center overflow-hidden rounded-[16px] border-[3px] border-white bg-white shadow-[0_16px_38px_rgba(2,6,23,0.13)] sm:max-w-[430px] md:max-w-[340px] md:justify-self-end">
+      {hasVideo ? (
+        <VideoLightbox
+          externalVideoUrl={externalVideoUrl}
+          thumbnailUrl={thumbnailUrl}
+          uploadedVideoUrl={uploadedVideoUrl}
+          youtubeEmbedUrl={youtubeEmbedUrl}
+        />
       ) : null}
     </div>
   );
