@@ -474,15 +474,15 @@ function HeroFeatureCards({
                 }`}
                 data-hero-feature-card
               >
-                <div className="flex w-full items-center gap-5 sm:gap-7 2xl:gap-8">
+                <div className="flex w-full min-w-0 items-center gap-4 sm:gap-5 2xl:gap-6">
                   <HeroFeatureIcon
                     iconKey={card.icon_key}
                     imageUrl={iconUrl}
                     isAccent={isAccent}
                   />
-                  <div className="min-w-0 flex-1 break-words">
+                  <div className="min-w-0 flex-1">
                     {card.title ? (
-                      <h2 className="font-serif text-[clamp(1.45rem,5.8vw,1.62rem)] font-bold leading-[1.14] tracking-normal sm:text-[clamp(1.5rem,3.2vw,1.72rem)] lg:text-[clamp(1.48rem,1.9vw,1.68rem)]">
+                      <h2 className="min-w-0 overflow-hidden text-ellipsis font-serif text-[clamp(1.35rem,5.2vw,1.5rem)] font-bold leading-[1.14] tracking-normal sm:whitespace-nowrap sm:text-[clamp(1.4rem,2.8vw,1.58rem)] lg:text-[clamp(1.36rem,1.55vw,1.5rem)] xl:text-[1.56rem]">
                         {card.title}
                       </h2>
                     ) : null}
@@ -649,10 +649,6 @@ function AboutSection({
   const description = getTextPreview(content.content, 360);
   const hasVideo = Boolean(youtubeEmbedUrl || uploadedVideoUrl || externalVideoUrl);
   const hasMediaImages = mediaImages.length > 0;
-  const featureVideoGridClassName =
-    featureItems.length > 0 && hasVideo
-      ? "mt-7 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(260px,340px)] lg:items-center xl:gap-6"
-      : "mt-7 grid gap-5";
 
   return (
     <section className="relative overflow-hidden bg-[#f7f3ea] py-16 sm:py-22 lg:py-28">
@@ -680,42 +676,23 @@ function AboutSection({
                 {description}
               </p>
             ) : null}
-            {featureItems.length > 0 || hasVideo ? (
-              <div className={featureVideoGridClassName}>
-                {featureItems.length > 0 ? (
-                  <div className="flex flex-col gap-3">
-                    {featureItems.map((item, index) => (
-                      <div
-                        key={`${item.title}-${index}`}
-                        className="flex items-center gap-3"
-                      >
-                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-[#061f3f] text-[#061f3f]" aria-hidden="true">
-                          <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.6">
-                            <path d="M3 8.2 6.4 11.5 13 4.5" />
-                          </svg>
-                        </span>
-                        <span className="min-w-0">
-                          <span className="block text-[15px] font-bold leading-6 text-[#061f3f] sm:whitespace-nowrap">
-                            {item.title}
-                          </span>
-                          {item.description ? (
-                            <span className="mt-1 block text-sm leading-6 text-slate-600">
-                              {item.description}
-                            </span>
-                          ) : null}
-                        </span>
-                      </div>
-                    ))}
+            {featureItems.length > 0 ? (
+              <div className="mt-7 flex flex-col gap-3">
+                {featureItems.map((item, index) => (
+                  <div
+                    key={`${item.title}-${index}`}
+                    className="flex items-center gap-3"
+                  >
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-[#061f3f] text-[#061f3f]" aria-hidden="true">
+                      <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.6">
+                        <path d="M3 8.2 6.4 11.5 13 4.5" />
+                      </svg>
+                    </span>
+                    <span className="min-w-0 overflow-hidden text-ellipsis text-[15px] font-bold leading-6 text-[#061f3f] sm:whitespace-nowrap">
+                      {item.title}
+                    </span>
                   </div>
-                ) : null}
-                {hasVideo ? (
-                  <AboutVideoCard
-                    externalVideoUrl={externalVideoUrl}
-                    thumbnailUrl={videoThumbnailUrl}
-                    uploadedVideoUrl={uploadedVideoUrl}
-                    youtubeEmbedUrl={youtubeEmbedUrl}
-                  />
-                ) : null}
+                ))}
               </div>
             ) : null}
             {content.button_text && content.button_url ? (
@@ -723,6 +700,16 @@ function AboutSection({
                 <CTAButton href={content.button_url}>
                   {content.button_text}
                 </CTAButton>
+              </div>
+            ) : null}
+            {hasVideo ? (
+              <div className="mt-7">
+                <AboutVideoCard
+                  externalVideoUrl={externalVideoUrl}
+                  thumbnailUrl={videoThumbnailUrl}
+                  uploadedVideoUrl={uploadedVideoUrl}
+                  youtubeEmbedUrl={youtubeEmbedUrl}
+                />
               </div>
             ) : null}
           </div>
@@ -1011,7 +998,7 @@ function AcademicProgramCard({
           <div className="flex h-12 w-12 shrink-0 items-center justify-center text-[#061f3f]" aria-hidden="true">
             <AcademicProgramIcon icon={program.icon} className="h-11 w-11" />
           </div>
-          <h3 className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap font-serif text-[1.48rem] font-bold leading-[1.12] tracking-normal text-[#082447] sm:text-[1.56rem] lg:text-[1.62rem]">
+          <h3 className="min-w-0 font-serif text-[1.48rem] font-bold leading-[1.12] tracking-normal text-[#082447] sm:overflow-hidden sm:text-ellipsis sm:whitespace-nowrap sm:text-[1.56rem] lg:text-[1.62rem]">
             {program.title}
           </h3>
         </div>

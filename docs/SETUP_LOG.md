@@ -1,5 +1,63 @@
 Date: 2026-07-01
 
+## About Placement and Public Card Title Wrapping Fix
+
+### Scope
+
+Frontend-only styling/layout update. No backend, CMS models/resources, API routes/controllers, migrations, database schema, or public content/data source were changed.
+
+### Files Changed
+
+- `frontend/src/app/page.tsx`
+- `docs/SETUP_LOG.md`
+
+### About Bullet Placement
+
+- Removed the combined bullet/video desktop grid that could place feature bullets in the same layout area as the video card.
+- About content now flows in a safe text-column order: subtitle, title, description, feature list, button, then video card.
+- The feature list is not absolute-positioned and no longer shares an overlapping grid/flex area with the video thumbnail.
+- The existing About image collage, video card component, external video behavior, and More About Us button styling were not changed.
+
+### About Feature Bullet List
+
+- Kept feature bullets as simple reference-style rows instead of card boxes.
+- Each row uses `flex items-center gap-3`.
+- Removed feature item background, border, shadow, rounded card styling, and large padding.
+- The icon is a small `h-6 w-6` circular navy outlined check with `shrink-0`.
+- Feature title text is dark/navy, bold, and uses `sm:whitespace-nowrap` with overflow protection so normal short bullets stay on one line on tablet/desktop.
+
+### Academics & Programs Card Titles
+
+- Kept the card design, image, button, bullet list, carousel, and section background unchanged.
+- Title row now uses tighter icon/title spacing and `min-w-0`.
+- Program titles use `sm:overflow-hidden sm:text-ellipsis sm:whitespace-nowrap` so common short titles stay on one line on tablet/desktop.
+- Mobile remains allowed to wrap when necessary.
+
+### Hero Feature Card Titles
+
+- Kept the Hero Feature Card colors, hover behavior, icon style, card position, and overall design unchanged.
+- Reduced the icon/title gap slightly to give text more width.
+- Removed the forced `break-words` title container behavior.
+- Hero Feature Card titles now use responsive sizing plus `sm:whitespace-nowrap`, `overflow-hidden`, and `text-ellipsis` so normal short titles stay on one line on tablet/desktop.
+
+### Future Public Card Title Rule
+
+Frontend card title rule: For all public website cards, titles should stay on one line on desktop/tablet where practical. Do not make short titles wrap because of narrow containers. Use responsive font sizing, proper flex width, whitespace-nowrap on larger screens, and ellipsis only for genuinely long titles. Mobile may wrap only when necessary, but no horizontal overflow is allowed.
+
+This applies to Hero Feature Cards, Academic Program cards, Department cards, Notice cards, Scholarship cards, Facility cards, Campus Life cards, Gallery cards, News/Event cards, Professor/Faculty cards, and any future public CMS card.
+
+### Verification Results
+
+- `npm run lint` passed.
+- `npm run build` passed.
+- `http://localhost:3000` is currently occupied by another listener and returns `500 Internal Server Error`.
+- Browser/Playwright verification could not be completed because the in-app browser blocks access to `http://localhost:3000` by enterprise network policy. No alternate browser-control workaround was used.
+- Source-level verification confirms the About feature list is separated from the video card layout, the old feature card box classes are removed, and Academics/Hero Feature Card titles use one-line tablet/desktop title classes.
+
+---
+
+Date: 2026-07-01
+
 ## About Bullets and Academic Program Title Styling
 
 ### Scope
