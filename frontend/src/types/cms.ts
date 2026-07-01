@@ -76,6 +76,11 @@ export interface HomepageSection {
     gallery_images?: string[] | string | null;
     video_url?: string | null;
     youtube_url?: string | null;
+    chairman_name?: string | null;
+    chairman_designation?: string | null;
+    signature_image?: string | null;
+    quote_label?: string | null;
+    layout_variant?: string | null;
     features?: unknown;
     feature_list?: unknown;
   };

@@ -19,7 +19,6 @@ import {
   getGalleryAlbums,
   getHeroFeatureCards,
   getHomepageSections,
-  getLeadershipProfiles,
   getMenuByLocation,
   getNewsPosts,
   getNotices,
@@ -35,7 +34,6 @@ import type {
   GalleryAlbum,
   HeroFeatureCard,
   HomepageSection,
-  LeadershipProfile,
   NewsPost,
   Notice,
   Scholarship,
@@ -116,7 +114,6 @@ export default async function Home() {
     facilities,
     facultyProfiles,
     scholarships,
-    leadershipProfiles,
     videos,
   ] = await Promise.all([
     getSiteSettings(),
@@ -133,7 +130,6 @@ export default async function Home() {
     getFacilities(),
     getFacultyProfiles(),
     getScholarships(),
-    getLeadershipProfiles(),
     getVideos(),
   ]);
 
@@ -150,11 +146,7 @@ export default async function Home() {
     "about_intro",
     "institution_intro",
   ]);
-  const chairmanSection = getHomepageSectionConfig(sections, [
-    "chairman",
-    "chairman_message",
-    "leadership_message",
-  ]);
+  const chairmanSection = getHomepageSectionByKey(sections, ["chairman_message"]);
   const academicsProgramsSection = getHomepageSectionConfig(sections, [
     "academics_programs",
     "academic_programs",
@@ -202,7 +194,6 @@ export default async function Home() {
     "gallery",
   ]);
 
-  const chairmanProfile = getChairmanProfile(leadershipProfiles.data);
   const feeRelatedScholarships = getFeeRelatedScholarships(scholarships.data);
   const communityVoices = communityVoicesSection
     ? getCommunityVoices(communityVoicesSection)
@@ -225,12 +216,6 @@ export default async function Home() {
           ),
         }
       : null,
-    chairmanSection && chairmanProfile
-      ? {
-          section: chairmanSection,
-          node: <ChairmanMessageSection profile={chairmanProfile} section={chairmanSection} />,
-        }
-      : null,
     noticesSection && notices.data.length > 0
       ? {
           section: noticesSection,
@@ -240,6 +225,12 @@ export default async function Home() {
               section={noticesSection}
             />
           ),
+        }
+      : null,
+    chairmanSection
+      ? {
+          section: chairmanSection,
+          node: <ChairmanMessageSection section={chairmanSection} />,
         }
       : null,
     campusLifeSection && (galleryAlbums.data.length > 0 || videos.data.length > 0)
@@ -1399,69 +1390,132 @@ function isExternalNoticeHref(href: string): boolean {
 }
 
 function ChairmanMessageSection({
-  profile,
   section,
 }: Readonly<{
-  profile: LeadershipProfile;
   section: HomepageSection;
 }>) {
-  const photoUrl = getCmsAssetUrl(section.image_path ?? profile.photo_path ?? null);
-  const message = getTextPreview(section.content, 260) ?? getTextPreview(profile.message ?? profile.short_bio, 260);
+  const photoUrl = getCmsAssetUrl(section.image_path);
+  const signatureUrl = getCmsAssetUrl(
+    getMetadataText(section.metadata, ["signature_image", "signature_path"]) ?? null,
+  );
+  const chairmanName = getMetadataText(section.metadata, ["chairman_name", "name"]);
+  const chairmanDesignation = getMetadataText(section.metadata, [
+    "chairman_designation",
+    "designation",
+    "role",
+  ]);
+  const quoteLabel = getMetadataText(section.metadata, ["quote_label"]);
+  const title = section.title?.trim() || "Message from the Chairman";
+  const eyebrow = section.subtitle?.trim() || "Chairman Message";
+  const message = getTextPreview(section.content, 620);
+  const hasAction = Boolean(section.button_text && section.button_url);
+  const hasCmsContent = Boolean(
+    section.title ||
+      section.subtitle ||
+      section.content ||
+      section.image_path ||
+      chairmanName ||
+      chairmanDesignation ||
+      signatureUrl ||
+      hasAction,
+  );
 
-  if (!section.title) {
+  if (!hasCmsContent) {
     return null;
   }
 
   return (
-    <section className="bg-white py-20 sm:py-24 lg:py-28">
-      <Container>
-        <div className="overflow-hidden rounded-[30px] bg-[#061f3f] shadow-[0_28px_80px_rgba(2,6,23,0.18)] lg:grid lg:grid-cols-[0.82fr_1.18fr]">
-          <div className="relative min-h-[340px] bg-blue-950">
-            {photoUrl ? (
+    <section className="relative overflow-hidden bg-[#f7f3ea] py-16 sm:py-20 lg:py-24">
+      <div
+        className="absolute inset-x-0 top-0 h-1/2 bg-white"
+        aria-hidden="true"
+      />
+      <Container className="relative">
+        <div className={`grid items-center gap-8 lg:gap-10 ${photoUrl ? "lg:grid-cols-[0.84fr_1.16fr]" : ""}`}>
+          {photoUrl ? (
+            <div className="relative mx-auto w-full max-w-[470px] lg:max-w-none">
               <div
-                className="absolute inset-0 bg-cover bg-center transition duration-500 hover:scale-105"
-                style={{ backgroundImage: `url(${photoUrl})` }}
+                className="absolute -left-4 top-8 h-24 w-24 rounded-[12px] bg-yellow-300/80 shadow-[0_18px_44px_rgba(202,138,4,0.18)] sm:-left-5"
                 aria-hidden="true"
               />
-            ) : (
               <div
-                className="absolute inset-0 bg-[radial-gradient(circle_at_34%_24%,rgba(250,204,21,0.24),transparent_30%),linear-gradient(135deg,#0f172a,#1d4ed8_65%,#082f49)]"
+                className="absolute -right-4 bottom-8 h-28 w-28 rounded-full border-[18px] border-[#061f3f]/10"
                 aria-hidden="true"
               />
-            )}
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent,rgba(2,6,23,0.25))]" aria-hidden="true" />
-          </div>
-          <div className="relative overflow-hidden p-7 text-white sm:p-10 lg:p-14">
+              <figure className="relative overflow-hidden rounded-[16px] bg-[#061f3f] p-3 shadow-[0_24px_68px_rgba(2,6,23,0.16)]">
+                <div
+                  className="aspect-[4/5] rounded-[10px] bg-cover bg-center"
+                  style={{ backgroundImage: `url(${photoUrl})` }}
+                  aria-label={chairmanName ?? title}
+                  role="img"
+                />
+              </figure>
+            </div>
+          ) : null}
+
+          <div className="relative overflow-hidden rounded-[16px] bg-white p-7 shadow-[0_20px_58px_rgba(2,6,23,0.08)] ring-1 ring-slate-200/70 sm:p-9 lg:p-11">
             <div
-              className="absolute right-8 top-8 h-24 w-24 rounded-full border-[16px] border-yellow-300/20"
+              className="absolute right-6 top-6 font-serif text-8xl font-bold leading-none text-[#061f3f]/[0.06] sm:text-9xl"
               aria-hidden="true"
-            />
-            {section.subtitle ? (
-              <p className="text-xs font-black uppercase tracking-[0.22em] text-yellow-300">
-                {section.subtitle}
-              </p>
-            ) : null}
-            <h2 className="relative mt-4 font-serif text-[clamp(2.15rem,6vw,3.35rem)] font-bold leading-[1.08] tracking-normal">
-              {section.title}
-            </h2>
-            <div className="relative mt-7 border-l-4 border-yellow-300 pl-5">
-              <h3 className="font-serif text-2xl font-bold tracking-normal">{profile.name}</h3>
-              {profile.designation ? (
-                <p className="mt-2 text-xs font-black uppercase tracking-[0.16em] text-blue-100">
-                  {profile.designation}
+            >
+              &quot;
+            </div>
+            <div className="relative">
+              <div className="mb-5 flex items-center gap-3">
+                <span className="h-px w-12 bg-yellow-400" aria-hidden="true" />
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-800">
+                  {eyebrow}
+                </p>
+              </div>
+              <h2 className="max-w-2xl font-serif text-[clamp(2.15rem,6vw,3.35rem)] font-bold leading-[1.06] tracking-normal text-[#061f3f]">
+                {title}
+              </h2>
+              {quoteLabel ? (
+                <p className="mt-3 text-sm font-bold uppercase tracking-[0.14em] text-yellow-700">
+                  {quoteLabel}
                 </p>
               ) : null}
+              {message ? (
+                <p className="mt-6 max-w-3xl whitespace-pre-line text-base leading-8 text-slate-600 sm:text-[1.04rem]">
+                  {message}
+                </p>
+              ) : null}
+
+              {(chairmanName || chairmanDesignation || signatureUrl) ? (
+                <div className="mt-7 border-l-4 border-yellow-400 pl-5">
+                  {signatureUrl ? (
+                    <div
+                      className="mb-4 h-12 max-w-[180px] bg-contain bg-left bg-no-repeat"
+                      style={{ backgroundImage: `url(${signatureUrl})` }}
+                      aria-label={chairmanName ? `${chairmanName} signature` : "Signature"}
+                      role="img"
+                    />
+                  ) : null}
+                  {chairmanName ? (
+                    <h3 className="font-serif text-2xl font-bold leading-tight tracking-normal text-[#061f3f]">
+                      {chairmanName}
+                    </h3>
+                  ) : null}
+                  {chairmanDesignation ? (
+                    <p className="mt-2 text-xs font-black uppercase tracking-[0.16em] text-slate-500">
+                      {chairmanDesignation}
+                    </p>
+                  ) : null}
+                </div>
+              ) : null}
+
+              {section.button_text && section.button_url ? (
+                <div className="mt-8">
+                  <a
+                    href={section.button_url}
+                    className="group inline-flex items-center rounded-[6px] bg-[#061f3f] px-6 py-3 text-sm font-black uppercase tracking-[0.08em] text-white shadow-[0_14px_34px_rgba(2,6,23,0.14)] transition duration-300 hover:-translate-y-0.5 hover:bg-yellow-400 hover:text-[#061f3f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-400"
+                  >
+                    {section.button_text}
+                    <span className="ml-3 h-px w-6 bg-current transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
+                  </a>
+                </div>
+              ) : null}
             </div>
-            {message ? (
-              <p className="relative mt-6 text-base leading-8 text-blue-50 sm:text-lg">{message}</p>
-            ) : null}
-            {section.button_text && section.button_url ? (
-              <div className="mt-8">
-                <CTAButton href={section.button_url}>
-                  {section.button_text}
-                </CTAButton>
-              </div>
-            ) : null}
           </div>
         </div>
       </Container>
@@ -1952,15 +2006,6 @@ function GalleryCard({ album }: Readonly<{ album: GalleryAlbum }>) {
   );
 }
 
-function getChairmanProfile(profiles: LeadershipProfile[]): LeadershipProfile | null {
-  return (
-    profiles.find((profile) =>
-      `${profile.name} ${profile.designation ?? ""}`.toLowerCase().includes("chairman"),
-    ) ??
-    null
-  );
-}
-
 function getFeeRelatedScholarships(scholarships: Scholarship[]): Scholarship[] {
   const feeKeywords = ["tuition", "fee", "fees", "admission fee", "waiver", "cost"];
 
@@ -2154,6 +2199,17 @@ function getHomepageSectionConfig(
     sections.find(
       (section) => normalizedKeys.includes(normalizeSectionKey(section.key)) && Boolean(section.title),
     ) ?? null
+  );
+}
+
+function getHomepageSectionByKey(
+  sections: HomepageSection[],
+  keys: string[],
+): HomepageSection | null {
+  const normalizedKeys = keys.map(normalizeSectionKey);
+
+  return (
+    sections.find((section) => normalizedKeys.includes(normalizeSectionKey(section.key))) ?? null
   );
 }
 

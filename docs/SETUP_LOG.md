@@ -3231,3 +3231,73 @@ Fixed the homepage visibility logic for the Latest Notices section only. The sec
 
 - `npm run lint` completed successfully.
 - `npm run build` completed successfully.
+
+---
+
+Date: 2026-07-01
+
+## Chairman Message Homepage Section
+
+### Scope
+
+Added a CMS-driven Chairman Message homepage section that renders after Latest Notices when an enabled `HomepageSection` record with key `chairman_message` exists. Header, Hero, Hero Feature Cards, About, Academics & Programs, and Latest Notices were not redesigned.
+
+### Files Changed
+
+- `backend/app/Filament/Resources/HomepageSections/HomepageSectionResource.php`
+- `backend/tests/Feature/PublicCmsApiTest.php`
+- `frontend/src/app/page.tsx`
+- `frontend/src/types/cms.ts`
+- `docs/SETUP_LOG.md`
+
+### CMS/Admin Fields Used
+
+- Existing `HomepageSection` fields: key, title, subtitle, content, image path, button text, button URL, sort order, enabled status, and metadata.
+- Chairman metadata fields exposed in Filament: `chairman_name`, `chairman_designation`, `signature_image`, `quote_label`, and `layout_variant`.
+- The main `image_path` field is used as the chairman photo.
+- `metadata.signature_image` is used as the optional signature image.
+
+### API Behavior
+
+- No new model, table, migration, or endpoint was added.
+- `GET /api/v1/homepage-sections` continues to return enabled homepage sections ordered by `sort_order`.
+- The chairman section is delivered through the existing standard response envelope when `key=chairman_message` and `is_enabled=true`.
+- Disabled `chairman_message` records are omitted by the existing `enabled()` scope.
+- The public API test now verifies chairman metadata is passed through without exposing disabled sections.
+
+### Frontend Behavior
+
+- The homepage looks for the enabled CMS key `chairman_message`.
+- The section renders from CMS/API data only: title, eyebrow/subtitle, message body, chairman photo, name, designation, signature image, button text, and button URL.
+- If the CMS image is missing, the section uses a clean text-only card layout and does not render a fake portrait.
+- If name, designation, signature, or button fields are missing, those parts are hidden gracefully.
+- The CTA uses navy by default and changes visibly to yellow with navy text on hover.
+- The section uses a premium cream/white university layout with navy typography, yellow accent line, serif heading, subtle quote mark, and balanced card spacing.
+
+### Commands Run
+
+- `php artisan optimize:clear`
+- `php artisan route:list --path=api/v1`
+- `php artisan test`
+- `npm run lint`
+- `npm run build`
+- `npm run dev -- --hostname 127.0.0.1 --port 3001`
+
+### Browser Verification Results
+
+- Browser MCP inspected `https://univet.rstheme.com/blue-two/` for visual direction only. No source code, assets, text, or proprietary implementation details were copied.
+- Local verification used `http://127.0.0.1:3001` because `http://127.0.0.1:3000` was occupied by a stale listener returning `500 Internal Server Error`.
+- Temporary local CMS data was created only to verify layout and then deleted.
+- Desktop `1366px` and `1920px`: Chairman Message appeared after Latest Notices, rendered CMS text/name/button, had no horizontal overflow, and used the text-only layout because no chairman photo was supplied.
+- Mobile `390px` and `430px`: section stacked cleanly, remained readable, had no horizontal overflow, and stayed after Latest Notices.
+- Button hover behavior was verified through the rendered Tailwind hover classes: navy default, yellow hover background, navy hover text.
+- Disabled-section behavior was verified: the API omitted `chairman_message` immediately after disabling, and the frontend stopped rendering it after the 60-second Next.js revalidation window.
+
+### Manual Admin Setup Needed
+
+- Create and enable a `HomepageSection` record with key `chairman_message`.
+- Suggested title: `Message from the Chairman`.
+- Suggested subtitle/eyebrow: `CHAIRMAN MESSAGE`.
+- Add approved chairman message content, chairman photo, optional signature image, button text/link, sort order, and metadata values.
+- Suggested sort order: `5`, assuming Latest Notices remains `4`.
+- Replace the suggested placeholder name/designation with approved institutional content before production.

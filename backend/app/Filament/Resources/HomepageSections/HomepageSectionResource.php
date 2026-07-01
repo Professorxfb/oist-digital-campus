@@ -104,6 +104,38 @@ class HomepageSectionResource extends Resource
                             ->maxLength(2048)
                             ->helperText('Use a YouTube or other public video URL when the section needs an embedded video.'),
                     ])->columns(2),
+                Section::make('Chairman Message Metadata')
+                    ->description('Optional fields used by the chairman_message homepage section.')
+                    ->schema([
+                        TextInput::make('metadata.chairman_name')
+                            ->label('Chairman Name')
+                            ->maxLength(255),
+                        TextInput::make('metadata.chairman_designation')
+                            ->label('Chairman Designation')
+                            ->maxLength(255),
+                        FileUpload::make('metadata.signature_image')
+                            ->label('Signature Image')
+                            ->disk('public')
+                            ->directory('homepage-sections/signatures')
+                            ->visibility('public')
+                            ->image()
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->maxSize(2048)
+                            ->imagePreviewHeight('90')
+                            ->previewable()
+                            ->openable()
+                            ->downloadable()
+                            ->deletable()
+                            ->nullable(),
+                        TextInput::make('metadata.quote_label')
+                            ->label('Quote Label')
+                            ->maxLength(255)
+                            ->helperText('Optional small label near the quote icon.'),
+                        TextInput::make('metadata.layout_variant')
+                            ->label('Layout Variant')
+                            ->maxLength(80)
+                            ->helperText('Optional frontend layout hint, for example: default or compact.'),
+                    ])->columns(2),
                 Section::make('Display Rules')
                     ->schema([
                         TextInput::make('sort_order')

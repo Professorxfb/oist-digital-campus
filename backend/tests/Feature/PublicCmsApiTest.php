@@ -64,6 +64,13 @@ class PublicCmsApiTest extends TestCase
             'title' => 'First',
             'sort_order' => 10,
             'is_enabled' => true,
+            'metadata' => [
+                'chairman_name' => 'CMS Chairman',
+                'chairman_designation' => 'Chairman',
+                'signature_image' => 'homepage-sections/signatures/signature.png',
+                'quote_label' => 'Message',
+                'layout_variant' => 'default',
+            ],
         ]);
 
         $response = $this->getJson('/api/v1/homepage-sections');
@@ -72,6 +79,11 @@ class PublicCmsApiTest extends TestCase
             ->assertOk()
             ->assertJsonPath('success', true)
             ->assertJsonPath('data.0.key', 'first-section')
+            ->assertJsonPath('data.0.metadata.chairman_name', 'CMS Chairman')
+            ->assertJsonPath('data.0.metadata.chairman_designation', 'Chairman')
+            ->assertJsonPath('data.0.metadata.signature_image', 'homepage-sections/signatures/signature.png')
+            ->assertJsonPath('data.0.metadata.quote_label', 'Message')
+            ->assertJsonPath('data.0.metadata.layout_variant', 'default')
             ->assertJsonPath('data.1.key', 'second-section')
             ->assertJsonMissing(['key' => 'disabled-section']);
     }
