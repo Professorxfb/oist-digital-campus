@@ -1,5 +1,43 @@
 Date: 2026-07-01
 
+## About Bullets and Academic Program Title Styling
+
+### Scope
+
+Frontend-only styling update. No backend, CMS models/resources, API routes/controllers, migrations, database schema, or public content/data source were changed.
+
+### Files Changed
+
+- `frontend/src/app/page.tsx`
+- `docs/SETUP_LOG.md`
+
+### About Feature Bullet List
+
+- Changed About feature items from small white card boxes to simple reference-style rows.
+- Removed feature item card background, border, shadow, rounded box styling, and large padding.
+- Each item now uses a flex row with centered alignment and a small circular navy check icon.
+- Feature title text uses dark/navy bold styling and `sm:whitespace-nowrap` so normal short bullet text stays on one line on tablet/desktop.
+- About images, video card/thumbnail, and More About Us button styling were not changed.
+
+### Academics & Programs Card Titles
+
+- Tightened the icon/title row gap.
+- Added `min-w-0`, `overflow-hidden`, `text-ellipsis`, and `whitespace-nowrap` to program card titles.
+- Reduced the title font sizing slightly across breakpoints so common titles such as `Diploma in CSE`, `Diploma in CE`, `Diploma in TE`, `B.Sc. in CSE`, and `M.Sc. in CSE` have enough room to remain on one line on tablet/desktop.
+- Card images, buttons, bullet lists, carousel behavior, and section background were not changed.
+
+### Verification Results
+
+- `npm run lint` passed.
+- `npm run build` passed.
+- Browser verification at `http://localhost:3000` could not be completed because that port was already occupied and returned `500 Internal Server Error`.
+- A local preview was started at `http://127.0.0.1:3002`, but the in-app browser refused access to the local URL due to browser security/network policy. No alternate browser-control workaround was used.
+- Source-level verification confirms the About feature items no longer use card background/border/shadow classes and Academics titles now use no-wrap/ellipsis sizing classes.
+
+---
+
+Date: 2026-07-01
+
 ## Homepage Section Registry Cleanup and Public CMS Ownership Rule
 
 ### Permanent Rule

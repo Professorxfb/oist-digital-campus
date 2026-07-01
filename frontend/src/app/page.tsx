@@ -683,19 +683,19 @@ function AboutSection({
             {featureItems.length > 0 || hasVideo ? (
               <div className={featureVideoGridClassName}>
                 {featureItems.length > 0 ? (
-                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                  <div className="flex flex-col gap-3">
                     {featureItems.map((item, index) => (
                       <div
                         key={`${item.title}-${index}`}
-                        className="flex gap-3 rounded-2xl border border-blue-100/80 bg-white/70 p-4 shadow-sm"
+                        className="flex items-center gap-3"
                       >
-                        <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-yellow-400 text-[#061f3f]" aria-hidden="true">
-                          <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5">
+                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-[#061f3f] text-[#061f3f]" aria-hidden="true">
+                          <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.6">
                             <path d="M3 8.2 6.4 11.5 13 4.5" />
                           </svg>
                         </span>
                         <span className="min-w-0">
-                          <span className="block text-sm font-black leading-6 text-[#061f3f]">
+                          <span className="block text-[15px] font-bold leading-6 text-[#061f3f] sm:whitespace-nowrap">
                             {item.title}
                           </span>
                           {item.description ? (
@@ -1007,11 +1007,11 @@ function AcademicProgramCard({
       </div>
 
       <div className="flex flex-1 flex-col px-6 pb-6 pt-6 sm:px-7 sm:pb-7 sm:pt-7">
-        <div className="flex items-center gap-5">
+        <div className="flex min-w-0 items-center gap-3 sm:gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center text-[#061f3f]" aria-hidden="true">
             <AcademicProgramIcon icon={program.icon} className="h-11 w-11" />
           </div>
-          <h3 className="font-serif text-[clamp(1.55rem,4.2vw,1.92rem)] font-bold leading-[1.12] tracking-normal text-[#082447]">
+          <h3 className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap font-serif text-[1.48rem] font-bold leading-[1.12] tracking-normal text-[#082447] sm:text-[1.56rem] lg:text-[1.62rem]">
             {program.title}
           </h3>
         </div>
