@@ -1,5 +1,42 @@
 Date: 2026-07-01
 
+## Hero Feature Card Title Truncation Fix
+
+### Scope
+
+Frontend-only styling/layout update. No backend, CMS models/resources, API routes/controllers, migrations, database schema, or public content/data source were changed.
+
+### Files Changed
+
+- `frontend/src/app/page.tsx`
+- `docs/SETUP_LOG.md`
+
+### Hero Feature Card Titles
+
+- Removed `overflow-hidden` and `text-ellipsis` from Hero Feature Card titles so normal short CMS titles are not cut off.
+- Kept titles CMS-driven; no titles were hard-coded.
+- Kept the Hero Feature Card colors, card position, icons, descriptions, and hover behavior unchanged.
+- Kept practical one-line behavior through flexible width and slightly smaller responsive title sizing instead of truncation.
+- Normal short titles such as `Books and library`, `Professional educators`, and `Focus on achievement` should display fully on desktop/tablet.
+
+### Future Public Card Title Rule
+
+Public card title rule: Do not cut off normal short card titles with ellipsis. Card titles should remain fully readable on desktop/tablet. Use better layout, flexible width, smaller responsive font size, and reduced icon/title gap before using truncation. Ellipsis is allowed only for genuinely long titles where wrapping would break the design. Normal titles like `Professional educators`, `Focus on achievement`, `Diploma in CSE`, and similar short CMS titles must display fully.
+
+This applies to Hero Feature Cards, Academic Program cards, Department cards, Notice cards, Scholarship cards, Facility cards, Campus Life cards, Gallery cards, News/Event cards, Professor/Faculty cards, and any future public CMS card.
+
+### Verification Results
+
+- `npm run lint` passed.
+- `npm run build` passed.
+- `http://localhost:3000` is still occupied by another listener and returns `500 Internal Server Error`.
+- Browser/Playwright verification could not be completed because the in-app browser blocks access to `http://localhost:3000` by enterprise network policy. No alternate browser-control workaround was used.
+- Source-level verification confirms Hero Feature Card titles no longer use truncation classes and normal short titles are allowed to render fully.
+
+---
+
+Date: 2026-07-01
+
 ## About Placement and Public Card Title Wrapping Fix
 
 ### Scope
@@ -38,11 +75,11 @@ Frontend-only styling/layout update. No backend, CMS models/resources, API route
 - Kept the Hero Feature Card colors, hover behavior, icon style, card position, and overall design unchanged.
 - Reduced the icon/title gap slightly to give text more width.
 - Removed the forced `break-words` title container behavior.
-- Hero Feature Card titles now use responsive sizing plus `sm:whitespace-nowrap`, `overflow-hidden`, and `text-ellipsis` so normal short titles stay on one line on tablet/desktop.
+- Hero Feature Card titles use responsive sizing and flexible width; normal short titles must not be cut off with ellipsis.
 
 ### Future Public Card Title Rule
 
-Frontend card title rule: For all public website cards, titles should stay on one line on desktop/tablet where practical. Do not make short titles wrap because of narrow containers. Use responsive font sizing, proper flex width, whitespace-nowrap on larger screens, and ellipsis only for genuinely long titles. Mobile may wrap only when necessary, but no horizontal overflow is allowed.
+Public card title rule: Do not cut off normal short card titles with ellipsis. Card titles should remain fully readable on desktop/tablet. Use better layout, flexible width, smaller responsive font size, and reduced icon/title gap before using truncation. Ellipsis is allowed only for genuinely long titles where wrapping would break the design. Normal titles like `Professional educators`, `Focus on achievement`, `Diploma in CSE`, and similar short CMS titles must display fully.
 
 This applies to Hero Feature Cards, Academic Program cards, Department cards, Notice cards, Scholarship cards, Facility cards, Campus Life cards, Gallery cards, News/Event cards, Professor/Faculty cards, and any future public CMS card.
 

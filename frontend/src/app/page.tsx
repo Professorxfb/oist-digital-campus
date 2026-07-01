@@ -482,7 +482,7 @@ function HeroFeatureCards({
                   />
                   <div className="min-w-0 flex-1">
                     {card.title ? (
-                      <h2 className="min-w-0 overflow-hidden text-ellipsis font-serif text-[clamp(1.35rem,5.2vw,1.5rem)] font-bold leading-[1.14] tracking-normal sm:whitespace-nowrap sm:text-[clamp(1.4rem,2.8vw,1.58rem)] lg:text-[clamp(1.36rem,1.55vw,1.5rem)] xl:text-[1.56rem]">
+                      <h2 className="min-w-0 font-serif text-[clamp(1.32rem,5vw,1.46rem)] font-bold leading-[1.14] tracking-normal sm:text-[clamp(1.36rem,2.5vw,1.5rem)] lg:text-[clamp(1.3rem,1.32vw,1.42rem)] xl:text-[1.48rem]">
                         {card.title}
                       </h2>
                     ) : null}
