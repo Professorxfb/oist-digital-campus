@@ -1,5 +1,43 @@
 Date: 2026-07-01
 
+## About Video Card Size and Alignment Refinement
+
+### Scope
+
+Frontend-only About section layout/CSS refinement. No backend, CMS models/resources, API routes/controllers, migrations, database schema, public content, or video lightbox behavior were changed.
+
+### Files Changed
+
+- `frontend/src/app/page.tsx`
+- `docs/SETUP_LOG.md`
+
+### About Video Card Layout
+
+- Reduced the desktop About video card from the previous larger flexible size to fixed responsive widths:
+  - `260px` at tablet/medium layout.
+  - `270px` at large desktop.
+  - `290px` at extra-large desktop.
+- Kept the 16:9 aspect ratio, rounded corners, white border, shadow, thumbnail image, and centered play button.
+- Increased the gap between the bullet/button column and video column:
+  - `32px` at medium layout.
+  - `56px` at large desktop.
+  - `64px` at extra-large desktop.
+- Kept the video justified to the right of its grid column so it sits closer to the intended empty right-side area.
+- Kept the bullet/button column flexible and added single-line CTA behavior to avoid awkward button wrapping.
+- Did not change the About image collage, title, description, bullet style, button styling, or modal/lightbox behavior.
+
+### Verification Results
+
+- `npm run lint` passed.
+- `npm run build` passed.
+- `http://localhost:3000` is currently occupied by another listener and returns `500 Internal Server Error`.
+- Browser/Playwright verification could not be completed because the in-app browser blocks access to `http://localhost:3000` by enterprise network policy. No alternate browser-control workaround was used.
+- Source-level verification confirms the About video card now uses smaller fixed responsive widths, larger right-side spacing, right alignment, and unchanged lightbox wiring.
+
+---
+
+Date: 2026-07-01
+
 ## About Video Placement and Lightbox Playback
 
 ### Scope

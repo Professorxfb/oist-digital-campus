@@ -679,7 +679,7 @@ function AboutSection({
               </p>
             ) : null}
             {featureItems.length > 0 || hasVideo ? (
-              <div className="mt-7 grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(280px,340px)] md:items-start lg:gap-10 xl:gap-12">
+              <div className="mt-7 grid gap-6 md:grid-cols-[minmax(285px,1fr)_260px] md:items-start md:gap-8 lg:grid-cols-[minmax(300px,1fr)_270px] lg:gap-14 xl:grid-cols-[minmax(320px,1fr)_290px] xl:gap-16">
                 <div className="min-w-0">
                   {featureItems.length > 0 ? (
                     <div className="flex flex-col gap-3">
@@ -702,7 +702,7 @@ function AboutSection({
                   ) : null}
                   {hasAction ? (
                     <div className={featureItems.length > 0 ? "mt-8" : ""}>
-                      <CTAButton href={content.button_url ?? ""}>
+                      <CTAButton href={content.button_url ?? ""} className="whitespace-nowrap">
                         {content.button_text}
                       </CTAButton>
                     </div>
@@ -720,7 +720,7 @@ function AboutSection({
             ) : null}
             {!featureItems.length && !hasVideo && hasAction ? (
               <div className="mt-8">
-                <CTAButton href={content.button_url ?? ""}>
+                <CTAButton href={content.button_url ?? ""} className="whitespace-nowrap">
                   {content.button_text}
                 </CTAButton>
               </div>
@@ -810,7 +810,7 @@ function AboutVideoCard({
   const hasVideo = Boolean(externalVideoUrl || youtubeEmbedUrl || uploadedVideoUrl);
 
   return (
-    <div className="aspect-video w-full max-w-[430px] justify-self-center overflow-hidden rounded-[16px] border-[3px] border-white bg-white shadow-[0_16px_38px_rgba(2,6,23,0.13)] sm:max-w-[430px] md:max-w-[340px] md:justify-self-end">
+    <div className="aspect-video w-full max-w-[430px] justify-self-center overflow-hidden rounded-[16px] border-[3px] border-white bg-white shadow-[0_16px_38px_rgba(2,6,23,0.13)] sm:max-w-[360px] md:w-[260px] md:max-w-[260px] md:justify-self-end lg:w-[270px] lg:max-w-[270px] xl:w-[290px] xl:max-w-[290px]">
       {hasVideo ? (
         <VideoLightbox
           externalVideoUrl={externalVideoUrl}
