@@ -74,6 +74,7 @@ export interface HomepageSection {
   sort_order: number;
   metadata: Record<string, unknown> & {
     gallery_images?: string[] | string | null;
+    gallery_captions?: string[] | string | null;
     video_url?: string | null;
     youtube_url?: string | null;
     chairman_name?: string | null;

@@ -3301,3 +3301,111 @@ Added a CMS-driven Chairman Message homepage section that renders after Latest N
 - Add approved chairman message content, chairman photo, optional signature image, button text/link, sort order, and metadata values.
 - Suggested sort order: `5`, assuming Latest Notices remains `4`.
 - Replace the suggested placeholder name/designation with approved institutional content before production.
+
+---
+
+Date: 2026-07-01
+
+## Chairman Message Background Color Fix
+
+### Scope
+
+Fixed only the Chairman Message outer section background. Header, Hero, About, Academics & Programs, Latest Notices, CMS logic, section content, and card layout were not redesigned.
+
+### Files Changed
+
+- `frontend/src/app/page.tsx`
+- `docs/SETUP_LOG.md`
+
+### CSS Fix
+
+- Removed the absolute white top overlay from the Chairman Message section:
+  - Removed `absolute inset-x-0 top-0 h-1/2 bg-white`.
+- Kept the outer section background as the site cream/off-white: `bg-[#f7f3ea]`.
+- Kept the inner message card white and kept the image card/layout unchanged.
+
+### Commands Run
+
+- `npm run lint`
+- `npm run build`
+- `npm run dev -- --hostname 127.0.0.1 --port 3002`
+
+### Verification Results
+
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully.
+- `http://localhost:3000` was occupied by an existing listener returning `500 Internal Server Error`, so browser verification used a fresh local preview at `http://127.0.0.1:3002`.
+- Browser MCP verified widths `390px`, `430px`, `768px`, `1366px`, and `1920px`.
+- The Chairman Message section background computed to `rgb(247, 243, 234)` at all checked widths.
+- No direct white top overlay/background layer remained in the Chairman Message section.
+- The white message card and chairman image card remained intact.
+- No horizontal overflow was detected at any checked width.
+
+---
+
+Date: 2026-07-01
+
+## OIST Lab Homepage Section
+
+### Scope
+
+Added a CMS-controlled `oist_lab` homepage section after Chairman Message using the existing `HomepageSection` system. Header, Hero, About, Academics & Programs, Latest Notices, and Chairman Message layouts were not redesigned.
+
+### Files Changed
+
+- `backend/app/Filament/Resources/HomepageSections/HomepageSectionResource.php`
+- `frontend/src/components/public-site/OistLabShowcase.tsx`
+- `frontend/src/app/page.tsx`
+- `frontend/src/types/cms.ts`
+- `docs/SETUP_LOG.md`
+
+### CMS/Admin Fields Used
+
+- Existing `HomepageSection` fields: key, title, subtitle, content, image path, button text, button URL, sort order, enabled status, and metadata.
+- Existing `metadata.gallery_images` is reused for OIST Lab thumbnails.
+- Added optional `metadata.gallery_captions` admin field. Captions can be entered one per line and are matched to the main image plus gallery images in order.
+- No new model, table, migration, package, or endpoint was added.
+
+### Frontend Behavior
+
+- The homepage now looks for enabled `HomepageSection` key `oist_lab`.
+- The section renders only when CMS provides at least one image through `image_path` or `metadata.gallery_images`.
+- The main background image fills the full-width cinematic section with `bg-cover`.
+- A dark navy overlay keeps white text readable.
+- CMS title, subtitle, content, optional button text/link, main image, gallery images, and optional captions drive the full section.
+- A small client component handles thumbnail clicks with React state.
+- Up to 5 images are shown in the thumbnail rail.
+- Active thumbnail uses a yellow/gold border; inactive thumbnails use a white border with hover lift/scale and border transition.
+- Clicking a thumbnail changes the main background image without adding any carousel package.
+
+### Commands Run
+
+- `php artisan optimize:clear`
+- `php artisan route:list --path=api/v1`
+- `php artisan test`
+- `npm run lint`
+- `npm run build`
+- `npm run dev -- --hostname 127.0.0.1 --port 3002`
+
+### Verification Results
+
+- `php artisan optimize:clear` completed successfully.
+- `php artisan route:list --path=api/v1` completed successfully and confirmed the existing `GET /api/v1/homepage-sections` endpoint.
+- `php artisan test` passed: 38 tests, 262 assertions.
+- `npm run lint` completed successfully.
+- `npm run build` completed successfully.
+- `http://localhost:3000` was occupied by an existing listener returning `500 Internal Server Error`, so browser verification used a fresh local preview at `http://127.0.0.1:3002`.
+- Temporary local CMS data was created only for browser verification and then deleted.
+- Browser MCP verified mobile `390px` and `430px`, tablet `768px`, and desktop `1366px` and `1920px`.
+- The section appeared after Chairman Message, rendered full-width to the document client width, used a dark overlay, showed centered white serif title text, displayed 4 thumbnails from local CMS media, and had no horizontal overflow.
+- Browser MCP clicked the second thumbnail and verified the active index changed from `0` to `1`, the active gold border moved, and the main background image URL changed.
+
+### Manual Admin Setup Needed
+
+- Create and enable a `HomepageSection` record with key `oist_lab`.
+- Suggested title: `OIST Lab`.
+- Suggested subtitle/eyebrow: `OUR LAB FACILITIES`.
+- Add approved OIST lab content, main lab image, 4-5 gallery images, optional one-per-line captions, button text/link, sort order, and enabled status.
+- Suggested button text: `Explore Labs`.
+- Suggested button URL: `/facilities`.
+- Suggested sort order: `6`, assuming Chairman Message remains `5`.

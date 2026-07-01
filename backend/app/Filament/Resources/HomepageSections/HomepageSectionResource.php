@@ -98,6 +98,11 @@ class HomepageSectionResource extends Resource
                             ->deletable()
                             ->nullable()
                             ->columnSpanFull(),
+                        Textarea::make('metadata.gallery_captions')
+                            ->label('Gallery Captions')
+                            ->rows(3)
+                            ->helperText('Optional captions for gallery images. Use one caption per line, matching the image order.')
+                            ->columnSpanFull(),
                         TextInput::make('metadata.video_url')
                             ->label('External Video URL')
                             ->url()

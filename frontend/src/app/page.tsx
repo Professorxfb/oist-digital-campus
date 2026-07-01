@@ -6,6 +6,7 @@ import { ContentCard } from "@/components/public-site/ContentCard";
 import { CTAButton } from "@/components/public-site/CTAButton";
 import { EventCard } from "@/components/public-site/EventCard";
 import { NoticeStrip } from "@/components/public-site/NoticeStrip";
+import { OistLabShowcase, type OistLabImage } from "@/components/public-site/OistLabShowcase";
 import { ScrollReveal } from "@/components/public-site/ScrollReveal";
 import { SiteFooter } from "@/components/public-site/SiteFooter";
 import { SiteHeader } from "@/components/public-site/SiteHeader";
@@ -147,6 +148,7 @@ export default async function Home() {
     "institution_intro",
   ]);
   const chairmanSection = getHomepageSectionByKey(sections, ["chairman_message"]);
+  const oistLabSection = getHomepageSectionByKey(sections, ["oist_lab"]);
   const academicsProgramsSection = getHomepageSectionConfig(sections, [
     "academics_programs",
     "academic_programs",
@@ -231,6 +233,12 @@ export default async function Home() {
       ? {
           section: chairmanSection,
           node: <ChairmanMessageSection section={chairmanSection} />,
+        }
+      : null,
+    oistLabSection
+      ? {
+          section: oistLabSection,
+          node: <OistLabSection section={oistLabSection} />,
         }
       : null,
     campusLifeSection && (galleryAlbums.data.length > 0 || videos.data.length > 0)
@@ -1426,10 +1434,6 @@ function ChairmanMessageSection({
 
   return (
     <section className="relative overflow-hidden bg-[#f7f3ea] py-16 sm:py-20 lg:py-24">
-      <div
-        className="absolute inset-x-0 top-0 h-1/2 bg-white"
-        aria-hidden="true"
-      />
       <Container className="relative">
         <div className={`grid items-center gap-8 lg:gap-10 ${photoUrl ? "lg:grid-cols-[0.84fr_1.16fr]" : ""}`}>
           {photoUrl ? (
@@ -1520,6 +1524,29 @@ function ChairmanMessageSection({
         </div>
       </Container>
     </section>
+  );
+}
+
+function OistLabSection({
+  section,
+}: Readonly<{
+  section: HomepageSection;
+}>) {
+  const images = getOistLabImages(section);
+
+  if (images.length === 0) {
+    return null;
+  }
+
+  return (
+    <OistLabShowcase
+      buttonText={section.button_text}
+      buttonUrl={section.button_url}
+      description={getTextPreview(section.content, 180)}
+      images={images}
+      subtitle={section.subtitle}
+      title={section.title}
+    />
   );
 }
 
@@ -2031,6 +2058,34 @@ type AboutFeatureItem = {
   description?: string;
 };
 
+function getOistLabImages(section: HomepageSection): OistLabImage[] {
+  const captions = getHomepageSectionGalleryCaptions(section);
+  const imagePaths = uniqueValues(
+    [section.image_path, ...getHomepageSectionGalleryImages(section)]
+      .map((value) => (typeof value === "string" ? value.trim() : ""))
+      .filter(Boolean),
+  );
+
+  return imagePaths
+    .map((path, index): OistLabImage | null => {
+      const src = getCmsAssetUrl(path);
+
+      if (!src) {
+        return null;
+      }
+
+      const caption = captions[index]?.trim();
+      const title = section.title?.trim();
+
+      return {
+        src,
+        alt: caption || title || `Lab image ${index + 1}`,
+        caption: caption || undefined,
+      };
+    })
+    .filter((image): image is OistLabImage => image !== null);
+}
+
 function getHomepageSectionGalleryImages(section: HomepageSection): string[] {
   const rawImages =
     section.metadata.gallery_images ??
@@ -2046,6 +2101,28 @@ function getHomepageSectionGalleryImages(section: HomepageSection): string[] {
   if (typeof rawImages === "string" && rawImages.trim().length > 0) {
     return rawImages
       .split(",")
+      .map((value) => value.trim())
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
+function getHomepageSectionGalleryCaptions(section: HomepageSection): string[] {
+  const rawCaptions =
+    section.metadata.gallery_captions ??
+    section.metadata.captions ??
+    section.metadata.image_captions;
+
+  if (Array.isArray(rawCaptions)) {
+    return rawCaptions
+      .map((value) => (typeof value === "string" ? value.trim() : ""))
+      .filter(Boolean);
+  }
+
+  if (typeof rawCaptions === "string" && rawCaptions.trim().length > 0) {
+    return rawCaptions
+      .split(/\r?\n|\|/)
       .map((value) => value.trim())
       .filter(Boolean);
   }
