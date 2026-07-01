@@ -278,6 +278,7 @@ export interface FacultyProfile {
   slug: string;
   designation?: string | null;
   department?: FacultyProfileDepartment | null;
+  photo_url?: string | null;
   photo_path?: string | null;
   short_bio?: string | null;
   email?: string | null;

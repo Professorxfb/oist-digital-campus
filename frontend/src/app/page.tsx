@@ -190,11 +190,7 @@ export default async function Home() {
     "facilities",
     "facility",
   ]);
-  const professorsSection = getHomepageSectionConfig(sections, [
-    "professors",
-    "faculty",
-    "faculty_profiles",
-  ]);
+  const professorsSection = getHomepageSectionConfig(sections, ["professors"]);
   const videosSection = getHomepageSectionConfig(sections, [
     "videos",
     "video_showcase",
@@ -312,7 +308,7 @@ export default async function Home() {
           section: professorsSection,
           node: (
             <ProfessorsSection
-              profiles={limitItems(facultyProfiles.data, professorsSection)}
+              profiles={facultyProfiles.data}
               section={professorsSection}
             />
           ),
@@ -1734,14 +1730,45 @@ function ProfessorsSection({
   profiles: FacultyProfile[];
   section: HomepageSection;
 }>) {
+  const visibleProfiles = profiles.slice(0, 3);
+
   return (
-    <PremiumSection section={section} tone="white">
-      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-        {profiles.map((profile) => (
-          <ProfessorCard key={profile.slug} profile={profile} />
-        ))}
-      </div>
-    </PremiumSection>
+    <section className="relative overflow-hidden bg-[#f7f3ea] py-20 sm:py-24 lg:py-28">
+      <Container className="relative">
+        <div className="mb-8 flex flex-col gap-6 sm:mb-10 lg:mb-12 lg:flex-row lg:items-start lg:justify-between">
+          <div className="min-w-0">
+            {section.subtitle ? (
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-700">
+                {section.subtitle}
+              </p>
+            ) : null}
+            <h2 className="mt-3 max-w-full font-serif text-[clamp(2.35rem,7vw,3.45rem)] font-bold leading-[1.05] tracking-normal text-[#061f3f] sm:whitespace-nowrap">
+              {section.title}
+            </h2>
+          </div>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {visibleProfiles.map((profile) => (
+            <ProfessorCard key={profile.slug} profile={profile} />
+          ))}
+        </div>
+
+        {profiles.length > 3 ? (
+          <div className="mt-9 flex justify-center gap-3" aria-label="Professor carousel position">
+            {profiles.slice(0, Math.min(profiles.length, 6)).map((profile, index) => (
+              <span
+                key={`${profile.slug}-dot`}
+                className={`h-3 w-3 rounded-full border transition ${
+                  index === 0 ? "border-[#064c78] bg-[#064c78]" : "border-slate-300 bg-white"
+                }`}
+                aria-hidden="true"
+              />
+            ))}
+          </div>
+        ) : null}
+      </Container>
+    </section>
   );
 }
 
@@ -1750,13 +1777,13 @@ function ProfessorCard({
 }: Readonly<{
   profile: FacultyProfile;
 }>) {
-  const photoUrl = getCmsAssetUrl(profile.photo_path ?? null);
+  const photoUrl = profile.photo_url ?? getCmsAssetUrl(profile.photo_path ?? null);
 
   return (
-    <article className="group overflow-hidden rounded-[24px] border border-slate-200/80 bg-white shadow-[0_14px_42px_rgba(2,6,23,0.06)] transition duration-300 hover:-translate-y-1.5 hover:border-yellow-300/60 hover:shadow-[0_24px_58px_rgba(2,6,23,0.13)]">
-      <div className="overflow-hidden">
+    <article className="group overflow-hidden rounded-[10px] border border-white bg-white shadow-[0_18px_44px_rgba(2,6,23,0.06)] transition duration-300 hover:-translate-y-1 hover:border-[#064c78] hover:shadow-[0_24px_60px_rgba(2,6,23,0.12)]">
+      <div className="overflow-hidden p-3 pb-0">
         <div
-          className="aspect-[4/5] bg-cover bg-center transition duration-700 group-hover:scale-105"
+          className="aspect-[1.08/1] rounded-[10px] bg-cover bg-center transition duration-700 group-hover:scale-105"
           style={{
             backgroundImage: photoUrl
               ? `url(${photoUrl})`
@@ -1765,23 +1792,13 @@ function ProfessorCard({
           aria-hidden="true"
         />
       </div>
-      <div className="p-6">
-        {profile.designation ? (
-          <p className="text-xs font-black uppercase tracking-[0.16em] text-blue-700">
-            {profile.designation}
-          </p>
-        ) : null}
-        <h3 className="mt-2 font-serif text-2xl font-bold leading-tight tracking-normal text-slate-950">
+      <div className="px-6 py-8 text-center transition duration-300 group-hover:bg-[#064c78] sm:px-8">
+        <h3 className="font-serif text-[clamp(1.55rem,4.8vw,1.7rem)] font-bold leading-tight tracking-normal text-[#061f3f] transition duration-300 group-hover:text-white sm:whitespace-nowrap">
           {profile.name}
         </h3>
-        {profile.department?.name ? (
-          <p className="mt-2 text-sm font-semibold text-slate-500">
-            {profile.department.name}
-          </p>
-        ) : null}
-        {profile.short_bio ? (
-          <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">
-            {getTextPreview(profile.short_bio, 120)}
+        {profile.designation ? (
+          <p className="mt-3 text-base leading-6 text-slate-500 transition duration-300 group-hover:text-blue-50">
+            {profile.designation}
           </p>
         ) : null}
       </div>

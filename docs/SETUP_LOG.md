@@ -1,5 +1,60 @@
 Date: 2026-07-01
 
+## Homepage Professors Section
+
+### Scope
+
+Added a CMS-driven homepage Professors section using the existing Public CMS -> Faculty Profiles module. No new Professor model, table, migration, Filament resource, or CMS module was created.
+
+### Files Changed
+
+- `backend/app/Http/Controllers/Api/V1/PublicCmsController.php`
+- `frontend/src/app/page.tsx`
+- `frontend/src/types/cms.ts`
+- `docs/SETUP_LOG.md`
+
+### CMS and API Source
+
+- Homepage Sections registry key: `professors`.
+- Homepage Sections controls only section registry/order/visibility and display heading fields: `key`, `title`, `subtitle`, `sort_order`, `is_enabled`.
+- Professor card data comes from existing published Faculty Profiles records only.
+- Existing Faculty Profiles fields used: `name`, `slug`, `designation`, `department`, `photo`, `short bio`, `email`, `phone`, `sort_order`, `is_published`.
+- Reused the existing `GET /api/v1/faculty-profiles` endpoint.
+- Faculty Profiles API now sorts published records by `sort_order` ascending, then newest `id` descending as fallback.
+- Faculty Profiles API includes a safe public `photo_url` while preserving the existing `photo_path`.
+
+### Frontend Behavior
+
+- Professors section renders only when Homepage Sections has enabled key `professors` and published Faculty Profiles exist.
+- Section title/subtitle come from Homepage Sections, for example `OIST Professors` and `OUR PROFESSORS`.
+- Desktop layout shows up to three professor cards in the reference-style row.
+- Tablet layout uses a clean two-column grid; mobile uses one card per row.
+- Cards use a cream/off-white section background, white rounded cards, top image, centered name/designation, and navy hover body state.
+- No fake professor names, images, social icons, or demo public content were added.
+
+### Admin Steps
+
+1. Homepage Sections -> add key `professors`.
+2. Title: `OIST Professors`.
+3. Subtitle: `OUR PROFESSORS`.
+4. Sort order: after OIST Lab.
+5. Is enabled: ON.
+6. Faculty Profiles -> add and publish faculty profiles.
+
+### Verification Results
+
+- `php artisan optimize:clear` passed.
+- `php artisan route:list --path=api/v1` passed and confirms `GET /api/v1/faculty-profiles` exists.
+- `php artisan test` passed: 43 tests, 292 assertions.
+- `npm run lint` passed.
+- `npm run build` passed.
+- Direct HTTP check for `http://localhost:3000` returns `500 Internal Server Error`.
+- Browser/Playwright responsive verification could not be completed because the in-app browser blocks access to `http://localhost:3000` by enterprise network policy. No alternate browser-control workaround was used.
+
+---
+
+Date: 2026-07-01
+
 ## OIST Lab Title Placement Fix
 
 ### Scope

@@ -30,6 +30,7 @@ use App\Models\SiteSetting;
 use App\Models\Video;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class PublicCmsController extends Controller
@@ -355,7 +356,7 @@ class PublicCmsController extends Controller
             ->published()
             ->with('department')
             ->orderBy('sort_order')
-            ->orderBy('name')
+            ->orderByDesc('id')
             ->paginate($this->perPage())
             ->through(fn (FacultyProfile $profile): array => $this->formatFacultyProfile($profile, true));
 
@@ -922,6 +923,7 @@ class PublicCmsController extends Controller
                     'slug' => $profile->department->slug,
                 ]
                 : null,
+            'photo_url' => $this->publicStorageUrl($profile->photo_path),
             'photo_path' => $profile->photo_path,
             'short_bio' => $profile->short_bio,
             'email' => $profile->email,
@@ -1044,6 +1046,25 @@ class PublicCmsController extends Controller
         }
 
         return Str::limit(trim(preg_replace('/\s+/', ' ', strip_tags($value))), 160);
+    }
+
+    private function publicStorageUrl(?string $path): ?string
+    {
+        if (! $path) {
+            return null;
+        }
+
+        if (Str::startsWith($path, ['http://', 'https://'])) {
+            return $path;
+        }
+
+        $normalizedPath = ltrim($path, '/');
+
+        if (Str::startsWith($normalizedPath, 'storage/')) {
+            return '/' . $normalizedPath;
+        }
+
+        return Storage::disk('public')->url($normalizedPath);
     }
 
     private function paginatedResponse(LengthAwarePaginator $paginator, string $message): JsonResponse
