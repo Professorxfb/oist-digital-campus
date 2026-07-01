@@ -72,6 +72,7 @@ export interface HomepageSection {
   button_text: string | null;
   button_url: string | null;
   sort_order: number;
+  is_enabled?: boolean;
   metadata: Record<string, unknown> & {
     gallery_images?: string[] | string | null;
     gallery_captions?: string[] | string | null;
@@ -85,6 +86,74 @@ export interface HomepageSection {
     features?: unknown;
     feature_list?: unknown;
   };
+}
+
+export interface HeroSectionContent {
+  title?: string | null;
+  subtitle?: string | null;
+  content?: string | null;
+  hero_image_path?: string | null;
+  video_path?: string | null;
+  video_url?: string | null;
+  button_text?: string | null;
+  button_url?: string | null;
+  secondary_button_text?: string | null;
+  secondary_button_url?: string | null;
+  sort_order?: number;
+}
+
+export interface AboutFeatureBullet {
+  title: string;
+  description?: string | null;
+}
+
+export interface AboutSectionContent {
+  title?: string | null;
+  subtitle?: string | null;
+  content?: string | null;
+  main_image_path?: string | null;
+  gallery_images?: string[] | null;
+  video_path?: string | null;
+  video_url?: string | null;
+  button_text?: string | null;
+  button_url?: string | null;
+  feature_bullets?: Array<string | AboutFeatureBullet> | null;
+  sort_order?: number;
+}
+
+export interface ChairmanMessageContent {
+  title?: string | null;
+  subtitle?: string | null;
+  chairman_name?: string | null;
+  chairman_designation?: string | null;
+  message?: string | null;
+  chairman_image_path?: string | null;
+  signature_image_path?: string | null;
+  quote_label?: string | null;
+  button_text?: string | null;
+  button_url?: string | null;
+  sort_order?: number;
+}
+
+export interface OistLabContent {
+  title?: string | null;
+  main_image_path?: string | null;
+  gallery_images?: string[] | null;
+  gallery_captions?: string[] | null;
+  sort_order?: number;
+}
+
+export interface CampusLifeSectionContent {
+  title?: string | null;
+  subtitle?: string | null;
+  description?: string | null;
+  image_path?: string | null;
+  video_path?: string | null;
+  video_url?: string | null;
+  gallery_images?: string[] | null;
+  button_text?: string | null;
+  button_url?: string | null;
+  sort_order?: number;
 }
 
 export type HeroFeatureCardIconKey =

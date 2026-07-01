@@ -13,22 +13,29 @@ import { SiteHeader } from "@/components/public-site/SiteHeader";
 import { resolveCmsAssetUrl } from "@/lib/api-client";
 import { formatDate, getCmsAssetUrl, getTextPreview } from "@/lib/cms-display";
 import {
+  getAboutSection,
   getAcademicPrograms,
+  getChairmanMessage,
   getEvents,
   getFacilities,
   getFacultyProfiles,
   getGalleryAlbums,
+  getHeroSection,
   getHeroFeatureCards,
   getHomepageSections,
   getMenuByLocation,
   getNewsPosts,
   getNotices,
+  getOistLab,
   getScholarships,
   getSiteSettings,
   getVideos,
 } from "@/services/cms";
 import type {
+  AboutFeatureBullet,
+  AboutSectionContent,
   AcademicProgram,
+  ChairmanMessageContent,
   Event,
   Facility,
   FacultyProfile,
@@ -37,6 +44,7 @@ import type {
   HomepageSection,
   NewsPost,
   Notice,
+  OistLabContent,
   Scholarship,
   Video,
 } from "@/types/cms";
@@ -102,8 +110,12 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Home() {
   const [
     siteSettings,
+    heroContent,
     heroFeatureCards,
     homepageSections,
+    aboutContent,
+    chairmanMessage,
+    oistLab,
     headerMenu,
     footerMenu,
     quickLinks,
@@ -118,8 +130,12 @@ export default async function Home() {
     videos,
   ] = await Promise.all([
     getSiteSettings(),
+    getHeroSection(),
     getHeroFeatureCards(),
     getHomepageSections(),
+    getAboutSection(),
+    getChairmanMessage(),
+    getOistLab(),
     getMenuByLocation("header"),
     getMenuByLocation("footer"),
     getMenuByLocation("quick_links"),
@@ -201,10 +217,10 @@ export default async function Home() {
     ? getCommunityVoices(communityVoicesSection)
     : [];
   const nullableSectionBlocks: Array<SectionBlock | null> = [
-    aboutSection
+    aboutSection && aboutContent.data
       ? {
           section: aboutSection,
-          node: <AboutSection section={aboutSection} />,
+          node: <AboutSection content={aboutContent.data} />,
         }
       : null,
     academicsProgramsSection && academicPrograms.data.length > 0
@@ -229,16 +245,20 @@ export default async function Home() {
           ),
         }
       : null,
-    chairmanSection
+    chairmanSection && chairmanMessage.data
       ? {
           section: chairmanSection,
-          node: <ChairmanMessageSection section={chairmanSection} />,
+          node: (
+            <ChairmanMessageSection
+              content={chairmanMessage.data}
+            />
+          ),
         }
       : null,
-    oistLabSection
+    oistLabSection && oistLab.data
       ? {
           section: oistLabSection,
-          node: <OistLabSection section={oistLabSection} />,
+          node: <OistLabSection content={oistLab.data} />,
         }
       : null,
     campusLifeSection && (galleryAlbums.data.length > 0 || videos.data.length > 0)
@@ -350,7 +370,7 @@ export default async function Home() {
       <SiteHeader settings={settings} menuItems={headerMenu.data.items} />
       <NoticeStrip notices={notices.data} label={noticeStripSection?.title} />
       <main>
-        <CMSHero heroSection={heroSection} />
+        <CMSHero heroContent={heroContent.data} heroSection={heroSection} />
         {heroFeatureCards.data.length > 0 ? (
           <HeroFeatureCards cards={heroFeatureCards.data} />
         ) : null}
@@ -606,42 +626,33 @@ function renderHeroFeatureIconPath(iconKey: string): React.ReactNode {
 }
 
 function AboutSection({
-  section,
+  content,
 }: Readonly<{
-  section: HomepageSection;
+  content: AboutSectionContent | null;
 }>) {
-  const imageUrl = getCmsAssetUrl(section.image_path);
-  const uploadedVideoUrl = getCmsAssetUrl(section.video_path);
-  const externalVideoUrl = getHomepageSectionExternalVideoUrl(section);
+  if (!content?.title) {
+    return null;
+  }
+
+  const imageUrl = getCmsAssetUrl(content.main_image_path ?? null);
+  const uploadedVideoUrl = getCmsAssetUrl(content.video_path ?? null);
+  const externalVideoUrl = content.video_url?.trim() || null;
   const youtubeEmbedUrl = externalVideoUrl ? getYouTubeEmbedUrl(externalVideoUrl) : null;
   const videoThumbnailUrl =
-    getCmsAssetUrl(
-      getMetadataText(section.metadata, [
-        "video_thumbnail_path",
-        "video_thumbnail",
-        "thumbnail_path",
-        "thumbnail",
-      ]) ?? null,
-    ) ??
     (externalVideoUrl ? getYouTubeThumbnailUrl(externalVideoUrl) : null) ??
     imageUrl;
-  const imageUrls = getHomepageSectionGalleryImages(section)
+  const imageUrls = (content.gallery_images ?? [])
     .map((path) => getCmsAssetUrl(path))
     .filter((url): url is string => Boolean(url));
   const mediaImages = uniqueValues([imageUrl, ...imageUrls].filter((url): url is string => Boolean(url)));
-  const featureItems = getAboutFeatureItems(section);
-  const mediaBadge = getMetadataText(section.metadata, ["badge_text", "media_badge", "stat_text"]);
-  const description = getTextPreview(section.content, 360);
+  const featureItems = getAboutFeatureItems(content.feature_bullets ?? []);
+  const description = getTextPreview(content.content, 360);
   const hasVideo = Boolean(youtubeEmbedUrl || uploadedVideoUrl || externalVideoUrl);
   const hasMediaImages = mediaImages.length > 0;
   const featureVideoGridClassName =
     featureItems.length > 0 && hasVideo
       ? "mt-7 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(260px,340px)] lg:items-center xl:gap-6"
       : "mt-7 grid gap-5";
-
-  if (!section.title) {
-    return null;
-  }
 
   return (
     <section className="relative overflow-hidden bg-[#f7f3ea] py-16 sm:py-22 lg:py-28">
@@ -656,13 +667,13 @@ function AboutSection({
               hasMediaImages ? "lg:bg-transparent lg:p-0 lg:shadow-none" : "max-w-4xl"
             }`}
           >
-            {section.subtitle ? (
+            {content.subtitle ? (
               <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-800">
-                {section.subtitle}
+                {content.subtitle}
               </p>
             ) : null}
             <h2 className="mt-3 max-w-3xl font-serif text-[clamp(2.15rem,6vw,3.2rem)] font-bold leading-[1.08] tracking-normal text-[#061f3f]">
-              {section.title}
+              {content.title}
             </h2>
             {description ? (
               <p className="mt-5 max-w-3xl text-base leading-8 text-slate-600 sm:text-[17px]">
@@ -707,17 +718,16 @@ function AboutSection({
                 ) : null}
               </div>
             ) : null}
-            {section.button_text && section.button_url ? (
+            {content.button_text && content.button_url ? (
               <div className="mt-8">
-                <CTAButton href={section.button_url}>
-                  {section.button_text}
+                <CTAButton href={content.button_url}>
+                  {content.button_text}
                 </CTAButton>
               </div>
             ) : null}
           </div>
           {hasMediaImages ? (
             <AboutMediaCollage
-              badge={mediaBadge}
               imageUrls={mediaImages}
             />
           ) : null}
@@ -1398,30 +1408,28 @@ function isExternalNoticeHref(href: string): boolean {
 }
 
 function ChairmanMessageSection({
-  section,
+  content,
 }: Readonly<{
-  section: HomepageSection;
+  content: ChairmanMessageContent | null;
 }>) {
-  const photoUrl = getCmsAssetUrl(section.image_path);
-  const signatureUrl = getCmsAssetUrl(
-    getMetadataText(section.metadata, ["signature_image", "signature_path"]) ?? null,
-  );
-  const chairmanName = getMetadataText(section.metadata, ["chairman_name", "name"]);
-  const chairmanDesignation = getMetadataText(section.metadata, [
-    "chairman_designation",
-    "designation",
-    "role",
-  ]);
-  const quoteLabel = getMetadataText(section.metadata, ["quote_label"]);
-  const title = section.title?.trim() || "Message from the Chairman";
-  const eyebrow = section.subtitle?.trim() || "Chairman Message";
-  const message = getTextPreview(section.content, 620);
-  const hasAction = Boolean(section.button_text && section.button_url);
+  if (!content) {
+    return null;
+  }
+
+  const photoUrl = getCmsAssetUrl(content.chairman_image_path ?? null);
+  const signatureUrl = getCmsAssetUrl(content.signature_image_path ?? null);
+  const chairmanName = content.chairman_name?.trim();
+  const chairmanDesignation = content.chairman_designation?.trim();
+  const quoteLabel = content.quote_label?.trim();
+  const title = content.title?.trim();
+  const eyebrow = content.subtitle?.trim();
+  const message = getTextPreview(content.message, 620);
+  const hasAction = Boolean(content.button_text && content.button_url);
   const hasCmsContent = Boolean(
-    section.title ||
-      section.subtitle ||
-      section.content ||
-      section.image_path ||
+    title ||
+      eyebrow ||
+      content.message ||
+      content.chairman_image_path ||
       chairmanName ||
       chairmanDesignation ||
       signatureUrl ||
@@ -1467,13 +1475,17 @@ function ChairmanMessageSection({
             <div className="relative">
               <div className="mb-5 flex items-center gap-3">
                 <span className="h-px w-12 bg-yellow-400" aria-hidden="true" />
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-800">
-                  {eyebrow}
-                </p>
+                {eyebrow ? (
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-800">
+                    {eyebrow}
+                  </p>
+                ) : null}
               </div>
-              <h2 className="max-w-2xl font-serif text-[clamp(2.15rem,6vw,3.35rem)] font-bold leading-[1.06] tracking-normal text-[#061f3f]">
-                {title}
-              </h2>
+              {title ? (
+                <h2 className="max-w-2xl font-serif text-[clamp(2.15rem,6vw,3.35rem)] font-bold leading-[1.06] tracking-normal text-[#061f3f]">
+                  {title}
+                </h2>
+              ) : null}
               {quoteLabel ? (
                 <p className="mt-3 text-sm font-bold uppercase tracking-[0.14em] text-yellow-700">
                   {quoteLabel}
@@ -1508,13 +1520,13 @@ function ChairmanMessageSection({
                 </div>
               ) : null}
 
-              {section.button_text && section.button_url ? (
+              {content.button_text && content.button_url ? (
                 <div className="mt-8">
                   <a
-                    href={section.button_url}
+                    href={content.button_url}
                     className="group inline-flex items-center rounded-[6px] bg-[#061f3f] px-6 py-3 text-sm font-black uppercase tracking-[0.08em] text-white shadow-[0_14px_34px_rgba(2,6,23,0.14)] transition duration-300 hover:-translate-y-0.5 hover:bg-yellow-400 hover:text-[#061f3f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-400"
                   >
-                    {section.button_text}
+                    {content.button_text}
                     <span className="ml-3 h-px w-6 bg-current transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
                   </a>
                 </div>
@@ -1528,12 +1540,16 @@ function ChairmanMessageSection({
 }
 
 function OistLabSection({
-  section,
+  content,
 }: Readonly<{
-  section: HomepageSection;
+  content: OistLabContent | null;
 }>) {
-  const galleryImages = getHomepageSectionGalleryImages(section);
-  const images = getOistLabImages(section, galleryImages);
+  if (!content) {
+    return null;
+  }
+
+  const galleryImages = content.gallery_images ?? [];
+  const images = getOistLabImages(content);
 
   if (images.length === 0) {
     return null;
@@ -1543,7 +1559,7 @@ function OistLabSection({
     <OistLabShowcase
       images={images}
       showThumbnails={galleryImages.length > 0 && images.length > 1}
-      title={section.title}
+      title={content.title ?? null}
     />
   );
 }
@@ -2057,12 +2073,11 @@ type AboutFeatureItem = {
 };
 
 function getOistLabImages(
-  section: HomepageSection,
-  galleryImages: string[],
+  content: OistLabContent,
 ): OistLabImage[] {
-  const captions = getHomepageSectionGalleryCaptions(section);
+  const captions = content.gallery_captions ?? [];
   const imagePaths = uniqueValues(
-    [section.image_path, ...galleryImages]
+    [content.main_image_path, ...(content.gallery_images ?? [])]
       .map((value) => (typeof value === "string" ? value.trim() : ""))
       .filter(Boolean),
   );
@@ -2076,7 +2091,7 @@ function getOistLabImages(
       }
 
       const caption = captions[index]?.trim();
-      const title = section.title?.trim();
+      const title = content.title?.trim();
 
       return {
         src,
@@ -2087,68 +2102,7 @@ function getOistLabImages(
     .filter((image): image is OistLabImage => image !== null);
 }
 
-function getHomepageSectionGalleryImages(section: HomepageSection): string[] {
-  const rawImages =
-    section.metadata.gallery_images ??
-    section.metadata.images ??
-    section.metadata.media_images;
-
-  if (Array.isArray(rawImages)) {
-    return rawImages
-      .map((value) => (typeof value === "string" ? value.trim() : ""))
-      .filter(Boolean);
-  }
-
-  if (typeof rawImages === "string" && rawImages.trim().length > 0) {
-    return rawImages
-      .split(",")
-      .map((value) => value.trim())
-      .filter(Boolean);
-  }
-
-  return [];
-}
-
-function getHomepageSectionGalleryCaptions(section: HomepageSection): string[] {
-  const rawCaptions =
-    section.metadata.gallery_captions ??
-    section.metadata.captions ??
-    section.metadata.image_captions;
-
-  if (Array.isArray(rawCaptions)) {
-    return rawCaptions
-      .map((value) => (typeof value === "string" ? value.trim() : ""))
-      .filter(Boolean);
-  }
-
-  if (typeof rawCaptions === "string" && rawCaptions.trim().length > 0) {
-    return rawCaptions
-      .split(/\r?\n|\|/)
-      .map((value) => value.trim())
-      .filter(Boolean);
-  }
-
-  return [];
-}
-
-function getHomepageSectionExternalVideoUrl(section: HomepageSection): string | null {
-  return (
-    getMetadataText(section.metadata, ["video_url", "youtube_url", "embed_url", "external_video_url"]) ??
-    null
-  );
-}
-
-function getAboutFeatureItems(section: HomepageSection): AboutFeatureItem[] {
-  const rawItems =
-    section.metadata.features ??
-    section.metadata.feature_list ??
-    section.metadata.bullets ??
-    section.metadata.items;
-
-  if (!Array.isArray(rawItems)) {
-    return [];
-  }
-
+function getAboutFeatureItems(rawItems: Array<string | AboutFeatureBullet>): AboutFeatureItem[] {
   return rawItems
     .map((item): AboutFeatureItem | null => {
       if (typeof item === "string" && item.trim().length > 0) {
@@ -2159,8 +2113,7 @@ function getAboutFeatureItems(section: HomepageSection): AboutFeatureItem[] {
         return null;
       }
 
-      const record = item as Record<string, unknown>;
-      const title = getMetadataText(record, ["title", "label", "heading", "name", "text"]);
+      const title = item.title?.trim();
 
       if (!title) {
         return null;
@@ -2168,7 +2121,7 @@ function getAboutFeatureItems(section: HomepageSection): AboutFeatureItem[] {
 
       return {
         title,
-        description: getMetadataText(record, ["description", "body", "content", "summary"]),
+        description: item.description?.trim() || undefined,
       };
     })
     .filter((item): item is AboutFeatureItem => item !== null);

@@ -9,8 +9,6 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
@@ -35,6 +33,7 @@ class HomepageSectionResource extends Resource
         return $schema
             ->components([
                 Section::make('Section Content')
+                    ->description('Homepage Sections controls section order and visibility only. Section-specific content should be managed from the related Public CMS module.')
                     ->schema([
                         TextInput::make('key')
                             ->required()
@@ -42,107 +41,9 @@ class HomepageSectionResource extends Resource
                             ->maxLength(255)
                             ->helperText('Use lowercase letters, numbers, underscores, or hyphens.'),
                         TextInput::make('title')->maxLength(255),
-                        TextInput::make('subtitle')->maxLength(255),
-                        Textarea::make('content')->rows(5)->columnSpanFull(),
-                    ])->columns(2),
-                Section::make('Media and Action')
-                    ->schema([
-                        FileUpload::make('image_path')
-                            ->label('Image')
-                            ->disk('public')
-                            ->directory('homepage-sections/images')
-                            ->visibility('public')
-                            ->image()
-                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
-                            ->maxSize(4096)
-                            ->imagePreviewHeight('180')
-                            ->previewable()
-                            ->openable()
-                            ->downloadable()
-                            ->deletable()
-                            ->nullable(),
-                        FileUpload::make('video_path')
-                            ->label('Video')
-                            ->disk('public')
-                            ->directory('homepage-sections/videos')
-                            ->visibility('public')
-                            ->acceptedFileTypes(['video/mp4', 'video/webm'])
-                            ->maxSize(51200)
-                            ->previewable()
-                            ->openable()
-                            ->downloadable()
-                            ->deletable()
-                            ->nullable(),
-                        TextInput::make('button_text')->maxLength(255),
-                        TextInput::make('button_url')->maxLength(255),
-                    ])->columns(2),
-                Section::make('Additional CMS Media')
-                    ->description('Optional media for richer section layouts. Existing main image/video fields continue to work as fallbacks.')
-                    ->schema([
-                        FileUpload::make('metadata.gallery_images')
-                            ->label('Gallery Images')
-                            ->disk('public')
-                            ->directory('homepage-sections/gallery')
-                            ->visibility('public')
-                            ->image()
-                            ->multiple()
-                            ->reorderable()
-                            ->appendFiles()
-                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
-                            ->maxSize(4096)
-                            ->maxFiles(8)
-                            ->imagePreviewHeight('140')
-                            ->previewable()
-                            ->openable()
-                            ->downloadable()
-                            ->deletable()
-                            ->nullable()
-                            ->columnSpanFull(),
-                        Textarea::make('metadata.gallery_captions')
-                            ->label('Gallery Captions')
-                            ->rows(3)
-                            ->helperText('Optional captions for gallery images. Use one caption per line, matching the image order.')
-                            ->columnSpanFull(),
-                        TextInput::make('metadata.video_url')
-                            ->label('External Video URL')
-                            ->url()
-                            ->maxLength(2048)
-                            ->helperText('Use a YouTube or other public video URL when the section needs an embedded video.'),
-                    ])->columns(2),
-                Section::make('Chairman Message Metadata')
-                    ->description('Optional fields used by the chairman_message homepage section.')
-                    ->schema([
-                        TextInput::make('metadata.chairman_name')
-                            ->label('Chairman Name')
+                        TextInput::make('subtitle')
+                            ->label('Subtitle / Short Label')
                             ->maxLength(255),
-                        TextInput::make('metadata.chairman_designation')
-                            ->label('Chairman Designation')
-                            ->maxLength(255),
-                        FileUpload::make('metadata.signature_image')
-                            ->label('Signature Image')
-                            ->disk('public')
-                            ->directory('homepage-sections/signatures')
-                            ->visibility('public')
-                            ->image()
-                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                            ->maxSize(2048)
-                            ->imagePreviewHeight('90')
-                            ->previewable()
-                            ->openable()
-                            ->downloadable()
-                            ->deletable()
-                            ->nullable(),
-                        TextInput::make('metadata.quote_label')
-                            ->label('Quote Label')
-                            ->maxLength(255)
-                            ->helperText('Optional small label near the quote icon.'),
-                        TextInput::make('metadata.layout_variant')
-                            ->label('Layout Variant')
-                            ->maxLength(80)
-                            ->helperText('Optional frontend layout hint, for example: default or compact.'),
-                    ])->columns(2),
-                Section::make('Display Rules')
-                    ->schema([
                         TextInput::make('sort_order')
                             ->numeric()
                             ->minValue(0)

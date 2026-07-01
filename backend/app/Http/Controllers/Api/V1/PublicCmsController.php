@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\AboutSection;
 use App\Models\AcademicProgram;
+use App\Models\CampusLifeSection;
+use App\Models\ChairmanMessage;
 use App\Models\Department;
 use App\Models\Download;
 use App\Models\Event;
@@ -12,6 +15,7 @@ use App\Models\FAQ;
 use App\Models\FacultyProfile;
 use App\Models\GalleryAlbum;
 use App\Models\GalleryItem;
+use App\Models\HeroSection;
 use App\Models\HeroFeatureCard;
 use App\Models\HomepageSection;
 use App\Models\InstitutionalPage;
@@ -20,6 +24,7 @@ use App\Models\Menu;
 use App\Models\MenuItem;
 use App\Models\NewsPost;
 use App\Models\Notice;
+use App\Models\OistLab;
 use App\Models\Scholarship;
 use App\Models\SiteSetting;
 use App\Models\Video;
@@ -78,10 +83,76 @@ class PublicCmsController extends Controller
                 'button_text' => $section->button_text,
                 'button_url' => $section->button_url,
                 'sort_order' => $section->sort_order,
+                'is_enabled' => $section->is_enabled,
                 'metadata' => (object) ($section->metadata ?? []),
             ]);
 
         return $this->publicResponse($sections, 'Homepage sections retrieved.');
+    }
+
+    public function heroSection(): JsonResponse
+    {
+        $section = HeroSection::query()
+            ->published()
+            ->ordered()
+            ->first();
+
+        return $this->publicResponse(
+            $section ? $this->formatHeroSection($section) : null,
+            'Hero section retrieved.',
+        );
+    }
+
+    public function aboutSection(): JsonResponse
+    {
+        $section = AboutSection::query()
+            ->published()
+            ->ordered()
+            ->first();
+
+        return $this->publicResponse(
+            $section ? $this->formatAboutSection($section) : null,
+            'About section retrieved.',
+        );
+    }
+
+    public function chairmanMessage(): JsonResponse
+    {
+        $message = ChairmanMessage::query()
+            ->published()
+            ->ordered()
+            ->first();
+
+        return $this->publicResponse(
+            $message ? $this->formatChairmanMessage($message) : null,
+            'Chairman message retrieved.',
+        );
+    }
+
+    public function oistLab(): JsonResponse
+    {
+        $lab = OistLab::query()
+            ->published()
+            ->ordered()
+            ->first();
+
+        return $this->publicResponse(
+            $lab ? $this->formatOistLab($lab) : null,
+            'OIST Lab retrieved.',
+        );
+    }
+
+    public function campusLifeSection(): JsonResponse
+    {
+        $section = CampusLifeSection::query()
+            ->published()
+            ->ordered()
+            ->first();
+
+        return $this->publicResponse(
+            $section ? $this->formatCampusLifeSection($section) : null,
+            'Campus Life section retrieved.',
+        );
     }
 
     public function heroFeatureCards(): JsonResponse
@@ -613,6 +684,84 @@ class PublicCmsController extends Controller
                 ->values()
                 ->all(),
         ];
+    }
+
+    private function formatHeroSection(HeroSection $section): array
+    {
+        return array_filter([
+            'title' => $section->title,
+            'subtitle' => $section->subtitle,
+            'content' => $section->content,
+            'hero_image_path' => $section->hero_image_path,
+            'video_path' => $section->video_path,
+            'video_url' => $section->video_url,
+            'button_text' => $section->button_text,
+            'button_url' => $section->button_url,
+            'secondary_button_text' => $section->secondary_button_text,
+            'secondary_button_url' => $section->secondary_button_url,
+            'sort_order' => $section->sort_order,
+        ], fn (mixed $value): bool => $value !== null);
+    }
+
+    private function formatAboutSection(AboutSection $section): array
+    {
+        return array_filter([
+            'title' => $section->title,
+            'subtitle' => $section->subtitle,
+            'content' => $section->content,
+            'main_image_path' => $section->main_image_path,
+            'gallery_images' => $section->gallery_images ?? [],
+            'video_path' => $section->video_path,
+            'video_url' => $section->video_url,
+            'button_text' => $section->button_text,
+            'button_url' => $section->button_url,
+            'feature_bullets' => $section->feature_bullets ?? [],
+            'sort_order' => $section->sort_order,
+        ], fn (mixed $value): bool => $value !== null);
+    }
+
+    private function formatChairmanMessage(ChairmanMessage $message): array
+    {
+        return array_filter([
+            'title' => $message->title,
+            'subtitle' => $message->subtitle,
+            'chairman_name' => $message->chairman_name,
+            'chairman_designation' => $message->chairman_designation,
+            'message' => $message->message,
+            'chairman_image_path' => $message->chairman_image_path,
+            'signature_image_path' => $message->signature_image_path,
+            'quote_label' => $message->quote_label,
+            'button_text' => $message->button_text,
+            'button_url' => $message->button_url,
+            'sort_order' => $message->sort_order,
+        ], fn (mixed $value): bool => $value !== null);
+    }
+
+    private function formatOistLab(OistLab $lab): array
+    {
+        return array_filter([
+            'title' => $lab->title,
+            'main_image_path' => $lab->main_image_path,
+            'gallery_images' => $lab->gallery_images ?? [],
+            'gallery_captions' => $lab->gallery_captions ?? [],
+            'sort_order' => $lab->sort_order,
+        ], fn (mixed $value): bool => $value !== null);
+    }
+
+    private function formatCampusLifeSection(CampusLifeSection $section): array
+    {
+        return array_filter([
+            'title' => $section->title,
+            'subtitle' => $section->subtitle,
+            'description' => $section->description,
+            'image_path' => $section->image_path,
+            'video_path' => $section->video_path,
+            'video_url' => $section->video_url,
+            'gallery_images' => $section->gallery_images ?? [],
+            'button_text' => $section->button_text,
+            'button_url' => $section->button_url,
+            'sort_order' => $section->sort_order,
+        ], fn (mixed $value): bool => $value !== null);
     }
 
     private function formatNotice(Notice $notice, bool $includeBody = false): array

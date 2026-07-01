@@ -7,6 +7,11 @@ Route::prefix('v1')->group(function (): void {
     Route::get('search', [PublicCmsController::class, 'search']);
     Route::get('site-settings', [PublicCmsController::class, 'siteSettings']);
     Route::get('homepage-sections', [PublicCmsController::class, 'homepageSections']);
+    Route::get('hero-section', [PublicCmsController::class, 'heroSection']);
+    Route::get('about-section', [PublicCmsController::class, 'aboutSection']);
+    Route::get('chairman-message', [PublicCmsController::class, 'chairmanMessage']);
+    Route::get('oist-lab', [PublicCmsController::class, 'oistLab']);
+    Route::get('campus-life-section', [PublicCmsController::class, 'campusLifeSection']);
     Route::get('hero-feature-cards', [PublicCmsController::class, 'heroFeatureCards']);
     Route::get('menus/{location}', [PublicCmsController::class, 'menu']);
     Route::get('notices', [PublicCmsController::class, 'notices']);

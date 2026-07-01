@@ -1,7 +1,10 @@
 import { fetchCmsApi } from "@/lib/api-client";
 import type {
   ApiFetchResult,
+  AboutSectionContent,
   AcademicProgram,
+  CampusLifeSectionContent,
+  ChairmanMessageContent,
   Department,
   Download,
   Event,
@@ -9,6 +12,7 @@ import type {
   FAQ,
   FacultyProfile,
   GalleryAlbum,
+  HeroSectionContent,
   HeroFeatureCard,
   HomepageSection,
   InstitutionalPage,
@@ -18,6 +22,7 @@ import type {
   MenuLocation,
   NewsPost,
   Notice,
+  OistLabContent,
   Scholarship,
   SearchResult,
   SiteSetting,
@@ -59,6 +64,28 @@ export function getHomepageSections(): Promise<
   ApiFetchResult<HomepageSection[]>
 > {
   return fetchCmsApi<HomepageSection[]>("homepage-sections", []);
+}
+
+export function getHeroSection(): Promise<ApiFetchResult<HeroSectionContent | null>> {
+  return fetchCmsApi<HeroSectionContent | null>("hero-section", null);
+}
+
+export function getAboutSection(): Promise<ApiFetchResult<AboutSectionContent | null>> {
+  return fetchCmsApi<AboutSectionContent | null>("about-section", null);
+}
+
+export function getChairmanMessage(): Promise<ApiFetchResult<ChairmanMessageContent | null>> {
+  return fetchCmsApi<ChairmanMessageContent | null>("chairman-message", null);
+}
+
+export function getOistLab(): Promise<ApiFetchResult<OistLabContent | null>> {
+  return fetchCmsApi<OistLabContent | null>("oist-lab", null);
+}
+
+export function getCampusLifeSection(): Promise<
+  ApiFetchResult<CampusLifeSectionContent | null>
+> {
+  return fetchCmsApi<CampusLifeSectionContent | null>("campus-life-section", null);
 }
 
 export function getHeroFeatureCards(): Promise<

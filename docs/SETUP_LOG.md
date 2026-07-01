@@ -1,3 +1,151 @@
+Date: 2026-07-01
+
+## Homepage Section Registry Cleanup and Public CMS Ownership Rule
+
+### Permanent Rule
+
+Homepage Sections is only a homepage section registry/layout manager. It controls section key, title, subtitle, sort order, and enabled status. Do not add section-specific content/media/function fields to the generic Homepage Sections form. Every public homepage section, existing or future, must use a dedicated Public CMS resource/module according to that section's own features/functions. When adding a new section in the future, first create the HomepageSection registry record, then create/reuse a section-specific CMS resource for content. The frontend must render the section only when the registry is enabled and the section-specific content exists.
+
+### Scope
+
+Cleaned up Admin -> Public CMS -> Homepage Sections so it no longer acts as a universal content editor. Added dedicated Public CMS modules and public API endpoints for the completed homepage sections whose content had been stored in `homepage_sections`: Hero Section, About Section, Chairman Message, and OIST Lab. Added a Campus Life CMS module for future use, without adding a new frontend Campus Life section.
+
+### Files Changed
+
+- `backend/app/Filament/Resources/HomepageSections/HomepageSectionResource.php`
+- `backend/app/Http/Controllers/Api/V1/PublicCmsController.php`
+- `backend/routes/api.php`
+- `backend/tests/Feature/PublicCmsApiTest.php`
+- `frontend/src/app/page.tsx`
+- `frontend/src/components/public-site/CMSHero.tsx`
+- `frontend/src/services/cms.ts`
+- `frontend/src/types/cms.ts`
+- `docs/SETUP_LOG.md`
+
+### Files Created
+
+- `backend/database/migrations/2026_07_01_000001_create_homepage_content_sections_table.php`
+- `backend/app/Models/HeroSection.php`
+- `backend/app/Models/AboutSection.php`
+- `backend/app/Models/ChairmanMessage.php`
+- `backend/app/Models/OistLab.php`
+- `backend/app/Models/CampusLifeSection.php`
+- `backend/app/Policies/HeroSectionPolicy.php`
+- `backend/app/Policies/AboutSectionPolicy.php`
+- `backend/app/Policies/ChairmanMessagePolicy.php`
+- `backend/app/Policies/OistLabPolicy.php`
+- `backend/app/Policies/CampusLifeSectionPolicy.php`
+- `backend/app/Filament/Resources/HeroSections/HeroSectionResource.php`
+- `backend/app/Filament/Resources/AboutSections/AboutSectionResource.php`
+- `backend/app/Filament/Resources/ChairmanMessages/ChairmanMessageResource.php`
+- `backend/app/Filament/Resources/OistLabs/OistLabResource.php`
+- `backend/app/Filament/Resources/CampusLifeSections/CampusLifeSectionResource.php`
+- Matching `Manage*` Filament pages for each new resource.
+
+### Homepage Sections Fields Kept
+
+- `key`
+- `title`
+- `subtitle`
+- `sort_order`
+- `is_enabled`
+
+### Homepage Sections Fields Hidden From Generic Admin Form
+
+- `content`
+- `image_path`
+- `video_path`
+- `button_text`
+- `button_url`
+- `metadata.gallery_images`
+- `metadata.gallery_captions`
+- `metadata.video_url`
+- `metadata.chairman_name`
+- `metadata.chairman_designation`
+- `metadata.signature_image`
+- `metadata.quote_label`
+- `metadata.layout_variant`
+- Any future section-specific media/content/function fields.
+
+The database columns and API compatibility fields were not deleted.
+
+### Official Section Ownership Map
+
+- Homepage registry: Public CMS -> Homepage Sections
+- Hero main content: Public CMS -> Hero Section
+- Hero cards: Public CMS -> Hero Feature Cards
+- About: Public CMS -> About Section
+- Academics & Programs: Public CMS -> Academic Programs
+- Latest Notices: Public CMS -> Notices
+- Departments: Public CMS -> Departments
+- Scholarships: Public CMS -> Scholarships
+- Facilities: Public CMS -> Facilities
+- Chairman Message: Public CMS -> Chairman Message
+- OIST Lab: Public CMS -> OIST Lab
+- Campus Life: Public CMS -> Campus Life
+- Community Voices: Public CMS -> Community Voices / Testimonials
+- Professors: Public CMS -> Faculty Profiles / Professors
+- News: Public CMS -> News Posts
+- Events: Public CMS -> Events
+- Gallery: Public CMS -> Gallery Albums / Gallery Items
+- Videos: Public CMS -> Videos
+- Menus: Menus / Menu Items
+- Footer/global brand/contact: Site Settings
+
+### New/Reused Public CMS Resources
+
+- Created: Hero Section, About Section, Chairman Message, OIST Lab, Campus Life.
+- Reused: Hero Feature Cards, Academic Programs, Notices, Departments, Scholarships, Facilities, News Posts, Events, Faculty Profiles, Leadership Profiles, Gallery Albums, Gallery Items, Videos, Site Settings, Menus, and Menu Items.
+
+### API Endpoints
+
+- Added `GET /api/v1/hero-section`
+- Added `GET /api/v1/about-section`
+- Added `GET /api/v1/chairman-message`
+- Added `GET /api/v1/oist-lab`
+- Added `GET /api/v1/campus-life-section`
+- Kept `GET /api/v1/homepage-sections` backward compatible and added `is_enabled` to the registry response.
+
+All new endpoints return only the first published/active record ordered by `sort_order`, without exposing model IDs or timestamps.
+
+### Frontend Rendering Rules
+
+- Hero renders only when enabled `homepage_sections.key=hero` exists and published Hero Section content exists.
+- About renders only when enabled `homepage_sections.key=about/about_intro/institution_intro` exists and published About Section content exists.
+- Chairman Message renders only when enabled `homepage_sections.key=chairman_message` exists and published Chairman Message content exists.
+- OIST Lab renders only when enabled `homepage_sections.key=oist_lab` exists and published OIST Lab content exists with a usable image.
+- Academic Programs and Latest Notices continue to use their existing section-specific APIs.
+- Completed frontend visuals were not redesigned.
+- No hard-coded public demo content was added.
+
+### Data Safety
+
+The migration creates new section-specific tables and copies existing matching `homepage_sections` content into those tables when present. It does not delete homepage section columns, rows, media paths, metadata, or existing public CMS records.
+
+### Verification Results
+
+- `php -l` passed for all new models, new Filament resources, the updated API controller, and the new migration.
+- `php artisan route:list --path=api/v1` passed and showed 34 API v1 routes, including the five new section-specific endpoints.
+- `php artisan optimize:clear` partially ran, but failed on cache clearing because MySQL at `127.0.0.1:3306` refused the connection.
+- `php artisan migrate --no-interaction` could not run because MySQL at `127.0.0.1:3306` refused the connection.
+- `php artisan test` began, then several feature groups failed and the process hung while using the configured MySQL test database; it was stopped by ending only the specific `php artisan test` process.
+- `php artisan test --filter=PublicCmsApiTest` also hung without output while using the configured MySQL test database and was stopped by ending only the specific PHP test process.
+- A temporary process-level SQLite override for `php artisan test --filter=PublicCmsApiTest` failed immediately because this PHP build does not have the SQLite PDO driver (`could not find driver`).
+- `npm run lint` passed.
+- `npm run build` passed. The build logged repeated `ECONNREFUSED 127.0.0.1:8000` fetch errors because the Laravel API server was not running, but the frontend compiled and generated successfully with safe empty fallbacks.
+
+### Follow-Up Needed
+
+- Start MySQL, then run `php artisan optimize:clear`, `php artisan migrate --no-interaction`, and `php artisan test --filter=PublicCmsApiTest`. Alternatively, enable the PHP SQLite PDO driver before using SQLite-backed test overrides.
+- After migration, verify the Filament admin screens manually:
+  - Homepage Sections shows only key, title, subtitle, sort order, and enabled status.
+  - Hero Section does not show Chairman/OIST Lab fields.
+  - About Section does not show Chairman/OIST Lab-only fields.
+  - Chairman Message does not show OIST Lab gallery fields.
+  - OIST Lab does not show button/content/body fields.
+
+---
+
 # OIST Digital Campus Platform - Setup Log
 
 Date: 2026-06-28
