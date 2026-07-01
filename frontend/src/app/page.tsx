@@ -1541,11 +1541,19 @@ function OistLabSection({
   }
 
   return (
-    <OistLabShowcase
-      images={images}
-      showThumbnails={galleryImages.length > 0 && images.length > 1}
-      title={content.title ?? null}
-    />
+    <section className="bg-[#f7f3ea] py-16 sm:py-20 lg:py-24">
+      {content.title ? (
+        <Container className="mb-8 text-center sm:mb-10 lg:mb-12">
+          <h2 className="mx-auto max-w-full whitespace-nowrap font-serif text-[clamp(2.05rem,7.8vw,3.1rem)] font-bold leading-[1.05] tracking-normal text-[#061f3f] sm:text-[clamp(2.35rem,5vw,3.35rem)] lg:text-[3.45rem]">
+            {content.title}
+          </h2>
+        </Container>
+      ) : null}
+      <OistLabShowcase
+        images={images}
+        showThumbnails={galleryImages.length > 0 && images.length > 1}
+      />
+    </section>
   );
 }
 

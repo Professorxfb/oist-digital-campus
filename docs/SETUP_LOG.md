@@ -1,5 +1,43 @@
 Date: 2026-07-01
 
+## OIST Lab Title Placement Fix
+
+### Scope
+
+Frontend-only OIST Lab layout/styling update. No backend, CMS models/resources, API routes/controllers, migrations, database schema, or public content/data source were changed.
+
+### Files Changed
+
+- `frontend/src/app/page.tsx`
+- `frontend/src/components/public-site/OistLabShowcase.tsx`
+- `docs/SETUP_LOG.md`
+
+### OIST Lab Title Placement
+
+- Moved the CMS-provided OIST Lab title out of the image overlay and into a clean heading area above the image showcase.
+- The heading sits on the same cream/off-white section background used by the surrounding public page sections.
+- Removed the large white title typography from inside the lab image.
+- The image showcase remains clean and cinematic, with the existing image background and thumbnail strip behavior preserved.
+- The title uses responsive sizing with `whitespace-nowrap` so normal short CMS titles stay on one line on desktop/tablet where practical.
+
+### Future Public Section/Card Title Rule
+
+Public section/card title rule: Normal short CMS titles must remain fully readable and should stay on one line on desktop/tablet wherever practical. Do not place section titles inside image overlays unless the section design explicitly requires it. Do not cut normal short titles with ellipsis. Do not force short titles into two lines because of oversized font or narrow containers. First fix layout, width, gap, and responsive font size. Mobile may wrap only when truly necessary, but no horizontal overflow is allowed.
+
+This applies to Hero Feature Cards, Academic Program cards, Department cards, Notice cards, Scholarship cards, Facility cards, Campus Life cards, Gallery cards, News/Event cards, Professor/Faculty cards, OIST Lab / image showcase sections, and any future public CMS section/card.
+
+### Verification Results
+
+- `npm run lint` passed.
+- `npm run build` passed.
+- `http://localhost:3000` is currently occupied by another listener and returns `500 Internal Server Error`.
+- Browser/Playwright verification could not be completed because the in-app browser blocks access to `http://localhost:3000` by enterprise network policy. No alternate browser-control workaround was used.
+- Source-level verification confirms the OIST Lab heading now renders above the image and the showcase component no longer renders a large title overlay inside the image.
+
+---
+
+Date: 2026-07-01
+
 ## About Video Card Size and Alignment Refinement
 
 ### Scope

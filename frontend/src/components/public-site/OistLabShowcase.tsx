@@ -9,7 +9,6 @@ export type OistLabImage = {
 };
 
 type OistLabShowcaseProps = {
-  title: string | null;
   images: OistLabImage[];
   showThumbnails: boolean;
 };
@@ -17,7 +16,6 @@ type OistLabShowcaseProps = {
 export function OistLabShowcase({
   images,
   showThumbnails,
-  title,
 }: Readonly<OistLabShowcaseProps>) {
   const visibleImages = images.slice(0, 5);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -44,15 +42,7 @@ export function OistLabShowcase({
         aria-hidden="true"
       />
 
-      <div className="relative z-10 mx-auto flex min-h-[420px] w-full max-w-7xl flex-col items-center justify-center px-4 py-14 text-center sm:min-h-[500px] sm:px-6 sm:py-16 lg:min-h-[560px] lg:px-8 xl:min-h-[600px]">
-        <div className="mx-auto max-w-5xl">
-          {title ? (
-            <h2 className="font-serif text-[clamp(3rem,12vw,7rem)] font-bold leading-[0.95] tracking-normal text-white drop-shadow-[0_8px_22px_rgba(0,0,0,0.42)]">
-              {title}
-            </h2>
-          ) : null}
-        </div>
-
+      <div className="relative z-10 mx-auto flex min-h-[420px] w-full max-w-7xl flex-col items-center justify-end px-4 py-14 text-center sm:min-h-[500px] sm:px-6 sm:py-16 lg:min-h-[560px] lg:px-8 xl:min-h-[600px]">
         {showThumbnails && visibleImages.length > 1 ? (
           <div className="absolute inset-x-0 bottom-8 z-20 px-4 sm:bottom-10">
             <div className="hide-scrollbar mx-auto flex max-w-full justify-start gap-3 overflow-x-auto pb-1 sm:justify-center sm:gap-4">
