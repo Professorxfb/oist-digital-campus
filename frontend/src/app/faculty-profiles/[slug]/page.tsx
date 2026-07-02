@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Container } from "@/components/public-site/Container";
 import { PublicSiteShell } from "@/components/public-site/PublicSiteShell";
 import { createCmsMetadata } from "@/lib/cms-metadata";
-import { getCmsAssetUrl, getTextPreview } from "@/lib/cms-display";
+import { getCmsAssetUrl } from "@/lib/cms-display";
 import { getFacultyProfileBySlug } from "@/services/cms";
 import type { FacultyProfile } from "@/types/cms";
 
@@ -58,17 +57,9 @@ export default async function FacultyProfileDetailPage({ params }: PageProps) {
   return (
     <PublicSiteShell>
       <article className="bg-[#f7f3ea]">
-        <section className="relative overflow-hidden bg-[#061f3f] text-white">
-          <div
-            className="absolute inset-0 bg-[radial-gradient(circle_at_82%_22%,rgba(250,204,21,0.15),transparent_24%),linear-gradient(135deg,#020617,#061f3f_54%,#0a3766)]"
-            aria-hidden="true"
-          />
-          <div
-            className="absolute inset-y-0 right-0 hidden w-1/3 bg-[linear-gradient(135deg,transparent,rgba(255,255,255,0.08))] lg:block"
-            aria-hidden="true"
-          />
-          <Container className="relative py-14 sm:py-16 lg:py-[88px]">
-            <nav className="flex flex-wrap items-center gap-2 text-sm font-bold text-blue-100" aria-label="Breadcrumb">
+        <section className="relative overflow-hidden bg-[#082f55] text-white">
+          <FacultyPageContainer className="relative pb-14 pt-[124px] sm:pb-16 sm:pt-[148px] lg:pb-[76px] lg:pt-[168px]">
+            <nav className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-bold leading-6 text-blue-100 sm:text-sm" aria-label="Breadcrumb">
               <Link className="transition hover:text-yellow-300" href="/">
                 Home
               </Link>
@@ -80,28 +71,28 @@ export default async function FacultyProfileDetailPage({ params }: PageProps) {
               <span className="text-white">{profile.name}</span>
             </nav>
 
-            <div className="mt-7 max-w-4xl">
+            <div className="mt-5 max-w-[680px]">
               {profile.department?.name || profile.designation ? (
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-yellow-300">
+                <p className="text-xs font-black uppercase leading-5 tracking-[0.17em] text-yellow-300">
                   {[profile.department?.name, profile.designation].filter(Boolean).join(" / ")}
                 </p>
               ) : null}
-              <h1 className="mt-4 font-serif text-[clamp(2.6rem,8vw,5.25rem)] font-bold leading-[1.02] tracking-normal text-white">
+              <h1 className="mt-3 font-serif text-[clamp(2.375rem,4.8vw,4.15rem)] font-bold leading-[1.05] tracking-normal text-white">
                 {profile.name}
               </h1>
-              <div className="mt-6 h-px w-full max-w-md bg-gradient-to-r from-white via-white/40 to-transparent" aria-hidden="true" />
+              <div className="mt-5 h-px w-28 bg-gradient-to-r from-white via-white/70 to-yellow-300/70" aria-hidden="true" />
               {profile.short_bio ? (
-                <p className="mt-6 max-w-2xl text-base font-medium leading-8 text-blue-50 sm:text-lg">
-                  {getTextPreview(profile.short_bio, 220)}
+                <p className="mt-5 max-w-[640px] text-base font-medium leading-8 text-blue-50 sm:text-[17px]">
+                  {profile.short_bio}
                 </p>
               ) : null}
             </div>
-          </Container>
+          </FacultyPageContainer>
         </section>
 
-        <section className="py-14 sm:py-16 lg:py-20">
-          <Container>
-            <div className="mx-auto grid max-w-[1280px] gap-8 lg:grid-cols-[380px_minmax(0,1fr)] xl:gap-12">
+        <section className="pb-16 pt-12 sm:pb-20 sm:pt-14 lg:pb-24 lg:pt-16">
+          <FacultyPageContainer>
+            <div className="grid items-start gap-8 lg:grid-cols-[340px_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[380px_minmax(0,1fr)]">
               <aside className="lg:self-start">
                 <div className="overflow-hidden rounded-[14px] bg-white p-3 shadow-[0_18px_50px_rgba(2,6,23,0.08)] ring-1 ring-slate-200/70">
                   <div
@@ -204,10 +195,24 @@ export default async function FacultyProfileDetailPage({ params }: PageProps) {
                 ) : null}
               </div>
             </div>
-          </Container>
+          </FacultyPageContainer>
         </section>
       </article>
     </PublicSiteShell>
+  );
+}
+
+function FacultyPageContainer({
+  children,
+  className = "",
+}: Readonly<{
+  children: React.ReactNode;
+  className?: string;
+}>) {
+  return (
+    <div className={`mx-auto w-full max-w-[1220px] px-5 sm:px-6 lg:px-8 ${className}`}>
+      {children}
+    </div>
   );
 }
 
@@ -220,7 +225,7 @@ function DetailPanel({
 }>) {
   return (
     <section className="rounded-[12px] bg-white p-6 shadow-[0_14px_42px_rgba(2,6,23,0.055)] ring-1 ring-slate-200/70 sm:p-8">
-      <h2 className="font-serif text-[clamp(1.9rem,5vw,2.45rem)] font-bold leading-tight tracking-normal text-[#061f3f]">
+      <h2 className="font-serif text-[clamp(1.7rem,3.5vw,2.05rem)] font-bold leading-[1.16] tracking-normal text-[#061f3f]">
         {title}
       </h2>
       <div className="mt-5">{children}</div>

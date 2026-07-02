@@ -1,5 +1,149 @@
 Date: 2026-07-02
 
+## Faculty Detail Hero Background and Title Scale
+
+### Scope
+
+Fixed the Faculty Profile detail hero background color inconsistency and refined the Faculty Profile detail title scale. This was a frontend styling-only change. Header/navbar layout, homepage layouts, CMS, API, database, and backend behavior were not changed.
+
+### Files Changed
+
+- `frontend/src/app/faculty-profiles/[slug]/page.tsx`
+- `frontend/src/components/public-site/CMSHero.tsx`
+- `docs/CODEX_BRIEF.md`
+- `docs/SETUP_LOG.md`
+
+### Hero Background Fix
+
+- Replaced the Faculty Profile detail hero background with a single solid premium navy: `#082f55`.
+- Removed the strong radial/linear gradient overlay that made the hero look darker on the left and lighter on the right.
+- Removed the extra right-side overlay that created a visible split-block effect.
+- Kept white/gold hero text and the cream/off-white main content background unchanged.
+
+### Title Scale Refinement
+
+- Reduced Faculty Profile detail hero title from `clamp(2.375rem, 5.4vw, 4.5rem)` to `clamp(2.375rem, 4.8vw, 4.15rem)`.
+- Adjusted hero title line-height from `1.04` to `1.05` for cleaner wrapping.
+- Reduced detail content card headings from `clamp(1.8rem, 4vw, 2.25rem)` to `clamp(1.7rem, 3.5vw, 2.05rem)`.
+- Adjusted detail content card heading line-height to `1.16`.
+- Reduced the homepage CMS hero title from mobile/tablet/desktop clamps of `clamp(2.85rem, 11vw, 3.55rem)`, `clamp(4rem, 7vw, 5.15rem)`, and `clamp(5rem, 4.8vw, 5.85rem)` to `clamp(2.55rem, 10vw, 3.25rem)`, `clamp(3.45rem, 6.2vw, 4.5rem)`, and `clamp(4.45rem, 4.2vw, 5.25rem)`.
+- Adjusted the homepage CMS hero title line-height from `0.98` / `0.96` to `1.02` / `1` for cleaner wrapping.
+
+### Global Typography Rule
+
+Added `Global Public Typography & Title Scale Rule` to `docs/CODEX_BRIEF.md`, and updated the existing page layout rule to prohibit oversized title sections.
+
+### Verification Result
+
+- `npm run lint` passed.
+- `npm run build` passed.
+- Browser verified `http://localhost:3000/faculty-profiles/rabiul-islam` and `http://localhost:3000` at `1366px`, `1920px`, `768px`, `390px`, and `430px`.
+- Faculty detail hero background resolves to `rgb(8, 47, 85)` with `background-image: none`.
+- Faculty detail hero title now measures about `65.6px` at `1366px`, `66.4px` at `1920px`, and `38px` on tablet/mobile.
+- Faculty detail content card headings now measure about `32.8px` on desktop and `27.2px` on tablet/mobile.
+- Homepage CMS hero title now measures about `71.2px` at `1366px`, `80.64px` at `1920px`, `55.2px` at `768px`, `40.8px` at `390px`, and `43px` at `430px`.
+- Homepage major section headings remain readable and visually balanced.
+- Header/navbar layout was not changed.
+- CMS, API, database, and backend files were not changed.
+- Cream/off-white content background remains `rgb(247, 243, 234)` on the faculty detail page.
+- Uploaded faculty image remains visible from the existing `/storage/cms/faculty/...` asset URL.
+- No horizontal overflow was detected on either checked page.
+
+---
+
+Date: 2026-07-02
+
+## Faculty Detail Header-To-Hero Spacing
+
+### Scope
+
+Adjusted only the Faculty Profile detail page hero spacing so the breadcrumb, meta, title, divider, and intro have reference-style breathing room below the existing global header. The global header, homepage, other public sections, CMS data flow, and unrelated pages were not changed.
+
+### Files Changed
+
+- `frontend/src/app/faculty-profiles/[slug]/page.tsx`
+- `docs/CODEX_BRIEF.md`
+- `docs/SETUP_LOG.md`
+
+### Spacing Fix
+
+- Changed the faculty detail hero container from symmetric vertical padding to explicit top and bottom padding.
+- Mobile hero padding is now `124px` top and `56px` bottom to clear the overlaid mobile header.
+- Tablet hero padding is now `148px` top and `64px` bottom to create breathing room below the header.
+- Desktop hero padding is now `168px` top and `76px` bottom to create a reference-style post-header gap.
+- Kept breadcrumb, meta, title, divider, and intro aligned to the same `1220px` page container left edge.
+- Preserved the controlled title scale, short divider, and untruncated intro wrapping.
+
+### Global Rule Update
+
+Updated `docs/CODEX_BRIEF.md` under `Global Public Page Layout Rule` to require clear breathing space between header/navbar and hero content, proper hero top/bottom padding, shared left alignment for breadcrumb/title/divider/intro, no cramped hero sections, and Univet reference spacing comparison before finishing.
+
+### Verification Result
+
+- `npm run lint` passed.
+- `npm run build` passed.
+- Browser verified `http://localhost:3000/faculty-profiles/rabiul-islam` at `1366px`, `1920px`, `768px`, `390px`, and `430px`.
+- Header-to-breadcrumb spacing now measures `82px` on `1366px` and `1920px` desktop viewports.
+- Header-to-breadcrumb spacing now measures `62px` on the `768px` tablet viewport.
+- Header-to-breadcrumb spacing now measures `52px` on `390px` and `430px` mobile viewports.
+- Breadcrumb-to-meta, title-to-divider, and divider-to-intro spacing each remain clean and consistent.
+- Hero and main content containers share the same visual left edge at every checked viewport.
+- Main content alignment remains balanced, with the desktop grid at `380px` plus a flexible right content column.
+- Uploaded faculty image remains visible from the existing `/storage/cms/faculty/...` asset URL.
+- No horizontal overflow was detected.
+- Header, homepage, and unrelated public sections were not changed.
+
+---
+
+Date: 2026-07-02
+
+## Faculty Detail Alignment and Global Page Rule
+
+### Scope
+
+Refined the Faculty Profile detail page hero and main content alignment so the page follows the Univet-style reference more closely. The work stayed limited to the faculty detail page styling and project documentation. No new CMS, model, resource, table, or duplicate Professor module was created.
+
+### Files Changed
+
+- `frontend/src/app/faculty-profiles/[slug]/page.tsx`
+- `docs/CODEX_BRIEF.md`
+- `docs/SETUP_LOG.md`
+
+### Alignment Fix
+
+- Added a page-local max-width container of `1220px` with consistent responsive horizontal padding.
+- Used the same container for the hero content and the main profile/content grid.
+- Reduced hero vertical padding to a balanced reference-style height.
+- Tightened breadcrumb, meta, title, divider, and intro spacing.
+- Changed the title clamp to a controlled serif range so it is premium without becoming oversized.
+- Replaced the wide divider with a short aligned divider.
+- Removed intro truncation on the detail hero and controlled readability through max width and line height.
+- Balanced the desktop main grid with a fixed profile-card column and flexible content column.
+- Kept the cream/off-white page background and white rounded content cards.
+
+### Global Rule Added
+
+Added `docs/CODEX_BRIEF.md` with a permanent `Global Public Page Layout Rule` covering centered containers, hero/main alignment, breadcrumb/title/divider/intro treatment, card spacing, CMS-controlled content, no random extra sections, no redesign of completed sections, and final responsive comparison expectations.
+
+### Verification Result
+
+- `npm run lint` passed.
+- `npm run build` passed.
+- Browser verified `/faculty-profiles/rabiul-islam` on the local frontend dev server at `1366px`, `1920px`, `768px`, `390px`, and `430px`.
+- Hero and main content containers share the same visual left boundary at every checked viewport.
+- Desktop title size caps at `72px`; mobile title size is `38px`.
+- Intro text width is controlled at `640px` on desktop and narrows with the viewport on mobile.
+- Desktop main layout uses a balanced `380px` profile-card column with a flexible right content column.
+- Tablet and mobile layouts stack cleanly.
+- Uploaded faculty image remains visible from the existing `/storage/cms/faculty/...` asset URL.
+- `Contact Information` heading is exact.
+- No horizontal overflow was detected.
+- No unrelated homepage or public section design was changed.
+
+---
+
+Date: 2026-07-02
+
 ## Faculty Profile Detail Page Reference-Style Refinement
 
 ### Scope

@@ -59,7 +59,7 @@ export function CMSHero({
               {heroContent.subtitle}
             </p>
           ) : null}
-          <h1 className="hero-animate-title mt-5 max-w-[780px] break-words font-serif text-[clamp(2.85rem,11vw,3.55rem)] font-semibold leading-[0.98] text-white sm:mt-7 sm:text-[clamp(4rem,7vw,5.15rem)] sm:leading-[0.96] lg:text-[clamp(5rem,4.8vw,5.85rem)]">
+          <h1 className="hero-animate-title mt-5 max-w-[780px] break-words font-serif text-[clamp(2.55rem,10vw,3.25rem)] font-semibold leading-[1.02] text-white sm:mt-7 sm:text-[clamp(3.45rem,6.2vw,4.5rem)] sm:leading-[1] lg:text-[clamp(4.45rem,4.2vw,5.25rem)]">
             {heroContent.title}
           </h1>
           {description ? (
