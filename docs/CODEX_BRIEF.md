@@ -40,6 +40,10 @@ Footer must remain one unified background color unless a reference design explic
 
 Every new public page or major public section must be checked at `1920px`, `1366px`, `768px`, `430px`, and `390px` before finishing. Verify visual alignment, spacing, font size, image cropping, footer consistency, and responsive polish. Apply these rules automatically for future public pages without waiting for the user to repeat them.
 
+Any future functional homepage section with forms must include CMS-controlled section title, subtitle, content, image, order, and enabled state where practical; dedicated backend storage for submitted data; a Filament admin resource to view and manage submissions; server-side validation; clear frontend success and error states; no hard-coded public content; and reference-quality spacing, alignment, typography, and responsive checks before completion.
+
+Any carousel or slider section must match the approved reference behavior, avoid layout jump, avoid horizontal overflow, preserve accessible manual interaction where practical, and be checked on desktop, tablet, and mobile before completion.
+
 ## Permanent Global Public Page Layout Rule
 
 Every public page/detail page must follow the Univet reference-style layout discipline.

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AdmissionsSection } from "@/components/public-site/AdmissionsSection";
 import { CMSHero } from "@/components/public-site/CMSHero";
 import { Container } from "@/components/public-site/Container";
 import { ContentCard } from "@/components/public-site/ContentCard";
@@ -167,6 +168,7 @@ export default async function Home() {
   ]);
   const chairmanSection = getHomepageSectionByKey(sections, ["chairman_message"]);
   const oistLabSection = getHomepageSectionByKey(sections, ["oist_lab"]);
+  const admissionsSection = getHomepageSectionConfig(sections, ["admissions"]);
   const academicsProgramsSection = getHomepageSectionConfig(sections, [
     "academics_programs",
     "academic_programs",
@@ -257,6 +259,12 @@ export default async function Home() {
       ? {
           section: oistLabSection,
           node: <OistLabSection content={oistLab.data} />,
+        }
+      : null,
+    admissionsSection
+      ? {
+          section: admissionsSection,
+          node: <AdmissionsSection section={admissionsSection} />,
         }
       : null,
     campusLifeSection && (galleryAlbums.data.length > 0 || videos.data.length > 0)

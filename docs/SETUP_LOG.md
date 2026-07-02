@@ -1,5 +1,133 @@
 Date: 2026-07-02
 
+## Professors Auto-Scroll and Admissions Application Section
+
+### Scope
+
+Added automatic carousel behavior to the existing homepage Professors section and implemented a CMS-controlled Admissions homepage section with backend-stored application submissions. Header, footer, completed Hero, About, Academics, Latest Notices, Chairman Message, OIST Lab, Faculty listing page, Faculty detail page, CMS public content models outside Homepage Sections, and existing professor card design were not redesigned.
+
+### Files Changed
+
+- `backend/app/Filament/Resources/AdmissionApplications/AdmissionApplicationResource.php`
+- `backend/app/Filament/Resources/AdmissionApplications/Pages/ManageAdmissionApplications.php`
+- `backend/app/Filament/Resources/HomepageSections/HomepageSectionResource.php`
+- `backend/app/Http/Controllers/Api/V1/PublicCmsController.php`
+- `backend/app/Models/AdmissionApplication.php`
+- `backend/database/migrations/2026_07_02_000002_create_admission_applications_table.php`
+- `backend/routes/api.php`
+- `backend/tests/Feature/PublicCmsApiTest.php`
+- `frontend/src/app/page.tsx`
+- `frontend/src/components/public-site/AdmissionsSection.tsx`
+- `frontend/src/components/public-site/ProfessorsCarousel.tsx`
+- `frontend/src/services/cms.ts`
+- `frontend/src/types/cms.ts`
+- `docs/CODEX_BRIEF.md`
+- `docs/SETUP_LOG.md`
+
+### Professor Auto-Scroll Behavior
+
+- The existing custom Professors carousel now auto-slides every `4200ms`.
+- The carousel loops from the last page back to the first page.
+- It pauses while the user hovers over or focuses inside the carousel.
+- Existing scroll-snap layout, pagination dots, manual dot interaction, responsive card counts, and image crop behavior were preserved.
+- No carousel or slider package was added.
+
+### Admissions Section Added
+
+- Homepage now looks for an enabled `HomepageSection` with key `admissions`.
+- CMS fields used: `title`, `subtitle`, `content`, `image_path`, `button_text`, `sort_order`, and `is_enabled`.
+- Homepage Sections Filament resource now exposes content, image, button text, and button URL fields so staff can manage simple homepage sections such as Admissions.
+- The public section renders a cream/off-white layout with left CMS text/image and a dark navy application form card with gold accent.
+- Mobile layout stacks cleanly and form fields collapse to one column.
+- No hard-coded public admissions title, subtitle, description, or image was added.
+
+### Backend Application Table, Model, and Resource
+
+- Added `admission_applications` table.
+- Added `AdmissionApplication` model.
+- Added Filament `Admission Applications` resource under Public CMS.
+- Admin table shows applicant name, email, phone, country, city, status, and submitted date.
+- Admin can view details, update status, add internal notes, and delete records.
+- Status options: `new`, `contacted`, `reviewed`, `accepted`, `rejected`.
+
+### Database Fields Added
+
+- `first_name`
+- `last_name`
+- `email`
+- `phone`
+- `address`
+- `country`
+- `city`
+- `zip_code`
+- `date_of_birth`
+- `message`
+- `preferred_program`
+- `status`
+- `notes`
+- `source`
+- timestamps
+
+### API Endpoint
+
+- Added `POST /api/v1/admission-applications`.
+- Request validation runs server-side through Laravel validation.
+- Required fields: `first_name`, `last_name`, `email`, and `phone`.
+- Optional fields: `address`, `country`, `city`, `zip_code`, `date_of_birth`, and `message`.
+- The endpoint stores `status` as `new` and `source` as `homepage_admissions_section` server-side.
+- Public submissions cannot set admin notes.
+- The route uses `throttle:6,1`.
+- Success response message: `Application submitted successfully. We will contact you soon.`
+
+### Frontend Form Behavior
+
+- Form fields: First Name, Last Name, Email Address, Phone Number, Address, Country, City, Zip Code, Date of Birth, and Message.
+- The submit button uses the shared animated public gold button.
+- While submitting, the button shows a loading state and is disabled.
+- On success, the form clears and shows a premium modal success popup.
+- Success popup heading: `Application Successful`.
+- Success popup message uses the backend success message.
+- Validation errors render inline under matching fields.
+- General submission errors render inside the form without redirecting.
+
+### Permanent Rules Added
+
+Updated `docs/CODEX_BRIEF.md` so future form-based homepage sections must include CMS-controlled section content, backend storage, Filament submission management, server-side validation, clear success/error frontend states, no hard-coded public content, and responsive reference-quality visual checks.
+
+Also added a permanent carousel/slider rule requiring reference-style behavior, no layout jump, no horizontal overflow, accessible manual interaction where practical, and desktop/tablet/mobile verification.
+
+### Plugin and Package Status
+
+- No plugin was added.
+- No package was installed.
+- The professor auto-scroll uses the existing lightweight custom React carousel behavior.
+
+### Verification Result
+
+- `php artisan optimize:clear` passed.
+- `php artisan migrate` passed and created `admission_applications`.
+- `php artisan route:list --path=api/v1` passed and confirmed `POST /api/v1/admission-applications`.
+- `php artisan test` passed: 46 tests, 327 assertions.
+- `npm run lint` passed.
+- `npm run build` passed.
+- `http://127.0.0.1:3000` was occupied by a stale local listener during final browser verification, so the final frontend preview used `http://127.0.0.1:3001`.
+- Browser verification used Laravel API at `http://127.0.0.1:8000` and frontend at `http://127.0.0.1:3001`.
+- A local CMS `HomepageSection` record with key `admissions` was created for verification so the CMS-controlled section could render on the homepage.
+- Checked browser widths: `1920px`, `1366px`, `1024px`, `768px`, `430px`, and `390px`.
+- No horizontal overflow was detected at any checked width.
+- Professors carousel rendered 3-card desktop sizing, 2-card tablet sizing, and 1-card mobile sizing.
+- Professors carousel dots rendered and auto-scroll advanced from page 1 to page 2 after the interval at `1366px`.
+- Admissions section rendered from CMS with the configured title/subtitle/content and a dark navy application form card.
+- Desktop form layout used two input columns and a constrained form card; mobile layout used one input column.
+- Browser form submission succeeded from the homepage.
+- Success popup appeared with heading `Application Successful` and message `Application submitted successfully. We will contact you soon.`
+- Successful browser submission cleared the First Name field after submit.
+- Submitted browser data was stored in `admission_applications` with `status` set to `new`, `source` set to `homepage_admissions_section`, and `notes` set to `null`.
+- Admin-style status/notes update was verified by updating the submitted record to `status=reviewed` and adding an internal note through the model fields used by the Filament resource.
+- Validation behavior was verified by the passing API feature test for required fields and invalid email responses.
+
+---
+
 ## Faculty Listing Card Redesign
 
 ### Scope

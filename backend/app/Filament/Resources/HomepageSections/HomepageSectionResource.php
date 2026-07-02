@@ -9,6 +9,8 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
@@ -33,7 +35,7 @@ class HomepageSectionResource extends Resource
         return $schema
             ->components([
                 Section::make('Section Content')
-                    ->description('Homepage Sections controls section order and visibility only. Section-specific content should be managed from the related Public CMS module.')
+                    ->description('Homepage Sections controls section order and visibility. Use the content fields for simple CMS-driven homepage sections such as Admissions.')
                     ->schema([
                         TextInput::make('key')
                             ->required()
@@ -44,6 +46,26 @@ class HomepageSectionResource extends Resource
                         TextInput::make('subtitle')
                             ->label('Subtitle / Short Label')
                             ->maxLength(255),
+                        Textarea::make('content')
+                            ->label('Description / Content')
+                            ->rows(4)
+                            ->columnSpanFull(),
+                        FileUpload::make('image_path')
+                            ->label('Section Image')
+                            ->disk('public')
+                            ->directory('cms/homepage-sections')
+                            ->visibility('public')
+                            ->image()
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+                            ->maxSize(4096)
+                            ->imagePreviewHeight('180')
+                            ->previewable()
+                            ->openable()
+                            ->downloadable()
+                            ->deletable()
+                            ->nullable(),
+                        TextInput::make('button_text')->maxLength(255),
+                        TextInput::make('button_url')->maxLength(2048),
                         TextInput::make('sort_order')
                             ->numeric()
                             ->minValue(0)

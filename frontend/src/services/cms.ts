@@ -1,6 +1,9 @@
 import { fetchCmsApi } from "@/lib/api-client";
+import { cmsApiBaseUrl } from "@/lib/api-client";
 import type {
+  AdmissionApplicationPayload,
   ApiFetchResult,
+  ApiMutationResult,
   AboutSectionContent,
   AcademicProgram,
   CampusLifeSectionContent,
@@ -262,5 +265,76 @@ export function searchPublicContent(
   return fetchCmsApi<SearchResult[]>(
     `search?q=${encodeURIComponent(normalizedQuery)}`,
     [],
+  );
+}
+
+export async function submitAdmissionApplication(
+  payload: AdmissionApplicationPayload,
+): Promise<ApiMutationResult> {
+  try {
+    const response = await fetch(`${cmsApiBaseUrl}/admission-applications`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data: unknown = await response.json().catch(() => null);
+
+    if (response.ok && isMutationResponse(data)) {
+      return {
+        success: true,
+        message: data.message ?? "Application submitted successfully. We will contact you soon.",
+        errors: {},
+      };
+    }
+
+    return {
+      success: false,
+      message: getMutationMessage(data),
+      errors: getValidationErrors(data),
+    };
+  } catch {
+    return {
+      success: false,
+      message: "Application submission failed. Please try again.",
+      errors: {},
+    };
+  }
+}
+
+function isMutationResponse(payload: unknown): payload is { success: boolean; message?: string | null } {
+  return Boolean(payload && typeof payload === "object" && "success" in payload);
+}
+
+function getMutationMessage(payload: unknown): string {
+  if (payload && typeof payload === "object" && "message" in payload) {
+    const message = (payload as { message?: unknown }).message;
+
+    if (typeof message === "string" && message.length > 0) {
+      return message;
+    }
+  }
+
+  return "Application submission failed. Please check the form and try again.";
+}
+
+function getValidationErrors(payload: unknown): Record<string, string[]> {
+  if (!payload || typeof payload !== "object" || !("errors" in payload)) {
+    return {};
+  }
+
+  const errors = (payload as { errors?: unknown }).errors;
+
+  if (!errors || typeof errors !== "object" || Array.isArray(errors)) {
+    return {};
+  }
+
+  return Object.fromEntries(
+    Object.entries(errors as Record<string, unknown>)
+      .filter((entry): entry is [string, string[]] => Array.isArray(entry[1]))
+      .map(([key, value]) => [key, value.filter((message): message is string => typeof message === "string")]),
   );
 }

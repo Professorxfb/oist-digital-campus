@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\AboutSection;
 use App\Models\AcademicProgram;
+use App\Models\AdmissionApplication;
 use App\Models\CampusLifeSection;
 use App\Models\ChairmanMessage;
 use App\Models\Department;
@@ -30,6 +31,7 @@ use App\Models\SiteSetting;
 use App\Models\Video;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -89,6 +91,38 @@ class PublicCmsController extends Controller
             ]);
 
         return $this->publicResponse($sections, 'Homepage sections retrieved.');
+    }
+
+    public function submitAdmissionApplication(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
+            'phone' => ['required', 'string', 'max:50'],
+            'address' => ['nullable', 'string', 'max:1000'],
+            'country' => ['nullable', 'string', 'max:255'],
+            'city' => ['nullable', 'string', 'max:255'],
+            'zip_code' => ['nullable', 'string', 'max:30'],
+            'date_of_birth' => ['nullable', 'date'],
+            'message' => ['nullable', 'string', 'max:3000'],
+        ]);
+
+        AdmissionApplication::query()->create(
+            $this->cleanAdmissionApplicationData($validated) + [
+                'status' => 'new',
+                'source' => 'homepage_admissions_section',
+            ],
+        );
+
+        return response()
+            ->json([
+                'success' => true,
+                'message' => 'Application submitted successfully. We will contact you soon.',
+                'data' => null,
+                'meta' => [],
+            ], 201)
+            ->header('Cache-Control', 'no-store');
     }
 
     public function heroSection(): JsonResponse
@@ -700,6 +734,25 @@ class PublicCmsController extends Controller
                 ->values()
                 ->all(),
         ];
+    }
+
+    /**
+     * @param array<string, mixed> $validated
+     * @return array<string, mixed>
+     */
+    private function cleanAdmissionApplicationData(array $validated): array
+    {
+        return collect($validated)
+            ->map(function (mixed $value, string $key): mixed {
+                if (! is_string($value)) {
+                    return $value;
+                }
+
+                $cleaned = trim(strip_tags($value));
+
+                return $key === 'email' ? Str::lower($cleaned) : $cleaned;
+            })
+            ->all();
     }
 
     private function formatHeroSection(HeroSection $section): array

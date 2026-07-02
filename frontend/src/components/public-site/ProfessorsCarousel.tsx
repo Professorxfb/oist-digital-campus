@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getCmsAssetUrl } from "@/lib/cms-display";
 import type { FacultyProfile } from "@/types/cms";
 
@@ -19,6 +19,7 @@ export function ProfessorsCarousel({
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activePage, setActivePage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(1);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     const viewport = scrollRef.current;
@@ -55,8 +56,18 @@ export function ProfessorsCarousel({
     }
 
     const updateActivePage = () => {
-      const nextPage = Math.round(viewport.scrollLeft / viewport.clientWidth);
-      setActivePage(Math.min(Math.max(nextPage, 0), getPageCount(profiles.length, itemsPerPage) - 1));
+      const pageCount = getPageCount(profiles.length, itemsPerPage);
+      const positions = Array.from({ length: pageCount }, (_, index) =>
+        getScrollLeftForPage(viewport, index),
+      );
+      const nextPage = positions.reduce((closestIndex, position, index) => {
+        const closestDistance = Math.abs(viewport.scrollLeft - positions[closestIndex]);
+        const distance = Math.abs(viewport.scrollLeft - position);
+
+        return distance < closestDistance ? index : closestIndex;
+      }, 0);
+
+      setActivePage(nextPage);
     };
 
     updateActivePage();
@@ -67,7 +78,7 @@ export function ProfessorsCarousel({
 
   const pageCount = getPageCount(profiles.length, itemsPerPage);
 
-  const scrollToPage = (pageIndex: number) => {
+  const scrollToPage = useCallback((pageIndex: number) => {
     const viewport = scrollRef.current;
 
     if (!viewport) {
@@ -75,13 +86,31 @@ export function ProfessorsCarousel({
     }
 
     viewport.scrollTo({
-      left: viewport.clientWidth * pageIndex,
+      left: getScrollLeftForPage(viewport, pageIndex),
       behavior: "smooth",
     });
-  };
+  }, []);
+
+  useEffect(() => {
+    if (pageCount <= 1 || isPaused) {
+      return;
+    }
+
+    const interval = window.setInterval(() => {
+      scrollToPage(activePage >= pageCount - 1 ? 0 : activePage + 1);
+    }, 4200);
+
+    return () => window.clearInterval(interval);
+  }, [activePage, isPaused, pageCount, scrollToPage]);
 
   return (
-    <div>
+    <div
+      onFocusCapture={() => setIsPaused(true)}
+      onBlurCapture={() => setIsPaused(false)}
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      data-professors-carousel
+    >
       <div
         ref={scrollRef}
         className="hide-scrollbar flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-3"
@@ -182,6 +211,12 @@ function ProfessorCard({
 
 function getPageCount(totalItems: number, itemsPerPage: number): number {
   return Math.max(1, Math.ceil(totalItems / itemsPerPage));
+}
+
+function getScrollLeftForPage(viewport: HTMLDivElement, pageIndex: number): number {
+  const maxScrollLeft = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+
+  return Math.min(viewport.clientWidth * pageIndex, maxScrollLeft);
 }
 
 function getFacultySocialLinks(profile: FacultyProfile): FacultySocialLink[] {

@@ -19,6 +19,25 @@ export interface ApiFetchResult<TData> {
   error: string | null;
 }
 
+export interface ApiMutationResult {
+  success: boolean;
+  message: string;
+  errors: Record<string, string[]>;
+}
+
+export interface AdmissionApplicationPayload {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  address: string;
+  country: string;
+  city: string;
+  zip_code: string;
+  date_of_birth: string;
+  message: string;
+}
+
 export interface PaginationMeta {
   current_page: number;
   last_page: number;

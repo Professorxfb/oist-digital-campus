@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\AboutSection;
+use App\Models\AdmissionApplication;
 use App\Models\CampusLifeSection;
 use App\Models\FacultyProfile;
 use App\Models\ChairmanMessage;
@@ -93,6 +94,62 @@ class PublicCmsApiTest extends TestCase
             ->assertJsonPath('data.0.is_enabled', true)
             ->assertJsonPath('data.1.key', 'second-section')
             ->assertJsonMissing(['key' => 'disabled-section']);
+    }
+
+    public function test_admission_application_submission_stores_validated_application(): void
+    {
+        $response = $this->postJson('/api/v1/admission-applications', [
+            'first_name' => '  <b>Samia</b>  ',
+            'last_name' => 'Rahman',
+            'email' => 'SAMIA@example.edu',
+            'phone' => '+8801700000000',
+            'address' => 'House 12, Road 4',
+            'country' => 'Bangladesh',
+            'city' => 'Dhaka',
+            'zip_code' => '1207',
+            'date_of_birth' => '2006-04-15',
+            'message' => '<script>alert("x")</script>I want admission information.',
+        ]);
+
+        $response
+            ->assertCreated()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('message', 'Application submitted successfully. We will contact you soon.')
+            ->assertJsonMissingPath('data.notes');
+
+        $this->assertDatabaseHas('admission_applications', [
+            'first_name' => 'Samia',
+            'last_name' => 'Rahman',
+            'email' => 'samia@example.edu',
+            'phone' => '+8801700000000',
+            'country' => 'Bangladesh',
+            'city' => 'Dhaka',
+            'zip_code' => '1207',
+            'status' => 'new',
+            'source' => 'homepage_admissions_section',
+            'notes' => null,
+        ]);
+
+        $this->assertSame(
+            'alert("x")I want admission information.',
+            AdmissionApplication::query()->first()?->message,
+        );
+    }
+
+    public function test_admission_application_submission_validates_required_fields(): void
+    {
+        $response = $this->postJson('/api/v1/admission-applications', [
+            'first_name' => '',
+            'last_name' => '',
+            'email' => 'not-an-email',
+            'phone' => '',
+        ]);
+
+        $response
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['first_name', 'last_name', 'email', 'phone']);
+
+        $this->assertDatabaseCount('admission_applications', 0);
     }
 
     public function test_hero_section_api_returns_first_published_hero_section(): void

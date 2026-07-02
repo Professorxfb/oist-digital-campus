@@ -7,6 +7,8 @@ Route::prefix('v1')->group(function (): void {
     Route::get('search', [PublicCmsController::class, 'search']);
     Route::get('site-settings', [PublicCmsController::class, 'siteSettings']);
     Route::get('homepage-sections', [PublicCmsController::class, 'homepageSections']);
+    Route::post('admission-applications', [PublicCmsController::class, 'submitAdmissionApplication'])
+        ->middleware('throttle:6,1');
     Route::get('hero-section', [PublicCmsController::class, 'heroSection']);
     Route::get('about-section', [PublicCmsController::class, 'aboutSection']);
     Route::get('chairman-message', [PublicCmsController::class, 'chairmanMessage']);
