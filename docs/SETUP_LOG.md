@@ -4153,6 +4153,96 @@ Added a CMS-driven Chairman Message homepage section that renders after Latest N
 
 ---
 
+Date: 2026-07-02
+
+## Professors Carousel, Footer Portal Redesign, and Public Button Rules
+
+### Scope
+
+Updated only the homepage Professors section, public footer, shared public button animation CSS, the `/faculty-profiles` listing route, and documentation rules. Header, Hero, About, Academics & Programs, Latest Notices, Chairman Message, OIST Lab, Faculty Detail page layout, CMS models, API endpoints, database schema, and Filament resources were not redesigned or changed.
+
+### Files Changed
+
+- `frontend/src/app/page.tsx`
+- `frontend/src/components/public-site/ProfessorsCarousel.tsx`
+- `frontend/src/components/public-site/SiteFooter.tsx`
+- `frontend/src/app/faculty-profiles/page.tsx`
+- `frontend/src/app/globals.css`
+- `docs/CODEX_BRIEF.md`
+- `docs/SETUP_LOG.md`
+
+### Professors Section Behavior
+
+- The homepage Professors section now uses a cream/off-white section background, uppercase `OUR PROFESSORS` fallback label, serif `OIST Professors` fallback title, and a top-right `View All Professors` button.
+- The button links to `/faculty-profiles`.
+- The section renders all published faculty profiles received from the existing Faculty Profiles CMS API data.
+- No new Professor CMS, model, resource, table, migration, API endpoint, or package was created.
+- A lightweight client carousel implements horizontal scroll-snap behavior with no carousel package.
+- Desktop uses 3 cards per view, tablet uses 2 cards per view, and mobile uses 1 card per view.
+- Pagination dots are shown only when there is more than one carousel page for the current viewport.
+- Existing professor card social-hover behavior was preserved in the carousel card implementation and not duplicated with fake links:
+  - social icons render only when profile URLs exist;
+  - social links open in a new tab with `rel="noopener noreferrer"`;
+  - social links are outside the card navigation link;
+  - card click still opens `/faculty-profiles/[slug]`;
+  - uploaded faculty photos still resolve through the existing CMS asset URL helper.
+
+### Faculty Profiles Listing Route
+
+- Created `/faculty-profiles` as a small CMS-driven listing page.
+- The page uses the existing `getFacultyProfiles()` service and existing `FacultyCard` component.
+- No hard-coded professor cards or fake faculty data were added.
+
+### Footer Redesign
+
+- Redesigned the existing `SiteFooter` into a premium dark navy footer with four responsive columns:
+  - brand/contact,
+  - Our Campus,
+  - Useful Links,
+  - Portals.
+- Footer menus use CMS footer menu and quick-link data when available.
+- Structural fallback links are used only when CMS menu data is missing.
+- Social links use Site Settings URLs and render only when URLs exist.
+- The newsletter area was not added.
+- Privacy checkbox content was not added.
+- Google Play and App Store banners were not added.
+- The portal area now shows Student Login, Faculty Login, and Staff Login links.
+- A clean bottom copyright row uses the current year and `OIST Digital Campus`.
+
+### Global Rules
+
+- Added shared public button classes in `frontend/src/app/globals.css`:
+  - `.btn-public-primary`
+  - `.btn-public-navy`
+  - `.btn-public-dot`
+- Updated `docs/CODEX_BRIEF.md` with the permanent global footer rule.
+- The permanent global public button animation rule already exists in `docs/CODEX_BRIEF.md` and remains the rule for future public buttons.
+
+### Commands Run
+
+- `npm run lint`
+- `npm run build`
+- `npm run dev -- --hostname 127.0.0.1 --port 3000`
+
+### Verification Results
+
+- `npm run lint` passed.
+- `npm run build` passed.
+- Browser verification used `http://127.0.0.1:3000`.
+- `/faculty-profiles` was generated and verified.
+- Local CMS data currently returned 3 faculty profiles.
+- Desktop `1920px` and `1366px`: Professors section rendered 3 visible cards with no carousel dots because there was only one desktop page for 3 profiles.
+- Tablet `768px`: cards measured as 2-per-view sizing and carousel dots appeared.
+- Mobile `430px` and `390px`: cards measured as 1-per-view sizing and carousel dots appeared.
+- Pagination dot click was verified at mobile width; clicking page 2 updated the active dot and carousel scroll position.
+- Professor card click was verified; clicking the first local CMS profile opened `/faculty-profiles/rabiul-islam`.
+- `/faculty-profiles` listing page rendered the CMS profiles and had no horizontal overflow.
+- Footer verification found 3 portal links and no newsletter, email-address signup, privacy checkbox, Google Play, or App Store text.
+- No horizontal overflow was detected for the page, Professors section, or footer at `1920px`, `1366px`, `768px`, `430px`, or `390px`.
+- Shared hover animation CSS compiled successfully. The in-app browser pointer surface did not report `:hover` state changes even after visible pointer movement, so hover was verified by implemented CSS/classes rather than a captured browser `:hover` state.
+
+---
+
 Date: 2026-07-01
 
 ## Chairman Message Background Color Fix

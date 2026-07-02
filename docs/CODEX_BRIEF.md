@@ -14,6 +14,14 @@ The public footer must keep the portal-login structure for Student Portal, Facul
 
 Do not add newsletter signup areas, app-store badges, download-app banners, or equivalent promotional footer blocks by default. Footer content must remain CMS/backend-controlled where practical, while portal links may remain structural navigation affordances until real authentication and portal workflows are implemented.
 
+## Permanent Global Footer Rule
+
+The public footer must follow the premium Univet-style dark navy footer layout with clean columns, CMS/site settings/menu data wherever practical, visible hover animation on footer links/buttons, and responsive behavior with no horizontal overflow.
+
+The current footer portal area must show Student Login, Faculty Login, and Staff Login links. Newsletter signup, privacy-policy checkbox blocks, Google Play buttons, App Store buttons, download-app banners, and similar promotional footer sections must not be added unless the user explicitly requests them later.
+
+Do not hard-code unnecessary demo footer content when CMS data exists. Structural fallback links are allowed only when CMS footer menu or quick-link data is missing.
+
 ## Permanent Global Public Page Layout Rule
 
 Every public page/detail page must follow the Univet reference-style layout discipline.

@@ -54,6 +54,112 @@ summary {
   display: none;
 }
 
+.btn-public-primary,
+.btn-public-navy {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  overflow: hidden;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  padding: 0.78rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 900;
+  line-height: 1;
+  text-decoration: none;
+  transition:
+    color 300ms ease,
+    border-color 300ms ease,
+    box-shadow 300ms ease,
+    transform 300ms ease;
+}
+
+.btn-public-primary {
+  border-color: var(--oist-gold);
+  background: var(--oist-gold);
+  color: var(--oist-navy);
+  box-shadow: 0 12px 26px rgba(255, 204, 0, 0.2);
+}
+
+.btn-public-navy {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.btn-public-primary::before,
+.btn-public-navy::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  content: "";
+  transform: translateX(-105%);
+  transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.btn-public-primary::before {
+  background: var(--oist-navy);
+}
+
+.btn-public-navy::before {
+  background: var(--oist-gold);
+}
+
+.btn-public-primary:hover,
+.btn-public-primary:focus-visible {
+  border-color: var(--oist-navy);
+  color: #fff;
+  box-shadow: 0 18px 38px rgba(6, 31, 63, 0.18);
+  transform: translateY(-2px);
+}
+
+.btn-public-navy:hover,
+.btn-public-navy:focus-visible {
+  border-color: var(--oist-gold);
+  color: var(--oist-navy);
+  box-shadow: 0 18px 34px rgba(255, 204, 0, 0.16);
+  transform: translateY(-2px);
+}
+
+.btn-public-primary:hover::before,
+.btn-public-primary:focus-visible::before,
+.btn-public-navy:hover::before,
+.btn-public-navy:focus-visible::before {
+  transform: translateX(0);
+}
+
+.btn-public-primary:focus-visible,
+.btn-public-navy:focus-visible {
+  outline: 2px solid var(--oist-gold);
+  outline-offset: 3px;
+}
+
+.btn-public-dot {
+  display: inline-flex;
+  width: 0.5rem;
+  height: 0.5rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: currentColor;
+  transition:
+    opacity 300ms ease,
+    transform 300ms ease,
+    width 300ms ease;
+}
+
+.btn-public-primary:hover .btn-public-dot,
+.btn-public-primary:focus-visible .btn-public-dot,
+.btn-public-navy:hover .btn-public-dot,
+.btn-public-navy:focus-visible .btn-public-dot {
+  width: 1.1rem;
+  opacity: 0.9;
+  transform: translateX(3px);
+}
+
 @keyframes hero-fade-up {
   from {
     opacity: 0;
