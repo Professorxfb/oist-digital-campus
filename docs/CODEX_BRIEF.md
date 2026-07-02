@@ -1,5 +1,19 @@
 # Codex Brief
 
+## Permanent Global Public Button Animation Rule
+
+Every public website button or link styled as a button must use the same premium Univet-inspired hover animation behavior unless there is a clear design reason not to.
+
+Default public button direction: yellow/gold primary background, navy text, rounded pill shape, and a small right-side dot/icon when suitable. Hover states must be visibly animated with smooth color or overlay movement, readable text, and subtle dot/icon movement or opacity change. Navy buttons should hover to yellow/gold or another clearly visible alternate state. Yellow buttons should hover to navy/darker tones or use a smooth overlay effect.
+
+This rule applies to all future public buttons, including Apply Now, View All Professors, More About Us, Explore Labs, Download, Read More, Back buttons, detail page CTAs, and any new public page button. Do not ship static public buttons. Prefer shared classes or component variants such as `.btn-public-primary` and `.btn-public-navy` over random one-off hover styles. Before finishing any public page or section, visually verify button hover behavior.
+
+## Permanent Public Footer Portal Rule
+
+The public footer must keep the portal-login structure for Student Portal, Faculty Portal, and Staff/Admin access unless the user explicitly requests newsletter, Google Play, App Store, or similar promotional footer sections later.
+
+Do not add newsletter signup areas, app-store badges, download-app banners, or equivalent promotional footer blocks by default. Footer content must remain CMS/backend-controlled where practical, while portal links may remain structural navigation affordances until real authentication and portal workflows are implemented.
+
 ## Permanent Global Public Page Layout Rule
 
 Every public page/detail page must follow the Univet reference-style layout discipline.

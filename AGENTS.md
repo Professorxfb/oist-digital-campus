@@ -86,7 +86,9 @@ This file is the permanent instruction rulebook for all future Codex work in thi
 - Keep public website pages SEO-friendly and portal pages protected from indexing.
 - Build mobile-first layouts.
 - Use accessible semantic markup.
-- Every public website button or CTA must have a visible hover color change; do not add static buttons without hover color feedback.
+- Every public website button or CTA must use the same premium Univet-inspired hover animation behavior unless there is a clear design reason not to. Public buttons must not be static on hover.
+- Prefer shared public button classes/variants for yellow/gold primary buttons, navy buttons, icon/dot accents, smooth overlay or color transitions, and readable hover states instead of one-off button styling.
+- Footer implementations must preserve the portal-login structure for Student Portal, Faculty Portal, and Staff/Admin access unless the user explicitly requests newsletter, Google Play, App Store, or similar promotional footer sections later.
 - Avoid leaking internal IDs, hidden fields, or sensitive metadata unless required by the API contract.
 
 ## 7. Backend Coding Standards

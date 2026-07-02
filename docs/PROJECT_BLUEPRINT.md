@@ -136,6 +136,8 @@ The public footer should include:
 - CMS-managed quick links.
 - CMS-managed social links.
 - Portal links for Student Portal and Faculty Portal as structural placeholders until real authentication is implemented.
+- Portal-login structure for Student Portal, Faculty Portal, and Staff/Admin access must be preserved unless the user explicitly requests newsletter, Google Play, App Store, or similar promotional footer sections later.
+- Newsletter signup areas, app-store badges, download-app banners, and similar promotional footer sections are not default footer requirements.
 - Dark blue institutional visual treatment.
 
 ### CMS Module
