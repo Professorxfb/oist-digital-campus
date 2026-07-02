@@ -19,6 +19,8 @@ type FacultySocialLink = {
   icon: "facebook" | "linkedin" | "twitter" | "website";
 };
 
+type ContactIcon = "email" | "phone" | "location" | "website";
+
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
   const { data: profile } = await getFacultyProfileBySlug(slug);
@@ -38,9 +40,7 @@ export default async function FacultyProfileDetailPage({ params }: PageProps) {
   }
 
   const photoUrl = getCmsAssetUrl(profile.photo_url ?? profile.photo_path ?? null);
-  const photoBackgroundImage = photoUrl
-    ? `url(${photoUrl})`
-    : "radial-gradient(circle at 30% 20%, rgba(250,204,21,0.24), transparent 28%), linear-gradient(135deg,#071733,#1d4ed8 58%,#e0f2fe)";
+  const profileImageBackground = buildProfileImageBackground(photoUrl);
   const socialLinks = getFacultySocialLinks(profile);
   const aboutHtml = sanitizeCmsHtml(profile.detailed_bio);
   const aboutText = aboutHtml ? null : profile.short_bio;
@@ -53,36 +53,45 @@ export default async function FacultyProfileDetailPage({ params }: PageProps) {
     Boolean(profile.email) ||
     Boolean(profile.phone) ||
     Boolean(profile.office_location) ||
-    socialLinks.length > 0;
+    Boolean(profile.website_url);
 
   return (
     <PublicSiteShell>
-      <article>
-        <section className="relative overflow-hidden border-b border-white/10 bg-[#071733] text-white">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_22%,rgba(250,204,21,0.16),transparent_24%),linear-gradient(135deg,#020617,#071733_58%,#0a2a5e)]" aria-hidden="true" />
-          <Container className="relative py-14 sm:py-20 lg:py-24">
-            <nav className="flex flex-wrap items-center gap-2 text-sm font-semibold text-blue-100" aria-label="Breadcrumb">
+      <article className="bg-[#f7f3ea]">
+        <section className="relative overflow-hidden bg-[#061f3f] text-white">
+          <div
+            className="absolute inset-0 bg-[radial-gradient(circle_at_82%_22%,rgba(250,204,21,0.15),transparent_24%),linear-gradient(135deg,#020617,#061f3f_54%,#0a3766)]"
+            aria-hidden="true"
+          />
+          <div
+            className="absolute inset-y-0 right-0 hidden w-1/3 bg-[linear-gradient(135deg,transparent,rgba(255,255,255,0.08))] lg:block"
+            aria-hidden="true"
+          />
+          <Container className="relative py-14 sm:py-16 lg:py-[88px]">
+            <nav className="flex flex-wrap items-center gap-2 text-sm font-bold text-blue-100" aria-label="Breadcrumb">
               <Link className="transition hover:text-yellow-300" href="/">
                 Home
               </Link>
-              <span aria-hidden="true">/</span>
+              <span className="text-yellow-300" aria-hidden="true">/</span>
               <Link className="transition hover:text-yellow-300" href="/faculty">
                 Faculty Profiles
               </Link>
-              <span aria-hidden="true">/</span>
-              <span className="text-yellow-300">{profile.name}</span>
+              <span className="text-yellow-300" aria-hidden="true">/</span>
+              <span className="text-white">{profile.name}</span>
             </nav>
-            <div className="mt-8 max-w-4xl">
+
+            <div className="mt-7 max-w-4xl">
               {profile.department?.name || profile.designation ? (
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-yellow-300">
                   {[profile.department?.name, profile.designation].filter(Boolean).join(" / ")}
                 </p>
               ) : null}
-              <h1 className="mt-3 font-serif text-[clamp(2.6rem,8vw,5.5rem)] font-bold leading-[1.02] tracking-normal text-white">
+              <h1 className="mt-4 font-serif text-[clamp(2.6rem,8vw,5.25rem)] font-bold leading-[1.02] tracking-normal text-white">
                 {profile.name}
               </h1>
+              <div className="mt-6 h-px w-full max-w-md bg-gradient-to-r from-white via-white/40 to-transparent" aria-hidden="true" />
               {profile.short_bio ? (
-                <p className="mt-5 max-w-3xl text-base font-medium leading-8 text-blue-50 sm:text-lg">
+                <p className="mt-6 max-w-2xl text-base font-medium leading-8 text-blue-50 sm:text-lg">
                   {getTextPreview(profile.short_bio, 220)}
                 </p>
               ) : null}
@@ -90,40 +99,40 @@ export default async function FacultyProfileDetailPage({ params }: PageProps) {
           </Container>
         </section>
 
-        <section className="bg-[#f7f3ea] py-12 sm:py-16 lg:py-20">
+        <section className="py-14 sm:py-16 lg:py-20">
           <Container>
-            <div className="grid gap-8 lg:grid-cols-[360px_1fr] xl:grid-cols-[390px_1fr]">
-              <aside className="lg:sticky lg:top-8 lg:self-start">
-                <div className="overflow-hidden rounded-[18px] border border-white bg-white shadow-[0_22px_60px_rgba(2,6,23,0.09)]">
+            <div className="mx-auto grid max-w-[1280px] gap-8 lg:grid-cols-[380px_minmax(0,1fr)] xl:gap-12">
+              <aside className="lg:self-start">
+                <div className="overflow-hidden rounded-[14px] bg-white p-3 shadow-[0_18px_50px_rgba(2,6,23,0.08)] ring-1 ring-slate-200/70">
                   <div
-                    className="aspect-[4/5] bg-cover bg-center"
-                    style={{ backgroundImage: photoBackgroundImage }}
+                    className="aspect-[4/3] rounded-[10px] bg-cover bg-center"
+                    style={{ backgroundImage: profileImageBackground }}
                     role="img"
                     aria-label={`${profile.name} profile photo`}
                   />
-                  <div className="p-7 text-center">
-                    <h2 className="font-serif text-3xl font-bold leading-tight text-[#061f3f]">
+                  <div className="px-4 pb-5 pt-6 text-center sm:px-6">
+                    <h2 className="font-serif text-[1.65rem] font-bold leading-tight tracking-normal text-[#061f3f]">
                       {profile.name}
                     </h2>
                     {profile.designation ? (
-                      <p className="mt-2 text-base font-semibold leading-6 text-slate-600">
+                      <p className="mt-2 text-base font-medium leading-6 text-slate-600">
                         {profile.designation}
                       </p>
                     ) : null}
                     {profile.department?.name ? (
-                      <p className="mt-2 text-sm font-black uppercase tracking-[0.13em] text-blue-800">
+                      <p className="mt-3 text-xs font-black uppercase tracking-[0.14em] text-blue-800">
                         {profile.department.name}
                       </p>
                     ) : null}
                     {socialLinks.length > 0 ? (
-                      <div className="mt-6 flex flex-wrap justify-center gap-2">
+                      <div className="mt-5 flex flex-wrap justify-center gap-2">
                         {socialLinks.map((link) => (
                           <a
                             key={link.label}
                             href={link.href}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex h-10 w-10 items-center justify-center rounded-full bg-[#064c78] text-white transition duration-300 hover:-translate-y-0.5 hover:bg-yellow-300 hover:text-[#061f3f] focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-300/70"
+                            className="flex h-10 w-10 items-center justify-center rounded-full bg-[#064c78] text-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-yellow-300 hover:text-[#061f3f] focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-300/70"
                             aria-label={`${profile.name} ${link.label}`}
                           >
                             {renderFacultySocialIcon(link.icon)}
@@ -135,57 +144,64 @@ export default async function FacultyProfileDetailPage({ params }: PageProps) {
                 </div>
               </aside>
 
-              <div className="min-w-0 space-y-7">
+              <div className="min-w-0 space-y-6">
                 {aboutHtml || aboutText ? (
                   <DetailPanel title="About / Introduction">
                     {aboutHtml ? (
                       <div
-                        className="cms-rich-text text-base leading-8 text-slate-700 [&_a]:font-bold [&_a]:text-blue-800 [&_a:hover]:text-[#061f3f] [&_li]:mb-2 [&_ol]:mb-5 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:mb-4 [&_strong]:text-slate-950 [&_ul]:mb-5 [&_ul]:list-disc [&_ul]:pl-6"
+                        className="cms-rich-text text-[16px] leading-8 text-slate-700 [&_a]:font-bold [&_a]:text-blue-800 [&_a:hover]:text-[#061f3f] [&_li]:mb-2 [&_ol]:mb-5 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:mb-4 [&_p:last-child]:mb-0 [&_strong]:text-slate-950 [&_ul]:mb-5 [&_ul]:list-disc [&_ul]:pl-6"
                         dangerouslySetInnerHTML={{ __html: aboutHtml }}
                       />
                     ) : (
-                      <p className="text-base leading-8 text-slate-700">{aboutText}</p>
+                      <p className="text-[16px] leading-8 text-slate-700">{aboutText}</p>
                     )}
                   </DetailPanel>
                 ) : null}
 
                 {hasAcademicDetails ? (
                   <DetailPanel title="Academic Details">
-                    <div className="grid gap-6 xl:grid-cols-2">
+                    <div className="grid gap-8 lg:grid-cols-2">
                       <TextList title="Academic Qualifications" items={qualifications} />
                       <TextList title="Research Interests" items={researchInterests} />
-                      <TextList title="Expertise" items={expertise} />
                     </div>
+                    {expertise.length > 0 ? (
+                      <section className="mt-8 border-t border-slate-200 pt-7">
+                        <h3 className="font-serif text-2xl font-bold leading-tight text-[#061f3f]">
+                          Expertise
+                        </h3>
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          {expertise.map((item) => (
+                            <span
+                              key={item}
+                              className="rounded-full bg-[#f7f3ea] px-4 py-2 text-sm font-bold text-blue-900 ring-1 ring-slate-200"
+                            >
+                              {item}
+                            </span>
+                          ))}
+                        </div>
+                      </section>
+                    ) : null}
                   </DetailPanel>
                 ) : null}
 
                 {hasContactDetails ? (
                   <DetailPanel title="Contact Information">
-                    <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                       {profile.email ? (
-                        <ContactItem label="Email" href={`mailto:${profile.email}`} value={profile.email} />
+                        <ContactItem icon="email" label="Email" href={`mailto:${profile.email}`} value={profile.email} />
                       ) : null}
                       {profile.phone ? (
-                        <ContactItem label="Phone" href={`tel:${getPhoneHref(profile.phone)}`} value={profile.phone} />
+                        <ContactItem icon="phone" label="Phone" href={`tel:${getPhoneHref(profile.phone)}`} value={profile.phone} />
                       ) : null}
                       {profile.office_location ? (
-                        <ContactItem label="Office" value={profile.office_location} />
+                        <ContactItem icon="location" label="Office" value={profile.office_location} />
                       ) : null}
                       {profile.website_url ? (
-                        <ContactItem label="Website" href={profile.website_url} value={profile.website_url} external />
+                        <ContactItem icon="website" label="Website" href={profile.website_url} value={profile.website_url} external />
                       ) : null}
                     </div>
                   </DetailPanel>
                 ) : null}
-
-                <div className="pt-2">
-                  <Link
-                    href="/"
-                    className="inline-flex items-center rounded-full bg-[#064c78] px-6 py-3 text-sm font-black uppercase tracking-[0.12em] text-white transition duration-300 hover:-translate-y-0.5 hover:bg-yellow-300 hover:text-[#061f3f] focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-300/70"
-                  >
-                    Back to Home
-                  </Link>
-                </div>
               </div>
             </div>
           </Container>
@@ -203,8 +219,8 @@ function DetailPanel({
   children: React.ReactNode;
 }>) {
   return (
-    <section className="rounded-[18px] border border-white bg-white p-6 shadow-[0_18px_48px_rgba(2,6,23,0.06)] sm:p-8">
-      <h2 className="font-serif text-3xl font-bold leading-tight text-[#061f3f]">
+    <section className="rounded-[12px] bg-white p-6 shadow-[0_14px_42px_rgba(2,6,23,0.055)] ring-1 ring-slate-200/70 sm:p-8">
+      <h2 className="font-serif text-[clamp(1.9rem,5vw,2.45rem)] font-bold leading-tight tracking-normal text-[#061f3f]">
         {title}
       </h2>
       <div className="mt-5">{children}</div>
@@ -225,13 +241,13 @@ function TextList({
 
   return (
     <section>
-      <h3 className="text-sm font-black uppercase tracking-[0.14em] text-blue-900">
+      <h3 className="font-serif text-2xl font-bold leading-tight text-[#061f3f]">
         {title}
       </h3>
-      <ul className="mt-4 space-y-3 text-base leading-7 text-slate-700">
+      <ul className="mt-4 space-y-3 text-[16px] leading-7 text-slate-700">
         {items.map((item) => (
           <li key={item} className="flex gap-3">
-            <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-yellow-400" aria-hidden="true" />
+            <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-yellow-400 ring-4 ring-yellow-100" aria-hidden="true" />
             <span>{item}</span>
           </li>
         ))}
@@ -241,11 +257,13 @@ function TextList({
 }
 
 function ContactItem({
+  icon,
   label,
   value,
   href,
   external = false,
 }: Readonly<{
+  icon: ContactIcon;
   label: string;
   value: string;
   href?: string;
@@ -253,14 +271,22 @@ function ContactItem({
 }>) {
   const content = (
     <>
-      <span className="text-xs font-black uppercase tracking-[0.13em] text-blue-900">
-        {label}
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-[#064c78] shadow-sm ring-1 ring-slate-200">
+        {renderContactIcon(icon)}
       </span>
-      <span className="mt-2 block break-words text-base font-semibold leading-7 text-slate-700">
-        {value}
+      <span className="min-w-0">
+        <span className="block text-[11px] font-black uppercase tracking-[0.13em] text-blue-900">
+          {label}
+        </span>
+        <span className="mt-1 block break-words text-[15px] font-semibold leading-6 text-slate-700">
+          {value}
+        </span>
       </span>
     </>
   );
+
+  const className =
+    "flex min-w-0 items-center gap-3 rounded-full bg-[#f7f3ea] px-4 py-3 shadow-[0_10px_28px_rgba(2,6,23,0.04)] ring-1 ring-slate-200/70 transition duration-300 hover:-translate-y-0.5 hover:bg-yellow-300/35 focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-300/70";
 
   if (href) {
     return (
@@ -268,19 +294,32 @@ function ContactItem({
         href={href}
         target={external ? "_blank" : undefined}
         rel={external ? "noopener noreferrer" : undefined}
-        className="rounded-[12px] bg-[#f7f3ea] p-5 transition duration-300 hover:-translate-y-0.5 hover:bg-yellow-300/35 focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-300/70"
+        className={className}
       >
         {content}
       </a>
     );
   }
 
-  return <div className="rounded-[12px] bg-[#f7f3ea] p-5">{content}</div>;
+  return <div className={className}>{content}</div>;
 }
 
-function getTextLines(value?: string | null): string[] {
+function buildProfileImageBackground(photoUrl: string | null): string {
+  const fallback =
+    "radial-gradient(circle at 30% 20%, rgba(250,204,21,0.24), transparent 28%), linear-gradient(135deg,#071733,#1d4ed8 58%,#e0f2fe)";
+
+  return photoUrl ? `url(${photoUrl}), ${fallback}` : fallback;
+}
+
+function getTextLines(value?: string | string[] | null): string[] {
   if (!value) {
     return [];
+  }
+
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => item.trim())
+      .filter(Boolean);
   }
 
   return value
@@ -351,6 +390,40 @@ function renderFacultySocialIcon(icon: FacultySocialLink["icon"]): React.ReactNo
     case "website":
       return (
         <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+          <path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z" />
+          <path d="M3.6 9h16.8M3.6 15h16.8M12 3c2.1 2.4 3.1 5.4 3.1 9s-1 6.6-3.1 9c-2.1-2.4-3.1-5.4-3.1-9s1-6.6 3.1-9Z" />
+        </svg>
+      );
+  }
+
+  return null;
+}
+
+function renderContactIcon(icon: ContactIcon): React.ReactNode {
+  switch (icon) {
+    case "email":
+      return (
+        <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" aria-hidden="true">
+          <path d="M4 6h16v12H4V6Z" />
+          <path d="m4.5 7 7.5 6 7.5-6" />
+        </svg>
+      );
+    case "phone":
+      return (
+        <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" aria-hidden="true">
+          <path d="M8.8 5.2 6.9 3.3 4.4 5.8c-.8.8-.8 2.1-.2 3.3 2.2 4.8 5.9 8.5 10.7 10.7 1.2.6 2.5.6 3.3-.2l2.5-2.5-1.9-1.9c-.8-.8-2-.9-2.9-.3l-1 .7c-2.7-1.4-5.1-3.8-6.5-6.5l.7-1c.6-.9.5-2.1-.3-2.9Z" />
+        </svg>
+      );
+    case "location":
+      return (
+        <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" aria-hidden="true">
+          <path d="M12 21s7-5.6 7-11a7 7 0 0 0-14 0c0 5.4 7 11 7 11Z" />
+          <path d="M12 12.4a2.4 2.4 0 1 0 0-4.8 2.4 2.4 0 0 0 0 4.8Z" />
+        </svg>
+      );
+    case "website":
+      return (
+        <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" aria-hidden="true">
           <path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z" />
           <path d="M3.6 9h16.8M3.6 15h16.8M12 3c2.1 2.4 3.1 5.4 3.1 9s-1 6.6-3.1 9c-2.1-2.4-3.1-5.4-3.1-9s1-6.6 3.1-9Z" />
         </svg>

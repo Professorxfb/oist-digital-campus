@@ -60,7 +60,7 @@ class FacultyProfileResource extends Resource
                             ->directory('cms/faculty')
                             ->image()
                             ->maxSize(4096)
-                            ->helperText('Image used on the homepage professor card and the faculty profile detail page.'),
+                            ->helperText('Used on homepage professor card and profile detail page.'),
                     ])->columns(1),
                 Section::make('Bio / Introduction')
                     ->schema([
@@ -71,23 +71,23 @@ class FacultyProfileResource extends Resource
                             ->columnSpanFull(),
                         RichEditor::make('detailed_bio')
                             ->label('Detailed Bio')
-                            ->helperText('Full introduction shown on the faculty profile detail page.')
+                            ->helperText('Full introduction shown on the detail page.')
                             ->columnSpanFull(),
                     ])->columns(1),
                 Section::make('Academic Details')
                     ->schema([
                         Textarea::make('qualifications')
                             ->rows(5)
-                            ->helperText('Academic qualifications, one per line when possible.')
+                            ->helperText('One item per line.')
                             ->columnSpanFull(),
                         Textarea::make('research_interests')
                             ->label('Research Interests')
                             ->rows(5)
-                            ->helperText('Research interests, one per line when possible.')
+                            ->helperText('One item per line.')
                             ->columnSpanFull(),
                         Textarea::make('expertise')
                             ->rows(5)
-                            ->helperText('Expertise areas, one per line when possible.')
+                            ->helperText('One item per line.')
                             ->columnSpanFull(),
                     ])->columns(1),
                 Section::make('Contact Information')
@@ -104,7 +104,7 @@ class FacultyProfileResource extends Resource
                             ->label('Facebook Profile URL')
                             ->url()
                             ->maxLength(2048)
-                            ->helperText('Shown as a card hover icon and on the detail page when provided.'),
+                            ->helperText('Shown as hover icons on cards and on the detail page.'),
                         TextInput::make('linkedin_url')
                             ->label('LinkedIn Profile URL')
                             ->url()

@@ -282,9 +282,9 @@ export interface FacultyProfile {
   photo_path?: string | null;
   short_bio?: string | null;
   detailed_bio?: string | null;
-  qualifications?: string | null;
-  research_interests?: string | null;
-  expertise?: string | null;
+  qualifications?: string | string[] | null;
+  research_interests?: string | string[] | null;
+  expertise?: string | string[] | null;
   email?: string | null;
   phone?: string | null;
   office_location?: string | null;

@@ -63,11 +63,25 @@ export function resolveCmsAssetUrl(path: string | null): string | null {
     return null;
   }
 
+  const backendOrigin = getBackendOrigin();
+
   if (/^https?:\/\//i.test(path)) {
-    return path;
+    try {
+      const assetUrl = new URL(path);
+
+      if (
+        assetUrl.pathname.startsWith("/storage/") &&
+        ["localhost", "127.0.0.1"].includes(assetUrl.hostname)
+      ) {
+        return `${backendOrigin}${assetUrl.pathname}${assetUrl.search}`;
+      }
+
+      return path;
+    } catch {
+      return path;
+    }
   }
 
-  const backendOrigin = getBackendOrigin();
   const normalizedPath = path.replace(/^\/+/, "");
 
   if (normalizedPath.startsWith("storage/")) {

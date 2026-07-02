@@ -1,5 +1,89 @@
 Date: 2026-07-02
 
+## Faculty Profile Detail Page Reference-Style Refinement
+
+### Scope
+
+Refined the existing Faculty Profiles detail flow to more closely match the Univet-style faculty member detail reference while keeping the existing Faculty Profiles CMS as the only source of truth. No new Professor CMS, model, resource, table, or duplicate content module was created.
+
+### Files Changed
+
+- `backend/app/Filament/Resources/FacultyProfiles/FacultyProfileResource.php`
+- `frontend/src/app/faculty-profiles/[slug]/page.tsx`
+- `frontend/src/lib/api-client.ts`
+- `frontend/src/types/cms.ts`
+- `docs/SETUP_LOG.md`
+
+### Photo URL Fix
+
+Faculty photos use the existing `faculty_profiles.photo_path` column. Filament stores uploads on the `public` disk in `cms/faculty`, and the API returns `photo_url` through Laravel public storage URL generation.
+
+The remaining frontend issue was URL normalization: Laravel can return local absolute storage URLs such as `http://localhost/storage/...`, while the frontend uses `NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000/api/v1`. The frontend CMS asset resolver now rewrites local `localhost` / `127.0.0.1` `/storage/...` asset URLs to the configured backend origin, so uploaded photos resolve to the active backend host/port.
+
+Storage note: local `backend/public/storage` exists. On a fresh deployment, run `php artisan storage:link` if public-disk uploads do not load.
+
+### Detail Page Redesign
+
+Updated `/faculty-profiles/[slug]` with a closer reference-style structure:
+
+- compact dark navy OIST-gradient hero
+- breadcrumb: Home / Faculty Profiles / profile name
+- uppercase department/designation meta line
+- large serif professor name
+- short bio preview
+- cream/off-white main background
+- centered max-width two-column desktop layout
+- left white profile card with 4:3 photo, name, designation, department, and social icons
+- right white cards for About / Introduction, Academic Details, and Contact Information
+- Academic Details uses two inner columns for Academic Qualifications and Research Interests
+- Expertise renders inside Academic Details as compact chips when provided
+- Contact Information uses email, phone, location, and website inline SVG icons
+- empty sections remain hidden
+
+The old extra Back to Home block was removed from the detail content area to keep the page closer to the reference structure.
+
+### Admin Field Hints
+
+Adjusted Faculty Profiles helper text:
+
+- Photo: used on homepage professor card and profile detail page.
+- Detailed Bio: full introduction shown on the detail page.
+- Qualifications, Research Interests, Expertise: one item per line.
+- Social Links: shown as hover icons on cards and on the detail page.
+
+### Social and Contact Behavior
+
+- Homepage hover social icons render only when real Faculty Profile social URLs exist.
+- Detail profile card social icons render only when real URLs exist.
+- Social links open with `target="_blank"` and `rel="noopener noreferrer"`.
+- Contact cards render only for existing CMS values.
+- Email uses `mailto:`, phone uses `tel:`, and website opens externally with safe rel attributes.
+- The heading is exactly `Contact Information`.
+
+### Verification Results
+
+- `php artisan optimize:clear` passed.
+- `php artisan route:list --path=api/v1` passed and confirmed `GET /api/v1/faculty-profiles` and `GET /api/v1/faculty-profiles/{slug}`.
+- `php artisan migrate` passed with nothing pending.
+- `php artisan test` passed: 44 tests, 314 assertions.
+- `npm run lint` passed.
+- `npm run build` passed.
+- `http://localhost:3000` responded for the homepage but closed unexpectedly for `/faculty-profiles/rabiul-islam`, so final browser verification used a fresh current preview at `http://127.0.0.1:3001`.
+- Browser verified homepage and `/faculty-profiles/rabiul-islam` at `1366px`, `1920px`, `768px`, `390px`, and `430px`.
+- Browser verified homepage card photo and detail profile card photo both resolve to `http://127.0.0.1:8000/storage/cms/faculty/...`.
+- Direct HTTP image check returned `200` for the uploaded faculty photo.
+- Browser verified homepage card click opens `/faculty-profiles/rabiul-islam`.
+- Browser verified detail page has hero, breadcrumb, left profile card, About / Introduction, Academic Details, Academic Qualifications, Research Interests, Expertise, Contact Information, contact icons, and no horizontal overflow.
+- Other public sections were not redesigned.
+
+### Package Status
+
+No package or plugin was installed.
+
+---
+
+Date: 2026-07-02
+
 ## Faculty Profile Detail Pages, Photos, and Social Links
 
 ### Scope
