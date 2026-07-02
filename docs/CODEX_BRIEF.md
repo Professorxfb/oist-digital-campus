@@ -1,5 +1,39 @@
 # Codex Brief
 
+## Permanent Global Public Page Layout Rule
+
+Every public page/detail page must follow the Univet reference-style layout discipline.
+
+Breadcrumb, meta text, page title, divider, intro text, and main content must start from a consistent left boundary. Do not randomly center hero text blocks unless the reference layout for that section is centered. Default public detail pages must be left-aligned like the Univet reference.
+
+Header/navbar must never touch the hero content. Always keep clean breathing space after the header. Hero content must use consistent top/bottom padding. Page hero content and main content must share the same container alignment system.
+
+At large desktop widths, content must not start too far inside/right. At `1920px` viewport, public detail page hero content should usually begin around `140px-180px` from the left edge unless the specific reference section requires otherwise. At `1366px` viewport, public detail page hero content should usually begin around `90px-120px` from the left edge. Avoid `250px-350px` left offsets for page titles unless the reference clearly uses that.
+
+Page titles must be large and premium, but not oversized. Use responsive `clamp()` title sizes. Do not use ugly ellipsis/truncation for important page titles or intro text.
+
+Do not create cramped hero sections. Do not create huge empty spaces. Do not create random extra sections unless CMS data and design require them. All public content must remain CMS/backend controlled.
+
+Before finishing any public page, compare against the Univet reference for left alignment, top spacing after header, title size, line height, content width, vertical rhythm, responsive behavior, and no horizontal overflow.
+
+Functional completion is not enough. Every public page must match reference-quality visual polish.
+
+## Recommended Public Page Container System
+
+Use a shared container style/pattern for public detail pages. Suggested desktop max width is `1480px-1520px` for hero/detail page wrappers when needed. Suggested desktop horizontal padding is `32px`. Suggested tablet padding is `24px`. Suggested mobile padding is `18px-20px`.
+
+Hero content should be left-aligned inside this container. Main content should use the same left boundary. Intro text should have controlled max-width around `600px-700px`.
+
+Do not use a narrow centered container that pushes hero content too far right. If a page needs a different layout, document why in `docs/SETUP_LOG.md`.
+
+## Permanent Global Public Typography Rule
+
+Public page titles must match the premium Univet-style scale. Titles should be elegant, readable, and balanced. Do not make titles huge just because they are hero titles.
+
+Use responsive `clamp()` sizing. Hero/page title, section title, card title, and small meta text must each have separate size scale. Card titles should stay readable and must not be cut off. Main page titles should never look messy or oversized.
+
+Always compare font size and spacing against the reference before finishing.
+
 ## Global Public Page Layout Rule
 
 Every new public detail page must use a consistent centered max-width container. Hero/banner text must align with the main content container, never with a random left or right position.

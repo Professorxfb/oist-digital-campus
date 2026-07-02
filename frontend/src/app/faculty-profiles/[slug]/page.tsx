@@ -210,7 +210,7 @@ function FacultyPageContainer({
   className?: string;
 }>) {
   return (
-    <div className={`mx-auto w-full max-w-[1220px] px-5 sm:px-6 lg:px-8 ${className}`}>
+    <div className={`mx-auto w-full max-w-[1220px] px-5 sm:px-6 lg:px-8 2xl:max-w-[1660px] ${className}`}>
       {children}
     </div>
   );

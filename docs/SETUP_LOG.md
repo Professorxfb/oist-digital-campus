@@ -1,5 +1,59 @@
 Date: 2026-07-02
 
+## Permanent Public Page Layout Rule and Faculty Detail Alignment
+
+### Scope
+
+Added permanent project-level public page layout and typography rules, then aligned the current Faculty Profile detail page to the new large-desktop left-boundary rule. This rule applies to all future public pages and detail templates, not only the Faculty Profile page. Header/navbar layout, homepage sections, CMS, API, database, and backend behavior were not changed.
+
+### Files Changed
+
+- `frontend/src/app/faculty-profiles/[slug]/page.tsx`
+- `docs/CODEX_BRIEF.md`
+- `docs/SETUP_LOG.md`
+
+### Faculty Detail Alignment Fix
+
+- Kept the existing `1220px` page container behavior for normal desktop widths so the `1366px` layout remains in the reference-style range.
+- Added a `2xl:max-w-[1660px]` width for the Faculty Profile detail page container so large desktop layouts do not push hero content too far inside/right.
+- Breadcrumb, meta, title, divider, intro text, and main content continue to share the same container alignment system.
+- The single navy hero background, refined title scale, header-to-hero breathing space, and CMS-controlled content were preserved.
+
+### Global Rules Added
+
+Added these permanent sections to `docs/CODEX_BRIEF.md`:
+
+- `Permanent Global Public Page Layout Rule`
+- `Recommended Public Page Container System`
+- `Permanent Global Public Typography Rule`
+
+The rules define left-boundary expectations, top spacing after the header, shared hero/main container alignment, title scale discipline, CMS-controlled content, and final reference-quality visual checks for every future public page.
+
+### Container Note
+
+The permanent container guidance recommends `1480px-1520px` wrappers for most public detail pages. The Faculty Profile detail page uses `2xl:max-w-[1660px]` at very large desktop widths because the current header and viewport measurements require a wider wrapper to keep the `1920px` hero title left edge within the requested `140px-180px` reference range.
+
+### Verification Result
+
+- `npm run lint` passed.
+- `npm run build` passed.
+- Browser verified `http://localhost:3000/faculty-profiles/rabiul-islam` at `1920px`, `1366px`, `768px`, `430px`, and `390px`.
+- At `1920px`, breadcrumb/meta/title/divider/intro start at `155px` from the viewport left edge, within the requested `140px-180px` reference range.
+- At `1366px`, breadcrumb/meta/title/divider/intro start at `98px` from the viewport left edge, within the requested `90px-120px` reference range.
+- At `768px`, content starts at `24px`, matching the tablet padding rule.
+- At `430px` and `390px`, content starts at `20px`, matching the mobile padding rule.
+- Breadcrumb, meta, title, divider, intro, and main content left boundaries match exactly at every checked viewport.
+- Header-to-breadcrumb spacing remains `82px` on desktop, `62px` on tablet, and `52px` on mobile.
+- Hero background remains the single navy `rgb(8, 47, 85)` with no background image/gradient split.
+- Faculty detail title remains controlled at about `66px` on desktop and `38px` on tablet/mobile.
+- Uploaded faculty image remains visible from the existing `/storage/cms/faculty/...` asset URL.
+- No horizontal overflow was detected.
+- Header/navbar, homepage sections, CMS, API, database, and backend files were not changed.
+
+---
+
+Date: 2026-07-02
+
 ## Faculty Detail Hero Background and Title Scale
 
 ### Scope
