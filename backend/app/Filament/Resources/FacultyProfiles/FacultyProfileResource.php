@@ -10,6 +10,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -36,7 +37,7 @@ class FacultyProfileResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Faculty Profile')
+                Section::make('Basic Profile')
                     ->schema([
                         TextInput::make('name')->required()->maxLength(255),
                         TextInput::make('slug')
@@ -50,15 +51,75 @@ class FacultyProfileResource extends Resource
                             ->relationship('department', 'name')
                             ->searchable()
                             ->preload(),
+                    ])->columns(2),
+                Section::make('Photo')
+                    ->schema([
                         FileUpload::make('photo_path')
                             ->label('Photo')
                             ->disk('public')
                             ->directory('cms/faculty')
                             ->image()
-                            ->maxSize(4096),
-                        Textarea::make('short_bio')->rows(4)->columnSpanFull(),
+                            ->maxSize(4096)
+                            ->helperText('Image used on the homepage professor card and the faculty profile detail page.'),
+                    ])->columns(1),
+                Section::make('Bio / Introduction')
+                    ->schema([
+                        Textarea::make('short_bio')
+                            ->label('Short Bio')
+                            ->rows(4)
+                            ->helperText('Brief introduction used in cards and summaries.')
+                            ->columnSpanFull(),
+                        RichEditor::make('detailed_bio')
+                            ->label('Detailed Bio')
+                            ->helperText('Full introduction shown on the faculty profile detail page.')
+                            ->columnSpanFull(),
+                    ])->columns(1),
+                Section::make('Academic Details')
+                    ->schema([
+                        Textarea::make('qualifications')
+                            ->rows(5)
+                            ->helperText('Academic qualifications, one per line when possible.')
+                            ->columnSpanFull(),
+                        Textarea::make('research_interests')
+                            ->label('Research Interests')
+                            ->rows(5)
+                            ->helperText('Research interests, one per line when possible.')
+                            ->columnSpanFull(),
+                        Textarea::make('expertise')
+                            ->rows(5)
+                            ->helperText('Expertise areas, one per line when possible.')
+                            ->columnSpanFull(),
+                    ])->columns(1),
+                Section::make('Contact Information')
+                    ->schema([
                         TextInput::make('email')->email()->maxLength(255),
                         TextInput::make('phone')->tel()->maxLength(255),
+                        TextInput::make('office_location')
+                            ->label('Office Location / Address')
+                            ->maxLength(255),
+                    ])->columns(2),
+                Section::make('Social Links')
+                    ->schema([
+                        TextInput::make('facebook_url')
+                            ->label('Facebook Profile URL')
+                            ->url()
+                            ->maxLength(2048)
+                            ->helperText('Shown as a card hover icon and on the detail page when provided.'),
+                        TextInput::make('linkedin_url')
+                            ->label('LinkedIn Profile URL')
+                            ->url()
+                            ->maxLength(2048),
+                        TextInput::make('twitter_url')
+                            ->label('X / Twitter Profile URL')
+                            ->url()
+                            ->maxLength(2048),
+                        TextInput::make('website_url')
+                            ->label('Website URL')
+                            ->url()
+                            ->maxLength(2048),
+                    ])->columns(2),
+                Section::make('Publishing')
+                    ->schema([
                         TextInput::make('sort_order')->numeric()->minValue(0)->default(0)->required(),
                         Toggle::make('is_published')->inline(false),
                     ])->columns(2),

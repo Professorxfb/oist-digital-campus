@@ -281,8 +281,17 @@ export interface FacultyProfile {
   photo_url?: string | null;
   photo_path?: string | null;
   short_bio?: string | null;
+  detailed_bio?: string | null;
+  qualifications?: string | null;
+  research_interests?: string | null;
+  expertise?: string | null;
   email?: string | null;
   phone?: string | null;
+  office_location?: string | null;
+  facebook_url?: string | null;
+  linkedin_url?: string | null;
+  twitter_url?: string | null;
+  website_url?: string | null;
   sort_order?: number;
 }
 

@@ -165,6 +165,12 @@ export function getFacultyProfiles(): Promise<ApiFetchResult<FacultyProfile[]>> 
   return fetchCmsApi<FacultyProfile[]>("faculty-profiles", []);
 }
 
+export function getFacultyProfileBySlug(
+  slug: string,
+): Promise<ApiFetchResult<FacultyProfile | null>> {
+  return fetchCmsApi<FacultyProfile | null>(`faculty-profiles/${slug}`, null);
+}
+
 export function getInstitutionalPages(): Promise<
   ApiFetchResult<InstitutionalPage[]>
 > {

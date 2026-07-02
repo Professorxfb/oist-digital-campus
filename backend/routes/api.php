@@ -27,6 +27,7 @@ Route::prefix('v1')->group(function (): void {
     Route::get('departments', [PublicCmsController::class, 'departments']);
     Route::get('departments/{slug}', [PublicCmsController::class, 'department']);
     Route::get('faculty-profiles', [PublicCmsController::class, 'facultyProfiles']);
+    Route::get('faculty-profiles/{slug}', [PublicCmsController::class, 'facultyProfile']);
     Route::get('institutional-pages', [PublicCmsController::class, 'institutionalPages']);
     Route::get('institutional-pages/{slug}', [PublicCmsController::class, 'institutionalPage']);
     Route::get('scholarships', [PublicCmsController::class, 'scholarships']);

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\AboutSection;
 use App\Models\CampusLifeSection;
+use App\Models\FacultyProfile;
 use App\Models\ChairmanMessage;
 use App\Models\HeroSection;
 use App\Models\HomepageSection;
@@ -264,6 +265,68 @@ class PublicCmsApiTest extends TestCase
             ->assertJsonMissing(['title' => 'Disabled Card'])
             ->assertJsonMissingPath('data.0.id')
             ->assertJsonMissingPath('data.0.created_at');
+    }
+
+    public function test_faculty_profiles_api_returns_photo_social_and_detail_fields(): void
+    {
+        FacultyProfile::query()->create([
+            'name' => 'Hidden Faculty',
+            'slug' => 'hidden-faculty',
+            'is_published' => false,
+        ]);
+
+        FacultyProfile::query()->create([
+            'name' => 'Published Faculty',
+            'slug' => 'published-faculty',
+            'designation' => 'Assistant Professor',
+            'photo_path' => 'cms/faculty/photo.jpg',
+            'short_bio' => 'Short public bio.',
+            'detailed_bio' => '<p>Detailed public bio.</p>',
+            'qualifications' => "B.Sc. in CSE\nM.Sc. in CSE",
+            'research_interests' => "AI\nRobotics",
+            'expertise' => "Programming\nData Science",
+            'email' => 'faculty@example.edu',
+            'phone' => '+8801700000000',
+            'office_location' => 'Room 201',
+            'facebook_url' => 'https://facebook.com/faculty',
+            'linkedin_url' => 'https://linkedin.com/in/faculty',
+            'twitter_url' => 'https://x.com/faculty',
+            'website_url' => 'https://faculty.example.edu',
+            'sort_order' => 1,
+            'is_published' => true,
+        ]);
+
+        $listResponse = $this->getJson('/api/v1/faculty-profiles');
+
+        $listResponse
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.0.name', 'Published Faculty')
+            ->assertJsonPath('data.0.photo_url', 'http://localhost/storage/cms/faculty/photo.jpg')
+            ->assertJsonPath('data.0.facebook_url', 'https://facebook.com/faculty')
+            ->assertJsonMissing(['name' => 'Hidden Faculty'])
+            ->assertJsonMissingPath('data.0.id')
+            ->assertJsonMissingPath('data.0.created_at');
+
+        $detailResponse = $this->getJson('/api/v1/faculty-profiles/published-faculty');
+
+        $detailResponse
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.name', 'Published Faculty')
+            ->assertJsonPath('data.detailed_bio', '<p>Detailed public bio.</p>')
+            ->assertJsonPath('data.qualifications', "B.Sc. in CSE\nM.Sc. in CSE")
+            ->assertJsonPath('data.research_interests', "AI\nRobotics")
+            ->assertJsonPath('data.expertise', "Programming\nData Science")
+            ->assertJsonPath('data.office_location', 'Room 201')
+            ->assertJsonPath('data.website_url', 'https://faculty.example.edu')
+            ->assertJsonMissingPath('data.id')
+            ->assertJsonMissingPath('data.created_at');
+
+        $this->getJson('/api/v1/faculty-profiles/hidden-faculty')
+            ->assertNotFound()
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('error', 'not_found');
     }
 
     public function test_menus_api_returns_active_menu_items(): void

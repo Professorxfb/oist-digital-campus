@@ -1,3 +1,115 @@
+Date: 2026-07-02
+
+## Faculty Profile Detail Pages, Photos, and Social Links
+
+### Scope
+
+Fixed and completed the Professors / Faculty Profiles flow using the existing Public CMS -> Faculty Profiles module only. No new Professor CMS, model, table, migration, resource, or duplicate content source was created.
+
+### Files Changed
+
+- `backend/app/Models/FacultyProfile.php`
+- `backend/app/Filament/Resources/FacultyProfiles/FacultyProfileResource.php`
+- `backend/app/Http/Controllers/Api/V1/PublicCmsController.php`
+- `backend/database/migrations/2026_07_02_000001_extend_faculty_profiles_for_detail_pages.php`
+- `backend/routes/api.php`
+- `backend/tests/Feature/PublicCmsApiTest.php`
+- `frontend/src/app/page.tsx`
+- `frontend/src/app/faculty-profiles/[slug]/page.tsx`
+- `frontend/src/components/public-site/FacultyCard.tsx`
+- `frontend/src/services/cms.ts`
+- `frontend/src/types/cms.ts`
+- `docs/SETUP_LOG.md`
+
+### Database Fields Added
+
+Added nullable columns to the existing `faculty_profiles` table only:
+
+- `detailed_bio`
+- `qualifications`
+- `research_interests`
+- `expertise`
+- `office_location`
+- `facebook_url`
+- `linkedin_url`
+- `twitter_url`
+- `website_url`
+
+Existing Faculty Profiles data is preserved. No columns were dropped or renamed.
+
+### Admin Behavior
+
+Faculty Profiles admin now groups the form into Basic Profile, Photo, Bio / Introduction, Academic Details, Contact Information, Social Links, and Publishing.
+
+Admin helper text was added for:
+
+- Photo: image used on homepage and detail page.
+- Short Bio: brief introduction for cards/summaries.
+- Detailed Bio: full detail page introduction.
+- Social Links: icons shown on card hover and detail page when real URLs exist.
+
+### API Behavior
+
+- `GET /api/v1/faculty-profiles` remains the published list endpoint.
+- `GET /api/v1/faculty-profiles/{slug}` was added for published-only profile detail.
+- Missing or unpublished detail profiles return 404 with the standard error envelope.
+- Faculty profile responses include safe public `photo_url` values generated from the public disk, plus the new detail/contact/social fields.
+- Public search faculty results now link to `/faculty-profiles/{slug}`.
+- Local storage link already exists at `backend/public/storage`. On a fresh deployment, run `php artisan storage:link` if public-disk uploads do not resolve.
+
+### Frontend Behavior
+
+- Homepage professor card photos now resolve through the CMS asset URL helper, so API `photo_url` values such as `/storage/...` or absolute backend URLs render from the Laravel backend instead of the frontend origin.
+- Homepage cards link to `/faculty-profiles/{slug}`.
+- The existing `/faculty` listing cards also link to `/faculty-profiles/{slug}`.
+- Homepage card hover keeps the navy/dark body state and reveals circular social icons only when real social URLs exist.
+- Social links open in a new tab with `target="_blank"` and `rel="noopener noreferrer"`.
+- If a profile has no photo, a graceful visual placeholder is used instead of a broken image.
+- If a profile has no social URLs, no fake social icons are rendered.
+
+### Detail Route
+
+Added public route:
+
+- `/faculty-profiles/[slug]`
+
+The detail page renders CMS/API data only:
+
+- hero/banner with breadcrumb and professor name
+- professor photo card
+- name, designation, department
+- about/introduction from `detailed_bio` or `short_bio`
+- academic qualifications
+- research interests
+- expertise
+- email, phone, office location, website
+- social links when available
+- Back to Home button with visible hover state
+
+Empty fields are hidden gracefully and no dummy qualifications, interests, expertise, or social links are displayed.
+
+### Verification Results
+
+- `php artisan optimize:clear` passed.
+- `php artisan route:list --path=api/v1` passed and confirmed both `GET /api/v1/faculty-profiles` and `GET /api/v1/faculty-profiles/{slug}`.
+- `php artisan migrate` passed and added only nullable Faculty Profile columns.
+- `php artisan test` passed: 44 tests, 314 assertions.
+- `npm run lint` passed.
+- `npm run build` passed. Build emitted expected local API connection warnings while `127.0.0.1:8000` was not running during static generation, but the build completed successfully.
+- Browser verification used local servers at `http://127.0.0.1:8000` and `http://127.0.0.1:3001`.
+- Existing published profile checked: `/faculty-profiles/rabiul-islam`.
+- Browser verified homepage card photo uses `/storage/cms/faculty/...`, card href is `/faculty-profiles/rabiul-islam`, and visible card click navigates to the detail page.
+- Browser verified detail page shows the profile name, breadcrumb, photo card, CMS content panels, and no horizontal overflow.
+- Browser verified responsive widths `1366px`, `1920px`, `768px`, `390px`, and `430px`.
+- Detail layout is two-column on desktop and stacked on tablet/mobile.
+- Current local published profile has no social URLs, so live browser showed zero social icons as intended. Social link fields and API output are covered by backend tests, and the frontend renders hover/detail icons only when CMS URLs exist.
+
+### Package Status
+
+No package or plugin was installed.
+
+---
+
 Date: 2026-07-01
 
 ## Homepage Professors Section

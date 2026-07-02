@@ -363,6 +363,21 @@ class PublicCmsController extends Controller
         return $this->paginatedResponse($profiles, 'Faculty profiles retrieved.');
     }
 
+    public function facultyProfile(string $slug): JsonResponse
+    {
+        $profile = FacultyProfile::query()
+            ->published()
+            ->with('department')
+            ->where('slug', $slug)
+            ->first();
+
+        if (! $profile) {
+            return $this->errorResponse('Faculty profile not found.', 404, 'not_found');
+        }
+
+        return $this->publicResponse($this->formatFacultyProfile($profile, true), 'Faculty profile retrieved.');
+    }
+
     public function institutionalPages(): JsonResponse
     {
         $pages = InstitutionalPage::query()
@@ -577,7 +592,7 @@ class PublicCmsController extends Controller
             ->orderBy('sort_order')
             ->limit($limit)
             ->get()
-            ->map(fn (FacultyProfile $profile): array => $this->searchResult('faculty_profile', $profile->name, $profile->designation ?? $profile->short_bio, '/faculty', $profile->updated_at)));
+            ->map(fn (FacultyProfile $profile): array => $this->searchResult('faculty_profile', $profile->name, $profile->designation ?? $profile->short_bio, "/faculty-profiles/{$profile->slug}", $profile->updated_at)));
 
         $results = $results->merge(Download::query()
             ->published()
@@ -926,8 +941,17 @@ class PublicCmsController extends Controller
             'photo_url' => $this->publicStorageUrl($profile->photo_path),
             'photo_path' => $profile->photo_path,
             'short_bio' => $profile->short_bio,
+            'detailed_bio' => $profile->detailed_bio,
+            'qualifications' => $profile->qualifications,
+            'research_interests' => $profile->research_interests,
+            'expertise' => $profile->expertise,
             'email' => $profile->email,
             'phone' => $profile->phone,
+            'office_location' => $profile->office_location,
+            'facebook_url' => $profile->facebook_url,
+            'linkedin_url' => $profile->linkedin_url,
+            'twitter_url' => $profile->twitter_url,
+            'website_url' => $profile->website_url,
             'sort_order' => $profile->sort_order,
         ], fn (mixed $value): bool => $value !== null);
     }
