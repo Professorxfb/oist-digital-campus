@@ -28,6 +28,8 @@ Footer must use one consistent background color unless a reference design explic
 
 Every new public page must follow the same public page container system and must be visually checked against the approved Univet-inspired direction before completion. Functional completion is not enough.
 
+Functional sections are not complete until their visual design matches the reference quality. For form sections, Codex must verify typography, spacing, field style, button style, image rendering, alignment, responsive behavior, and success/error states before finishing. Do not deliver plain functional forms with weak design.
+
 Header/navbar must never touch page hero content. Always keep clean breathing space between the header and breadcrumb/title group. Page hero content must use reference-style left alignment: breadcrumb, meta text, title, divider, and intro text must start from the same left edge. Do not randomly center or push page title blocks inward unless the reference section is intentionally centered.
 
 At `1920px` viewport, public page title content should usually start around `140px-180px` from the viewport left. At `1366px` viewport, it should usually start around `90px-120px` from the viewport left. Do not start public page titles around `250px-350px` from the left unless specifically required by the reference.

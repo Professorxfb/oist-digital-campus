@@ -1,3 +1,55 @@
+Date: 2026-07-03
+
+## Admissions Section Visual Redesign
+
+### Scope
+
+Redesigned and polished only the homepage Admissions / Application Form section frontend. Header, footer, Hero, About, Academics, Notices, Chairman Message, OIST Lab, Professors, Faculty pages, CMS/API/database, backend routes, migrations, models, and Filament resources were not changed.
+
+### Files Changed
+
+- `frontend/src/components/public-site/AdmissionsSection.tsx`
+- `docs/CODEX_BRIEF.md`
+- `docs/SETUP_LOG.md`
+
+### Visual Changes
+
+- Reworked the Admissions section into a reference-style cream/off-white two-column layout with CMS-controlled subtitle, title, content, and media on the left and a dark navy application form card on the right.
+- Refined left typography with small uppercase letter-spaced subtitle, elegant serif title using controlled `clamp()` sizing, and readable paragraph spacing.
+- Restyled the media area as a large horizontal feature block with rounded corners, soft shadow, stable height, and clear CMS image rendering through the existing `getCmsAssetUrl(section.image_path)` path.
+- Local CMS verification currently has no Admissions `image_path`, so the section rendered the existing-style tasteful gradient fallback instead of a blank dark rectangle. No frontend asset URL bug fix was needed.
+- Restyled the form card with OIST navy, subtle shadow, gold top accent, clean radius, academic cap icon, serif heading, and balanced internal spacing.
+- Reordered fields into the required desktop pairs: First Name / Last Name, Email / Phone, Country / City, Zip Code / Date of Birth, with Address and Message full width.
+- Updated inputs to dark navy field backgrounds, subtle borders, readable white text, gold focus states, and clear gold required asterisks.
+- Kept the shared animated `.btn-public-primary` Apply Now button with gold background, navy text, pill radius, moving dot, and visible hover animation.
+
+### Behavior Confirmation
+
+- Existing `submitAdmissionApplication(form)` API flow was preserved.
+- Browser validation check confirmed empty submit still shows required-field errors and a clean general validation message.
+- Browser submission check succeeded with the success modal heading `Application Successful` and message `Application submitted successfully. We will contact you soon.`
+- The successful browser submission cleared the First Name field after submit.
+- Backend database check confirmed the submitted local test row was saved in `admission_applications` with `status=new`, `source=homepage_admissions_section`, and `notes=null`.
+- No CMS/API/database/backend change was made.
+
+### Responsive Verification Result
+
+- Frontend preview used `http://127.0.0.1:3002` because `127.0.0.1:3000` returned `EACCES` and `127.0.0.1:3001` was already in use.
+- Backend verification used `http://127.0.0.1:8000`.
+- Browser checked widths: `1920px`, `1366px`, `1024px`, `768px`, `430px`, and `390px`.
+- `1920px`, `1366px`, and `1024px`: two-column layout rendered with visible left media/fallback and aligned dark navy form card; desktop field pairs shared rows.
+- `768px`: section stacked cleanly with centered/constrained form card and no horizontal overflow.
+- `430px` and `390px`: subtitle/title/paragraph, media, and form stacked in order; fields collapsed to one column; Apply Now button became full width and easy to tap.
+- No horizontal overflow was detected at any checked width.
+- Settled browser screenshots confirmed the reveal animation completed with normal opacity before final visual assessment.
+
+### Commands Run
+
+- `npm run lint` passed.
+- `npm run build` passed.
+
+---
+
 Date: 2026-07-02
 
 ## Professors Auto-Scroll and Admissions Application Section
