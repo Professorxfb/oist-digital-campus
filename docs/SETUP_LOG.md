@@ -1,5 +1,86 @@
 Date: 2026-07-02
 
+## Faculty Listing Polish, Footer Unification, and Permanent Quality Rules
+
+### Scope
+
+Fixed the `/faculty-profiles` listing page visual layout, faculty card image cropping, footer background/copyright/contact alignment, and permanent project rules. Header/navbar structure, completed homepage sections, CMS/API/database, backend behavior, Faculty Profiles CMS, and Professor CMS/model/resource/table definitions were not changed.
+
+### Files Changed
+
+- `frontend/src/app/faculty-profiles/page.tsx`
+- `frontend/src/components/public-site/FacultyCard.tsx`
+- `frontend/src/components/public-site/ProfessorsCarousel.tsx`
+- `frontend/src/components/public-site/SiteFooter.tsx`
+- `AGENTS.md`
+- `docs/CODEX_BRIEF.md`
+- `docs/SETUP_LOG.md`
+
+### Faculty Profiles Listing Page Fix
+
+- Replaced the generic page intro on `/faculty-profiles` with a page-specific hero matching the Faculty Detail alignment system.
+- Hero now uses one consistent navy background: `#082f55`.
+- Header-to-hero breathing space follows the detail page spacing pattern.
+- Breadcrumb, eyebrow, title, and divider share the same left boundary.
+- Page title uses controlled responsive serif sizing: `clamp(2.125rem,4.2vw,4rem)`.
+- Main content stays on the same container system and uses the cream/off-white page background.
+
+### Faculty Card Image and Layout Fix
+
+- Replaced the generic content-card renderer with a faculty-specific card.
+- Faculty listing card image area now uses a fixed `4:3` aspect ratio.
+- CMS profile photos render with `bg-cover` and top-biased `background-position: 50% 22%` to reduce bad face/head cropping.
+- Card heights, image areas, metadata badges, title scale, short-bio preview, and Read More action are aligned consistently.
+- Homepage professor carousel images also use the same top-biased `50% 22%` positioning.
+- No hard-coded professor data was added; all profiles still come from the existing Faculty Profiles CMS API.
+
+### Footer Fix
+
+- Removed the left-side footer overlay/panel that created a split-color footer.
+- Footer now uses one unified navy background: `#061f3f`.
+- Removed logo-area/footer-text rendering so duplicate copyright text such as `©OIST. All rights reserved.` no longer appears under the logo.
+- Bottom copyright text remains and is centered.
+- Footer contact rows now use clean icon + text alignment.
+- Phone and email use `whitespace-nowrap` on desktop so they do not break awkwardly when space is available, with mobile wrapping allowed only when necessary.
+- Portal links, CMS/social links, and existing footer columns were preserved.
+
+### Permanent Rules Added
+
+Updated `docs/CODEX_BRIEF.md` and reinforced the same rule family in `AGENTS.md` with:
+
+- `Permanent Public Page & Section Quality Rules`
+- Expanded `Permanent Global Footer Rule`
+
+These rules permanently require reference-style public page alignment, header-to-hero spacing, controlled title scale, consistent containers, proper image crop/positioning, unified footer backgrounds, centered footer copyright, clean footer contact alignment, and visual checks at `1920px`, `1366px`, `768px`, `430px`, and `390px`.
+
+### Commands Run
+
+- `npm run lint`
+- `npm run build`
+- `npm run dev -- --hostname 127.0.0.1 --port 3000`
+
+### Verification Results
+
+- `npm run lint` passed.
+- `npm run build` passed.
+- Browser verification used `http://127.0.0.1:3000`.
+- `/faculty-profiles` was checked at `1920px`, `1366px`, `768px`, `430px`, and `390px`.
+- `/faculty-profiles/rabiul-islam` was checked at `1366px`.
+- Homepage `/` footer was checked at `1366px`; homepage professor carousel rendered earlier in the run and was verified at `1366px` and `390px` before the current CMS homepage section response stopped rendering the professors section.
+- Listing page title left edge measured `155px` at `1920px` and `98px` at `1366px`, matching the permanent reference-style range.
+- Listing page title measured `64px` at `1920px`, about `57px` at `1366px`, and `34px` on tablet/mobile.
+- Listing card image aspect measured `1.33` (`4:3`) with `background-position: 50% 22%`.
+- Footer background measured as a single `rgb(6, 31, 63)` with transparent top-level decorative elements only.
+- Footer had no newsletter, email signup, privacy checkbox, Google Play, or App Store text.
+- Footer had no logo-area duplicate copyright text.
+- Bottom copyright text was centered and read `© 2026 OIST Digital Campus. All rights reserved.`
+- Desktop phone and email measured as one-line `nowrap` contact links.
+- No horizontal overflow was detected on the checked pages and widths.
+
+---
+
+Date: 2026-07-02
+
 ## Permanent Public Page Layout Rule and Faculty Detail Alignment
 
 ### Scope

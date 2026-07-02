@@ -22,6 +22,24 @@ The current footer portal area must show Student Login, Faculty Login, and Staff
 
 Do not hard-code unnecessary demo footer content when CMS data exists. Structural fallback links are allowed only when CMS footer menu or quick-link data is missing.
 
+Footer must use one consistent background color unless a reference design explicitly requires panels. Do not create split-color footer panels, darker left blocks, alternate logo-area panels, or separate two-tone strips. Bottom copyright text should be centered. Do not add duplicate logo-area copyright text. Footer contact information must align cleanly with icon and text rows; email and phone should stay on one line on desktop where space allows, and social icons must align consistently. Check the footer on desktop, tablet, and mobile before finishing.
+
+## Permanent Public Page & Section Quality Rules
+
+Every new public page must follow the same public page container system and must be visually checked against the approved Univet-inspired direction before completion. Functional completion is not enough.
+
+Header/navbar must never touch page hero content. Always keep clean breathing space between the header and breadcrumb/title group. Page hero content must use reference-style left alignment: breadcrumb, meta text, title, divider, and intro text must start from the same left edge. Do not randomly center or push page title blocks inward unless the reference section is intentionally centered.
+
+At `1920px` viewport, public page title content should usually start around `140px-180px` from the viewport left. At `1366px` viewport, it should usually start around `90px-120px` from the viewport left. Do not start public page titles around `250px-350px` from the left unless specifically required by the reference.
+
+Use consistent max-width containers and responsive side padding. Public title scale must match the Univet reference: hero/page titles should be large but controlled, section titles should be premium but balanced, and card titles should be readable and never cut off. Use responsive `clamp()` font sizes. Do not make titles oversized, cramped, or visually heavier than the reference. Avoid ugly ellipsis or truncation for important titles.
+
+Card images must use a consistent aspect ratio, `object-cover`, and a deliberate `object-position` that protects important subjects. Do not crop faces, heads, products, buildings, or other important image subjects badly. Avoid huge zoomed-in crops, stretched images, and unstable card image heights.
+
+Footer must remain one unified background color unless a reference design explicitly requires panels. Footer copyright must be centered unless a specific design says otherwise. Email and phone text must not break awkwardly on desktop where there is room.
+
+Every new public page or major public section must be checked at `1920px`, `1366px`, `768px`, `430px`, and `390px` before finishing. Verify visual alignment, spacing, font size, image cropping, footer consistency, and responsive polish. Apply these rules automatically for future public pages without waiting for the user to repeat them.
+
 ## Permanent Global Public Page Layout Rule
 
 Every public page/detail page must follow the Univet reference-style layout discipline.

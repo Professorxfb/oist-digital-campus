@@ -86,9 +86,12 @@ This file is the permanent instruction rulebook for all future Codex work in thi
 - Keep public website pages SEO-friendly and portal pages protected from indexing.
 - Build mobile-first layouts.
 - Use accessible semantic markup.
+- Every new public page and major public section must follow the permanent reference-quality layout rules: consistent public page container, proper header-to-hero breathing space, left-aligned breadcrumb/title/divider/intro group, controlled responsive title scale, polished spacing, and visual checks at `1920px`, `1366px`, `768px`, `430px`, and `390px` before completion.
+- Public card images must use a consistent aspect ratio and deliberate cover positioning so faces, heads, buildings, products, and other important subjects are not cropped badly. Do not ship stretched, over-zoomed, unstable, or poorly positioned public images.
 - Every public website button or CTA must use the same premium Univet-inspired hover animation behavior unless there is a clear design reason not to. Public buttons must not be static on hover.
 - Prefer shared public button classes/variants for yellow/gold primary buttons, navy buttons, icon/dot accents, smooth overlay or color transitions, and readable hover states instead of one-off button styling.
 - Footer implementations must preserve the portal-login structure for Student Portal, Faculty Portal, and Staff/Admin access unless the user explicitly requests newsletter, Google Play, App Store, or similar promotional footer sections later.
+- Footer implementations must use one unified navy background unless an approved reference explicitly requires panels. Do not add split-color footer blocks, duplicate logo-area copyright text, off-center bottom copyright, or awkwardly broken desktop email/phone contact text.
 - Avoid leaking internal IDs, hidden fields, or sensitive metadata unless required by the API contract.
 
 ## 7. Backend Coding Standards

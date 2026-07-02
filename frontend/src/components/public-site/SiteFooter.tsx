@@ -58,11 +58,10 @@ export function SiteFooter({
 
   return (
     <footer className="relative overflow-hidden bg-[#061f3f] text-white">
-      <div className="absolute inset-y-0 left-0 w-[34%] bg-white/[0.025]" aria-hidden="true" />
       <div className="absolute bottom-14 right-10 hidden h-32 w-32 border border-white/10 lg:block" aria-hidden="true" />
       <div className="absolute bottom-28 right-20 hidden h-24 w-24 rotate-45 border border-white/10 lg:block" aria-hidden="true" />
       <Container className="relative py-14 sm:py-16 lg:py-20">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.3fr_0.75fr_0.75fr_0.9fr] lg:gap-14">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.45fr_0.72fr_0.72fr_0.82fr] lg:gap-14">
           <div className="min-w-0">
             <div className="flex items-center gap-4">
               {logoUrl ? (
@@ -87,28 +86,25 @@ export function SiteFooter({
                 </p>
               </div>
             </div>
-            {settings.footer_text ? (
-              <p className="mt-6 max-w-xl text-[15px] leading-7 text-blue-100">
-                {settings.footer_text}
-              </p>
-            ) : null}
             {contactItems.length > 0 ? (
-              <ul className="mt-7 grid gap-4 text-sm text-blue-100 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+              <ul className="mt-7 grid max-w-[680px] gap-4 text-sm text-blue-100 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
                 {contactItems.map((item) => (
-                  <li key={`${item.label}-${item.value}`} className="min-w-0">
-                    <span className="mb-1 flex items-center gap-2 font-serif text-[15px] font-bold text-white">
-                      <span className="text-yellow-300" aria-hidden="true">
+                  <li key={`${item.label}-${item.value}`} className="flex min-w-0 items-start gap-3">
+                    <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-yellow-300 ring-1 ring-white/10" aria-hidden="true">
                         {renderFooterIcon(item.icon)}
-                      </span>
-                      {item.label}
                     </span>
-                    {item.href ? (
-                      <a className="break-words transition duration-300 hover:text-yellow-300" href={item.href}>
-                        {item.value}
-                      </a>
-                    ) : (
-                      <span className="break-words">{item.value}</span>
-                    )}
+                    <span className="min-w-0">
+                      <span className="block font-serif text-[15px] font-bold leading-5 text-white">
+                        {item.label}
+                      </span>
+                      {item.href ? (
+                        <a className="mt-1 block max-w-full whitespace-nowrap leading-6 text-blue-100 transition duration-300 hover:text-yellow-300 max-sm:whitespace-normal max-sm:break-words" href={item.href}>
+                          {item.value}
+                        </a>
+                      ) : (
+                        <span className="mt-1 block leading-6 text-blue-100 break-words">{item.value}</span>
+                      )}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -137,7 +133,7 @@ export function SiteFooter({
           <PortalLinks />
         </div>
 
-        <div className="mt-12 border-t border-white/10 pt-7 text-sm font-semibold text-blue-100">
+        <div className="mt-12 border-t border-white/10 pt-7 text-center text-sm font-semibold text-blue-100">
           <p>&copy; {currentYear} OIST Digital Campus. All rights reserved.</p>
         </div>
       </Container>

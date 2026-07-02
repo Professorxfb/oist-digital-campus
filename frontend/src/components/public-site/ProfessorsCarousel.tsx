@@ -143,7 +143,7 @@ function ProfessorCard({
             aria-hidden="true"
           >
             <div
-              className="absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-105"
+              className="absolute inset-0 bg-cover bg-[center_22%] transition duration-700 group-hover:scale-105"
               style={{ backgroundImage: photoBackgroundImage }}
             />
             <div className="absolute inset-0 bg-[#061f3f]/0 transition duration-500 group-hover:bg-[#061f3f]/18" />
