@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { CTAButton } from "@/components/public-site/CTAButton";
 import { EmptyState } from "@/components/public-site/EmptyState";
 import { PublicSiteShell } from "@/components/public-site/PublicSiteShell";
 import { createCmsMetadata } from "@/lib/cms-metadata";
@@ -47,7 +46,7 @@ export default async function FacultyProfilesPage() {
         <section className="pb-16 pt-10 sm:pb-20 sm:pt-12 lg:pb-24 lg:pt-14" data-section="faculty-listing">
           <FacultyProfilesContainer>
             {profiles.length > 0 ? (
-              <div className="grid max-w-[1320px] gap-5 sm:grid-cols-2 lg:grid-cols-4 xl:gap-6">
+              <div className="mx-auto grid w-full max-w-[1360px] gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {profiles.map((profile) => (
                   <FacultyListingCard key={profile.slug} profile={profile} />
                 ))}
@@ -68,45 +67,47 @@ function FacultyListingCard({
   profile: FacultyProfile;
 }>) {
   const imageUrl = getCmsAssetUrl(profile.photo_url ?? profile.photo_path ?? null);
-  const metaItems = [profile.designation, profile.department?.name].filter(Boolean);
+  const designation = profile.designation?.trim();
+  const departmentName = profile.department?.name?.trim();
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-[10px] border border-slate-200/70 bg-white shadow-[0_14px_34px_rgba(2,6,23,0.055)] transition duration-300 hover:-translate-y-1 hover:border-yellow-300/70 hover:shadow-[0_22px_48px_rgba(2,6,23,0.12)]" data-faculty-listing-card>
-      <div className="overflow-hidden p-2.5 pb-0">
-        <div className="relative aspect-[4/3] overflow-hidden rounded-[8px] bg-slate-100">
-          {imageUrl ? (
-            <div
-              className="h-full w-full bg-cover bg-[center_22%] transition duration-700 group-hover:scale-[1.035]"
-              style={{ backgroundImage: `url(${imageUrl})` }}
-              aria-hidden="true"
-            />
-          ) : (
-            <div className="h-full w-full bg-[radial-gradient(circle_at_30%_20%,rgba(250,204,21,0.2),transparent_28%),linear-gradient(135deg,#071733,#1d4ed8_58%,#e0f2fe)]" aria-hidden="true" />
-          )}
-          <div className="absolute inset-0 bg-[#061f3f]/0 transition duration-500 group-hover:bg-[#061f3f]/10" aria-hidden="true" />
-        </div>
+    <article className="group flex h-full min-h-[430px] flex-col overflow-hidden rounded-[14px] border border-slate-200/80 bg-white shadow-[0_18px_44px_rgba(2,6,23,0.07)] transition duration-300 hover:-translate-y-1 hover:border-yellow-300/70 hover:shadow-[0_26px_58px_rgba(2,6,23,0.13)]" data-faculty-listing-card>
+      <div className="relative aspect-[4/3] overflow-hidden rounded-t-[14px] bg-slate-100">
+        {imageUrl ? (
+          <div
+            className="h-full w-full bg-cover bg-[center_22%] transition duration-700 group-hover:scale-[1.035]"
+            style={{ backgroundImage: `url(${imageUrl})` }}
+            aria-hidden="true"
+          />
+        ) : (
+          <div className="h-full w-full bg-[radial-gradient(circle_at_30%_20%,rgba(250,204,21,0.22),transparent_28%),linear-gradient(135deg,#071733,#1d4ed8_58%,#e0f2fe)]" aria-hidden="true" />
+        )}
+        <div className="absolute inset-0 bg-[#061f3f]/0 transition duration-500 group-hover:bg-[#061f3f]/10" aria-hidden="true" />
       </div>
 
-      <div className="flex flex-1 flex-col px-5 pb-6 pt-5 text-center">
-        {metaItems.length > 0 ? (
-          <p className="mx-auto max-w-full text-[11px] font-black uppercase leading-5 tracking-[0.12em] text-blue-800">
-            {metaItems.map((item, index) => (
-              <span key={item}>
-                {index > 0 ? <span className="mx-1.5 text-yellow-500">/</span> : null}
-                <span>{item}</span>
-              </span>
-            ))}
-          </p>
-        ) : null}
-
-        <h2 className="mt-3 font-serif text-[clamp(1.25rem,3.4vw,1.5rem)] font-bold leading-[1.15] tracking-normal text-[#061f3f] transition duration-300 group-hover:text-blue-900">
+      <div className="flex flex-1 flex-col px-5 pb-6 pt-5 text-center sm:px-6">
+        <h2 className="mx-auto max-w-[16rem] font-serif text-[clamp(1.24rem,2.1vw,1.48rem)] font-bold leading-[1.18] tracking-normal text-[#061f3f] transition duration-300 group-hover:text-blue-900">
           {profile.name}
         </h2>
 
-        <div className="mt-auto pt-5">
-          <CTAButton href={`/faculty-profiles/${profile.slug}`} variant="subtle" className="min-h-10 px-4 py-2 text-[13px]">
-            Read More
-          </CTAButton>
+        <div className="mt-3 space-y-2">
+          {designation ? (
+            <p className="mx-auto max-w-[17rem] text-[14px] font-semibold leading-6 text-slate-700">
+              {designation}
+            </p>
+          ) : null}
+          {departmentName ? (
+            <p className="mx-auto max-w-[17rem] text-[11px] font-black uppercase leading-5 tracking-[0.14em] text-blue-800">
+              {departmentName}
+            </p>
+          ) : null}
+        </div>
+
+        <div className="mt-auto pt-6">
+          <Link href={`/faculty-profiles/${profile.slug}`} className="btn-public-primary min-h-10 px-4 py-2 text-[13px]">
+            <span>Read More</span>
+            <span className="btn-public-dot" aria-hidden="true" />
+          </Link>
         </div>
       </div>
     </article>

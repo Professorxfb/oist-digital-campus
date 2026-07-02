@@ -1,5 +1,67 @@
 Date: 2026-07-02
 
+## Faculty Listing Card Redesign
+
+### Scope
+
+Redesigned only the `/faculty-profiles` listing page card layout and grid polish. Header, footer, homepage sections, Faculty Profile detail page, shared homepage faculty card behavior, CMS/API/database, backend code, and Faculty Profiles CMS fields were not changed.
+
+### Files Changed
+
+- `frontend/src/app/faculty-profiles/page.tsx`
+- `docs/SETUP_LOG.md`
+
+### Card Fields Displayed
+
+- Faculty image.
+- Faculty name.
+- Designation as its own readable centered line.
+- Department as its own centered uppercase text line.
+- Read More button linking to the existing faculty detail page.
+
+### Card Fields Removed From Listing
+
+- Short bio/description preview.
+- Social media icons and social links.
+- Combined designation/department badge row.
+- Yellow chip/pill metadata block.
+
+### Design Changes
+
+- Updated the listing grid to center within a balanced `1360px` max width.
+- Desktop now supports 4 clean columns at large widths, with 3 columns at `1024px`, 2 columns at tablet width, and 1 column on mobile.
+- Card size now uses a taller premium profile-card rhythm with consistent height, white background, soft border, subtle shadow, and gentle hover lift.
+- Image is a top card media area with a consistent `4:3` aspect ratio, `bg-cover`, and `background-position: 50% 22%` to protect faces from poor cropping.
+- Faculty name is centered in navy serif type.
+- Designation and department are separated into two individual text lines with no badge wrapper.
+- Read More now uses the shared animated public yellow pill button with the moving dot accent.
+
+### Commands Run
+
+- `npm run lint`
+- `npm run build`
+- `npm run dev -- --hostname 127.0.0.1 --port 3000`
+
+### Responsive Verification Result
+
+- `npm run lint` passed.
+- `npm run build` passed.
+- Browser verification used `http://127.0.0.1:3000/faculty-profiles`.
+- Checked widths: `1920px`, `1366px`, `1024px`, `768px`, `430px`, and `390px`.
+- `1920px`: 4 cards per row, card measured about `322px x 448px`, no horizontal overflow.
+- `1366px`: 4 cards per row, card measured about `271px x 458px`, no horizontal overflow.
+- `1024px`: 3 cards per row, no horizontal overflow.
+- `768px`: 2 cards per row, no horizontal overflow.
+- `430px` and `390px`: 1 card per row, no horizontal overflow.
+- First card rendered in the required order: image, `Md. Rabiul Islam`, `Professor & Head of Department`, `Computer Science & Engineering`, `Read More`.
+- First card had exactly one link, the Read More detail link, and no social links.
+- Short bio/excerpt text did not render on listing cards.
+- Image crop used `background-position: 50% 22%`.
+- Read More button used `.btn-public-primary` with animated transition properties.
+- No CMS/API/database changes were made.
+
+---
+
 ## Faculty Listing Polish, Footer Unification, and Permanent Quality Rules
 
 ### Scope
